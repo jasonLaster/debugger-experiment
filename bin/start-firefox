@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+const env = require('../environment.json');
+const fs = require('fs');
+const spawn = require('child_process').spawn;
+
+const firefoxBinDir = env.firefoxBinDir || "/Applications/FirefoxDeveloperEdition.app/Contents/MacOS/firefox-bin";
+
+if (!fs.existsSync(firefoxBinDir)) {
+  console.log(`Oops, I couldn\'t find firefox-bin at ${firefoxBinDir}. Please add the correct path in your environment.json file (e.g. firefoxBinDir: <path-here>)`)
+  return;
+}
+
+const firefox = spawn(env.firefoxBinDir, ['--start-debugger-server', '6080']);
+
+firefox.stdout.on('data', (data) => {
+  console.log(`stdout: ${data}`);
+});
+
+firefox.stderr.on('data', (data) => {
+  console.log(`stderr: ${data}`);
+});
+
+firefox.on('close', (code) => {
+  console.log(`child process exited with code ${code}`);
+});
