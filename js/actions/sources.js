@@ -167,8 +167,8 @@ function togglePrettyPrint(source) {
 function loadSourceText(source) {
   return (dispatch, getState) => {
     // Fetch the source text only once.
-    let textInfo = getSourceText(getState(), source.actor).toJS();
-    if (textInfo) {
+    let textInfo = getSourceText(getState(), source.actor);
+    if (!textInfo.isEmpty()) {
       // It's already loaded or is loading
       return promise.resolve(textInfo);
     }

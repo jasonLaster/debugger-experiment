@@ -60,12 +60,6 @@ const Editor = React.createClass({
     });
   },
 
-  componentDidUpdate() {
-    // if(this.props.sourceText) {
-    //   this.editor.setValue(this.props.sourceText.text);
-    // }
-  },
-
   componentWillReceiveProps(nextProps) {
     const sourceText = nextProps.sourceText;
     const cursor = this.editor.getCursor();
@@ -106,7 +100,7 @@ const Editor = React.createClass({
 
 module.exports = connect(
   (state, props) => {
-    const selectedActor = props.selectedSource && props.selectedSource.actor;
+    const selectedActor = props.selectedSource.get("actor");
     return { sourceText: getSourceText(state, selectedActor) };
   },
   dispatch => bindActionCreators(actions, dispatch)

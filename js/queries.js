@@ -1,5 +1,5 @@
 "use strict";
-const Immutable = require("immutable");
+const { Map, Seq } = require("immutable");
 
 /* Selectors */
 function getSources(state) {
@@ -32,7 +32,7 @@ function getSelectedTab(state) {
 
 /* Queries */
 function getSource(state, actor) {
-  return getSources(state).get(actor) || Immutable.Map();
+  return getSources(state).get(actor) || Map();
 }
 
 function getSourceCount(state) {
@@ -40,26 +40,28 @@ function getSourceCount(state) {
 }
 
 function getSourceByURL(state, url) {
-  return getSources(state).find(source => source.url == url)
-         || Immutable.Map();
+  return getSources(state).find(source => source.url == url) || Map();
 }
 
 function getSourceByActor(state, actor) {
-  return getSources(state).find(source => source.actor == actor)
-         || Immutable.Map();
+  return getSources(state).find(source => source.actor == actor) || Map();
 }
 
+/* @deprecate getSourceText */
 function getSourceText(state, actor) {
-  return getSourcesText(state).get(actor) || Immutable.Map();
+  return getSourcesText(state).get(actor) || Map();
+}
+
+function getSourceTextByActor(state, actor) {
+  return getSourcesText(state).get(actor) || Map();
 }
 
 function getBreakpointsSeq(state) {
-  return getBreakpoints(state).valueSeq() || Immutable.Seq();
+  return getBreakpoints(state).valueSeq() || Seq();
 }
 
 function getBreakpoint(state, location) {
-  return getBreakpoints(state).get(makeLocationId(location))
-         || Immutable.Map();
+  return getBreakpoints(state).get(makeLocationId(location)) || Map();
 }
 
 function makeLocationId(location) {
@@ -75,6 +77,7 @@ module.exports = {
   getSelectedSource,
   getSelectedSourceOpts,
   getSourceText,
+  getSourceTextByActor,
   getBreakpoint,
   getBreakpoints,
   getBreakpointsSeq,

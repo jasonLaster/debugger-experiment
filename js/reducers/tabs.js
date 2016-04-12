@@ -21,7 +21,7 @@ function update(state = initialState, action) {
 
       return state.mergeIn(
         ["tabs"],
-        Map(tabs.map(tab => [tab.actor, Map(tab)]))
+        Immutable.Map(tabs.map(tab => [tab.actor, Immutable.Map(tab)]))
       );
     case constants.SELECT_TAB:
       if (action.status == "start") {
