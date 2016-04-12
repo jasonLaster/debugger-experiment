@@ -9,8 +9,8 @@ const { Map } = Immutable;
 
 const initialState = Immutable.fromJS({
   sources: {},
-  selectedSource: null,
-  selectedSourceOpts: null,
+  selectedSource: {},
+  selectedSourceOpts: {},
   sourcesText: {}
 });
 

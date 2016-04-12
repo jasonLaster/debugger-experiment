@@ -12,7 +12,7 @@ const { getSelectedTab } = require("../queries");
 function TabList({ selectedTab }) {
   return dom.div(
     { className: "tablist" },
-    selectedTab ? App() : Tabs()
+    selectedTab.isEmpty() ? Tabs() : App()
   );
 }
 

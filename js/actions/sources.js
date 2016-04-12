@@ -47,7 +47,7 @@ function selectSource(source, opts) {
       return;
     }
 
-    source = getSource(getState(), source.actor);
+    source = getSource(getState(), source.actor).toJS();
 
     // Make sure to start a request to load the source text.
     dispatch(loadSourceText(source));
@@ -137,7 +137,7 @@ function togglePrettyPrint(source) {
         let response;
 
         // Only attempt to pretty print JavaScript sources.
-        const sourceText = getSourceText(getState(), source.actor);
+        const sourceText = getSourceText(getState(), source.actor).toJS();
         const contentType = sourceText ? sourceText.contentType : null;
         if (!SourceUtils.isJavaScript(source.url, contentType)) {
           throw new Error("Can't prettify non-javascript files.");
@@ -167,7 +167,7 @@ function togglePrettyPrint(source) {
 function loadSourceText(source) {
   return (dispatch, getState) => {
     // Fetch the source text only once.
-    let textInfo = getSourceText(getState(), source.actor);
+    let textInfo = getSourceText(getState(), source.actor).toJS();
     if (textInfo) {
       // It's already loaded or is loading
       return promise.resolve(textInfo);

@@ -5,11 +5,10 @@
 
 const constants = require("../constants");
 const Immutable = require("immutable");
-const { Map } = Immutable;
 
 const initialState = Immutable.fromJS({
   tabs: {},
-  selectedTab: null,
+  selectedTab: {},
 });
 
 function update(state = initialState, action) {

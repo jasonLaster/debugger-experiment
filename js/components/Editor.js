@@ -70,20 +70,20 @@ const Editor = React.createClass({
     const sourceText = nextProps.sourceText;
     const cursor = this.editor.getCursor();
 
-    if (sourceText.loading) {
+    if (sourceText.get("loading")) {
       this.editor.setValue("Loading...");
       return;
     }
 
-    if (sourceText.error) {
+    if (sourceText.get("error")) {
       this.editor.setValue("Error");
-      console.error(sourceText);
+      console.error(sourceText.get("error"));
       return;
     }
 
-    const text = sourceText.text;
-
-    if (this.props.sourceText && this.props.sourceText.text == text) {
+    // TODO: fix this equality check before i commit.
+    const text = sourceText.get("text");
+    if (this.props.sourceText && this.props.sourceText.get("text") == text) {
       return;
     }
 

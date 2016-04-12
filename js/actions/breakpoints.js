@@ -52,6 +52,7 @@ function addBreakpoint(location, condition) {
       breakpoint: bp,
       condition: condition,
       [PROMISE]: Task.spawn(function* () {
+        debugger;
         const sourceClient = gThreadClient.source(
           getSource(getState(), bp.location.actor)
         );
