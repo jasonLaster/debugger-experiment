@@ -1,6 +1,7 @@
 "use strict";
 
-const { createStore, actions, queries } = require("../../util/test-head");
+const { createStore, actions, queries,
+  Task, waitForState, commonLog } = require("../../util/test-head");
 
 const mockThreadClient = {
   currentSourceText: {
@@ -19,24 +20,25 @@ const mockThreadClient = {
       }
     };
   }
-}
+};
+
 const store = createStore(mockThreadClient);
 
-// function waitForState(predicate, fn) {
-//   store.subscribe(state => {
-//     if(predicate(state)) {
-//       fn(state);
-//     }
-//   });
-// }
-
 function run_test() {
-  store.dispatch(actions.loadSourceText({ actor: "foo1" })).then(() => {
-    dump('JWL here\n');
-    equal(queries.getSourceText(store.getState(), "foo1").text,
-          "function() {\n  return 5;\n}");
-  }).catch(err => dump('ERROR: ' + err + '\n'));
+  old_test();
+  Task.spawn(function* () {
+    commonLog("inside spawn");
+    store.dispatch(actions.loadSourceText({ actor: "foo1" }));
 
+    yield waitForState(() => {
+      return queries.getSourceText(store.getState(), "foo1");
+    });
+
+    equal(queries.getSourceText(store.getState(), "foo1").text,
+          "function() {\n  return 7;\n}");
+  });
+
+  dump("outside spawn");
   run_next_test();
 }
 
