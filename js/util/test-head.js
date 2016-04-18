@@ -13,7 +13,8 @@ const mockThreadClient = {
 const _createStore = configureStore({
   log: false,
   makeThunkArgs: args => {
-    return Object.assign({}, args, { threadClient: mockThreadClient });
+    const { dispatch, getState } = args;
+    return [ dispatch, getState, {} ];
   }
 });
 
