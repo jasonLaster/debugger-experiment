@@ -58,15 +58,76 @@ function startDriver() {
 
 function startExpressServer() {
   var app = express();
+  let driver;
+
+  var isQuiting = false;
+  var isOpen = false;
+
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
 
-  app.post('/command', function (req, res) {
-    const command = req.body.command;
-    eval(command);
-    console.log("command", command)
-    res.send('POST request to the homepage');
+  app.post('/start', function(req, res) {
+    if (!isQuiting && !isOpen) {
+      driver = startDriver();
+      isOpen = true;
+    }
+    res.send('POST start driver');
   });
+
+  app.post('/stop', function(req, res) {
+    isQuiting = true;
+    driver.quit()
+    .catch(e => console.log("QUIT failed", e.stack))
+    .finally(() => {
+      isQuiting = false;
+      isOpen = false;
+      res.send('POST quit driver');
+    });
+  });
+
+  app.post('/command', function(req, res) {
+    const command = req.body.command;
+    const timeout = req.body.timeout;
+    console.log("Initiating command", command)
+
+    var isDone = false;
+    var cb = () => {
+      if (!isDone) {
+        console.log("Command Executed", command);
+        isDone = true;
+        res.sendStatus(200);
+      }
+    }
+
+    try {
+      var r  = eval(command);
+    } catch (e) {
+      console.log("error", e.stack);
+    }
+
+    setTimeout(cb, timeout);
+    r.then(cb)
+    .catch(err => {
+      console.log("Command Failed", err.stack);
+    });
+/*
+TypeError: command.result is not a function
+    at /Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/firefox/index.js:383:26
+    at ManagedPromise.invokeCallback_ (/Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/lib/promise.js:1379:14)
+    at TaskQueue.execute_ (/Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/lib/promise.js:2913:14)
+    at TaskQueue.executeNext_ (/Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/lib/promise.js:2896:21)
+    at /Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/lib/promise.js:2820:25
+    at /Users/jlaster/src/mozilla/debugger.html/node_modules/selenium-webdriver/lib/promise.js:639:7
+    at process._tickCallback (internal/process/next_tick.js:103:7)
+*/
+
+  });
+
+
+  // Serves todomvc from node_modules.
+  // This is a test to see if going forward, we want to pull in test
+  // examples from the community.
+  app.use(express.static("node_modules"));
 
   app.listen(9002, function () {
     console.log('Debuggee Server listening on 9002!');
@@ -75,5 +136,4 @@ function startExpressServer() {
   return app;
 }
 
-const driver = startDriver();
 const app = startExpressServer();
