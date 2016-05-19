@@ -19,7 +19,7 @@ function isCurrentlyPausedAtBreakpoint(state, breakpoint) {
   }
 
   const breakpointLocation = makeLocationId(breakpoint.get("location").toJS());
-  const pauseLocation = makeLocationId(pause.getIn(["frame", "where"]).toJS());
+  const pauseLocation = makeLocationId(pause.getIn(["frame", "location"]).toJS());
 
   return breakpointLocation == pauseLocation;
 }
