@@ -15,6 +15,8 @@ test:
     - npm run lint-js
     - npm run test-karma
 dependencies:
+  cache_directories:
+    - ~/.cypress
   override:
     - npm install
     - curl -L -o google-chrome.deb https://s3.amazonaws.com/circle-downloads/google-chrome-stable_current_amd64_47.0.2526.73-1.deb
