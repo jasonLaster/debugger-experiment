@@ -54,9 +54,9 @@
 
 "use strict";
 
-const {components, Cc, Ci, Cu} = require("ff-devtools-libs/sham/chrome");
-const { NetUtil } = require("ff-devtools-libs/sham/netutil");
-const DevToolsUtils = require("ff-devtools-libs/shared/DevToolsUtils");
+const {components, Cc, Ci, Cu} = require("devtools-sham/sham/chrome");
+const { NetUtil } = require("devtools-sham/sham/netutil");
+const DevToolsUtils = require("devtools-sham/shared/DevToolsUtils");
 
 // The cache used in the `nsIURL` function.
 const gNSURLStore = new Map();

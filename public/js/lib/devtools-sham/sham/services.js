@@ -2,7 +2,7 @@
  * A sham for https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Services.jsm
  */
 
-const L10N = require("ff-devtools-libs/sham/l10n");
+const L10N = require("devtools-sham/sham/l10n");
 const Services = { };
 
 Services.strings = {
@@ -30,7 +30,7 @@ Services.obs = {
   addObserver: () => {},
   removeObserver: () => {},
 }
-Services.prefs = require("ff-devtools-libs/sham/services/prefs");
+Services.prefs = require("devtools-sham/sham/services/prefs");
 
 Services.tm = {
   currentThread: {

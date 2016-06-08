@@ -4,9 +4,9 @@
 "use strict";
 
 const defer = require("devtools/shared/defer");
-const { PROMISE } = require("ff-devtools-libs/client/shared/redux/middleware/promise");
-const { Task } = require("ff-devtools-libs/sham/task");
-const SourceUtils = require("ff-devtools-libs/client/shared/source-utils");
+const { PROMISE } = require("devtools-sham/client/shared/redux/middleware/promise");
+const { Task } = require("devtools-sham/sham/task");
+const SourceUtils = require("devtools-sham/client/shared/source-utils");
 
 const { getSource, getSourceText } = require("../selectors");
 const constants = require("../constants");

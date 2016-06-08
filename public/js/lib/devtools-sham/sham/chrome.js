@@ -2,7 +2,7 @@
  * A sham for https://developer.mozilla.org/en-US/Add-ons/SDK/Low-Level_APIs/chrome
  */
 
-var { inDOMUtils } = require("ff-devtools-libs/sham/inDOMUtils");
+var { inDOMUtils } = require("devtools-sham/sham/inDOMUtils");
 
 var ourServices = {
   inIDOMUtils: inDOMUtils,

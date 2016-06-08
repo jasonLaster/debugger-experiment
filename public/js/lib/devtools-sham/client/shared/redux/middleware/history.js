@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const DevToolsUtils = require("ff-devtools-libs/shared/DevToolsUtils");
+const DevToolsUtils = require("devtools-sham/shared/DevToolsUtils");
 
 /**
  * A middleware that stores every action coming through the store in the passed

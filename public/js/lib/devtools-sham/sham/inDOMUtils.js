@@ -2,9 +2,9 @@
 
 "use strict";
 
-var { CSSLexer } = require("ff-devtools-libs/sham/parse-css");
-var { cssColors } = require("ff-devtools-libs/sham/css-color-db");
-var { cssProperties } = require("ff-devtools-libs/sham/css-property-db");
+var { CSSLexer } = require("devtools-sham/sham/parse-css");
+var { cssColors } = require("devtools-sham/sham/css-color-db");
+var { cssProperties } = require("devtools-sham/sham/css-property-db");
 
 var cssRGBMap;
 

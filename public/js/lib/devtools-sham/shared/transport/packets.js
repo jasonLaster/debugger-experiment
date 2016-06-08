@@ -24,11 +24,11 @@
  *     Called to clean up at the end of use
  */
 
-const { Cc, Ci, Cu } = require("ff-devtools-libs/sham/chrome");
-const DevToolsUtils = require("ff-devtools-libs/shared/DevToolsUtils");
+const { Cc, Ci, Cu } = require("devtools-sham/sham/chrome");
+const DevToolsUtils = require("devtools-sham/shared/DevToolsUtils");
 const { dumpn, dumpv } = DevToolsUtils;
-const StreamUtils = require("ff-devtools-libs/shared/transport/stream-utils");
-const promise = require("ff-devtools-libs/sham/promise");
+const StreamUtils = require("devtools-sham/shared/transport/stream-utils");
+const promise = require("devtools-sham/sham/promise");
 
 /*DevToolsUtils.defineLazyGetter(this, "unicodeConverter", () => {
   const unicodeConverter = Cc("@mozilla.org/intl/scriptableunicodeconverter")

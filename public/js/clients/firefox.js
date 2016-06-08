@@ -1,8 +1,8 @@
 "use strict";
 
-const { DebuggerClient } = require("ff-devtools-libs/shared/client/main");
-const { DebuggerTransport } = require("ff-devtools-libs/transport/transport");
-const { TargetFactory } = require("ff-devtools-libs/client/framework/target");
+const { DebuggerClient } = require("devtools-sham/shared/client/main");
+const { DebuggerTransport } = require("devtools-sham/transport/transport");
+const { TargetFactory } = require("devtools-sham/client/framework/target");
 const {
   Tab, Source, Location, BreakpointResult, Frame
 } = require("../types");

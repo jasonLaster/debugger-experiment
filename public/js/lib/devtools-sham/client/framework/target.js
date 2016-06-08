@@ -4,13 +4,13 @@
 
 "use strict";
 
-const { Ci, Cu } = require("ff-devtools-libs/sham/chrome");
-const promise = require("ff-devtools-libs/sham/promise");
-const EventEmitter = require("ff-devtools-libs/shared/event-emitter");
-const { Services } = require("ff-devtools-libs/sham/services");
+const { Ci, Cu } = require("devtools-sham/sham/chrome");
+const promise = require("devtools-sham/sham/promise");
+const EventEmitter = require("devtools-sham/shared/event-emitter");
+const { Services } = require("devtools-sham/sham/services");
 
-/*const { DebuggerServer } = require("ff-devtools-libs/server/main");*/
-const { DebuggerClient } = require("ff-devtools-libs/shared/client/main");
+/*const { DebuggerServer } = require("devtools-sham/server/main");*/
+const { DebuggerClient } = require("devtools-sham/shared/client/main");
 
 const targets = new WeakMap();
 const promiseTargets = new WeakMap();

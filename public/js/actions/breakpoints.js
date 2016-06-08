@@ -5,11 +5,11 @@
 
 const defer = require("devtools/shared/defer");
 const constants = require("../constants");
-const { PROMISE } = require("ff-devtools-libs/client/shared/redux/middleware/promise");
+const { PROMISE } = require("devtools-sham/client/shared/redux/middleware/promise");
 const {
   getBreakpoint, getBreakpoints
 } = require("../selectors");
-const { Task } = require("ff-devtools-libs/sham/task");
+const { Task } = require("devtools-sham/sham/task");
 const fromJS = require("../util/fromJS");
 
 function enableBreakpoint(location) {

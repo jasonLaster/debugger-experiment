@@ -6,7 +6,7 @@
 
 "use strict";
 
-// const promise = require("ff-devtools-libs/sham/promise");
+// const promise = require("devtools-sham/sham/promise");
 
 /**
  * This object provides the public module functions.

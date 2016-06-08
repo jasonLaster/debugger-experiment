@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const Prefs = require("ff-devtools-libs/sham/services/prefs");
-const EventEmitter = require("ff-devtools-libs/shared/event-emitter");
+const Prefs = require("devtools-sham/sham/services/prefs");
+const EventEmitter = require("devtools-sham/shared/event-emitter");
 
 /**
  * Shortcuts for lazily accessing and setting various preferences.

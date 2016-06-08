@@ -9,8 +9,8 @@
 var EventEmitter = function EventEmitter() {};
 module.exports = EventEmitter;
 
-const { Cu } = require("ff-devtools-libs/sham/chrome");
-const promise = require("ff-devtools-libs/sham/promise");
+const { Cu } = require("devtools-sham/sham/chrome");
+const promise = require("devtools-sham/sham/promise");
 
 /**
  * Decorate an object with event emitter functionality.

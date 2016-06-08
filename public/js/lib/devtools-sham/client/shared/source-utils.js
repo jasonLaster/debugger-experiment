@@ -7,7 +7,7 @@
 // const { URL } = require("sdk/url");
 
 // TODO: add support for l10n
-// const { LocalizationHelper } = require("ff-devtools-libs/client/shared/l10n");
+// const { LocalizationHelper } = require("devtools-sham/client/shared/l10n");
 // const l10n = new LocalizationHelper("chrome://devtools/locale/components.properties");
 // const UNKNOWN_SOURCE_STRING = l10n.getStr("frame.unknownSource");
 const UNKNOWN_SOURCE_STRING = "unknown"

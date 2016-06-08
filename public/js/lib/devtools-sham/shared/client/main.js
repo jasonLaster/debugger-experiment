@@ -6,18 +6,18 @@
 
 "use strict";
 
-const { Ci, Cu, components } = require("ff-devtools-libs/sham/chrome");
-const { Services } = require("ff-devtools-libs/sham/services");
-const DevToolsUtils = require("ff-devtools-libs/shared/DevToolsUtils");
+const { Ci, Cu, components } = require("devtools-sham/sham/chrome");
+const { Services } = require("devtools-sham/sham/services");
+const DevToolsUtils = require("devtools-sham/shared/DevToolsUtils");
 
 // WARNING I swapped the sync one for the async one here
 //const promise = require("resource://devtools/shared/deprecated-sync-thenables.js", {}).Promise;
-const promise = require("ff-devtools-libs/sham/promise");
+const promise = require("devtools-sham/sham/promise");
 
 const events = require("sdk/event/core");
-const { WebConsoleClient } = require("ff-devtools-libs/shared/webconsole/client");
-/*const { DebuggerSocket } = require("ff-devtools-libs/shared/security/socket");*/
-/*const Authentication = require("ff-devtools-libs/shared/security/auth");*/
+const { WebConsoleClient } = require("devtools-sham/shared/webconsole/client");
+/*const { DebuggerSocket } = require("devtools-sham/shared/security/socket");*/
+/*const Authentication = require("devtools-sham/shared/security/auth");*/
 
 const noop = () => {};
 
