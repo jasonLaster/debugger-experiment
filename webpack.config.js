@@ -13,6 +13,7 @@ let config = {
   },
   resolve: {
     alias: {
+      "devtools": "/Users/james/projects/mozilla/debugger.html/public/js/lib/devtools",
       "ff-devtools-libs": "/Users/james/projects/mozilla/debugger.html/public/js/lib/devtools-sham",
       "sdk": "/Users/james/projects/mozilla/debugger.html/public/js/lib/devtools-sham/sdk"
     }

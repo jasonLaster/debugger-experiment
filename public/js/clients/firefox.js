@@ -6,7 +6,7 @@ const { TargetFactory } = require("ff-devtools-libs/client/framework/target");
 const {
   Tab, Source, Location, BreakpointResult, Frame
 } = require("../types");
-const defer = require("../util/defer");
+const defer = require("../lib/devtools/shared/defer");
 
 let currentClient = null;
 let currentThreadClient = null;
