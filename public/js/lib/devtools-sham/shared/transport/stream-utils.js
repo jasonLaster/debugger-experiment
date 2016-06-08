@@ -4,12 +4,12 @@
 
 "use strict";
 
-const { Ci, Cc, Cu, Cr, CC } = require("devtools/sham/chrome");
-const Services = require("devtools/sham/services");
-const DevToolsUtils = require("devtools/shared/DevToolsUtils");
+const { Ci, Cc, Cu, Cr, CC } = require("ff-devtools-libs/sham/chrome");
+const Services = require("ff-devtools-libs/sham/services");
+const DevToolsUtils = require("ff-devtools-libs/shared/DevToolsUtils");
 const { dumpv } = DevToolsUtils;
-const EventEmitter = require("devtools/shared/event-emitter");
-const promise = require("devtools/sham/promise");
+const EventEmitter = require("ff-devtools-libs/shared/event-emitter");
+const promise = require("ff-devtools-libs/sham/promise");
 
 const IOUtil = Cc("@mozilla.org/io-util;1").getService(Ci.nsIIOUtil);
 
