@@ -1,12 +1,14 @@
 // turn theses tests on when you want to write new fixture data
 // you also need to turn on the cypress-server to be able to save the fixtures.
-xdescribe("Fixtures", function() {
+describe("Fixtures", function() {
   /**
    An example of the debugger not being paused.
    */
   it("todomvc", function() {
     debugPage("todomvc");
     goToSource("js/views/todo-view");
+    goToSource("app-view");
+    goToSource("models/todo.js");
     cy.saveFixture("todomvc");
     cy.reload();
   });

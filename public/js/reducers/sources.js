@@ -11,10 +11,13 @@ const initialState = fromJS({
   sources: {},
   sourceTree: ["root", []],
   selectedSource: null,
-  sourcesText: {}
+  sourcesText: {},
+  tabs: []
 });
 
 function update(state = initialState, action) {
+  let tabList;
+
   switch (action.type) {
     case constants.ADD_SOURCE:
       return state.mergeIn(["sources", action.source.id], action.source);
@@ -28,9 +31,29 @@ function update(state = initialState, action) {
       );
 
     case constants.SELECT_SOURCE:
-      return state.merge({
-        selectedSource: action.source
-      });
+      const source = fromJS(action.source);
+      tabList = state.get("tabs");
+      if (!tabList.includes(source)) {
+        tabList = tabList.unshift(source)
+      }
+
+      return state
+        .merge({ selectedSource: action.source })
+        .set("tabs", tabList);
+
+    case constants.CLOSE_TAB:
+      tabList = state.get("tabs")
+                      .filter(tab => tab.get("id") != action.id);
+
+      const selectedSource = getNewSelectedSource(
+        state.get("tabs"),
+        state.get("selectedSource"),
+        action.id
+      );
+
+      return state
+        .set("tabs", tabList)
+        .merge({ selectedSource });
 
     case constants.LOAD_SOURCE_TEXT: {
       return _updateText(state, action);
@@ -90,6 +113,28 @@ function _updateText(state, action) {
     text: action.value.text,
     contentType: action.value.contentType
   }));
+}
+
+/**
+ * Gets the next tab to select
+ * when a tab closes.
+ */
+function getNewSelectedSource(tabs, selectedSource, id) {
+  // if we're not closing the selected tab return the selected tab
+  if (selectedSource.get("id") != id) {
+    return selectedSource;
+  }
+
+  const tabIndex = tabs.findIndex(tab => tab.get("id") == id);
+  const numTabs = tabs.count();
+
+  // if we're closing the last tab, select the penultimate tab
+  if (tabIndex + 1 == numTabs) {
+    return tabs.get(tabIndex-1);
+  }
+
+  // return the next tab
+  return tabs.get(tabIndex+1)
 }
 
 module.exports = update;

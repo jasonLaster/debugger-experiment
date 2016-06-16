@@ -63,6 +63,13 @@ function selectSource(id, opts) {
   };
 }
 
+function closeTab(id) {
+  return {
+    type: constants.CLOSE_TAB,
+    id: id,
+  };
+}
+
 /**
  * Set the black boxed status of the given source.
  *
@@ -255,6 +262,7 @@ function getTextForSources(actors) {
 module.exports = {
   newSource,
   selectSource,
+  closeTab,
   blackbox,
   togglePrettyPrint,
   loadSourceText,
