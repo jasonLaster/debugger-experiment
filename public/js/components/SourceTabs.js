@@ -57,7 +57,6 @@ function sourceTab(source, selectedSource, selectSource, closeTab) {
 }
 
 function SourceTabs({ selectedSource, sourceTabs, selectSource, closeTab }) {
-
   function renderTab(source) {
     return sourceTab(source, selectedSource, selectSource, closeTab);
   }
