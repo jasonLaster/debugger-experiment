@@ -8,7 +8,7 @@
     "lint-js": "eslint public/js",
     "test": "mocha --compilers js:babel-register public/js/test/node-unit-tests.js",
     "test-all": "npm run test; npm run lint; npm run cypress; npm run karma",
-    "test-paths": "mocha --compilers js:babel-register",
+    "test-paths": "TEST_PATHS=-- npm run test",
     "mocha-server": "node bin/mocha-server.js",
     "cypress-server": "node bin/cypress-server.js",
     "karma": "./node_modules/.bin/karma start --single-run",

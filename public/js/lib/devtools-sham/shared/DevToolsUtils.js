@@ -135,12 +135,20 @@ exports.entries = function entries(obj) {
  * Takes an array of 2-element arrays as key/values pairs and
  * constructs an object using them.
  */
-exports.toObject = function(arr) {
+exports.toObject = function toObject(arr) {
   const obj = {};
   for(let pair of arr) {
     obj[pair[0]] = pair[1];
   }
   return obj;
+}
+
+exports.objectMap = function(obj, iteratee) {
+  return exports.toObject(
+    exports.entries(obj).map(arr => {
+      return [arr[0], iteratee(arr[1])];
+    })
+  );
 }
 
 /**

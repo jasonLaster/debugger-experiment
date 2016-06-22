@@ -14,4 +14,6 @@ function testPath(testFile) {
   return path.join("..", path.relative("public/js", testFile));
 }
 
-glob("public/js/**/tests/*.js").map(testPath).map(require);
+const testPaths = process.env.TEST_PATHS || "public/js/**/tests/*.js";
+
+glob(testPaths).map(testPath).map(require);
