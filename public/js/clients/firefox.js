@@ -108,7 +108,10 @@ function initPage(actions) {
   // Listen to all the requested events.
   setupEvents({ threadClient, actions });
   Object.keys(clientEvents).forEach(eventName => {
-    threadClient.addListener(eventName, clientEvents[eventName]);
+    threadClient.addListener(eventName, function(type, data) {
+      window.clientEventLog.push(data);
+      clientEvents[eventName](data);
+    });
   });
 
   // In Firefox, we need to initially request all of the sources which

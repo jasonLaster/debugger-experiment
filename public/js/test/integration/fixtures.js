@@ -1,12 +1,12 @@
 // turn theses tests on when you want to write new fixture data
 // you also need to turn on the cypress-server to be able to save the fixtures.
-xdescribe("Fixtures", function() {
+describe("Fixtures", function() {
   /**
    An example of the debugger not being paused.
    */
   it("todomvc", function() {
     debugPage("todomvc");
-    goToSource("js/views/todo-view");
+    goToSource("localhost:8000/js/views/todo-view");
     goToSource("app-view");
     goToSource("models/todo.js");
     cy.saveFixture("todomvc");
@@ -18,7 +18,7 @@ xdescribe("Fixtures", function() {
    */
   it("todomvc.updateOnEnter", function() {
     debugPage("todomvc");
-    goToSource("js/views/todo-view");
+    goToSource("localhost:8000/js/views/todo-view");
     toggleBreakpoint(113);
     toggleBreakpoint(119);
     toggleBreakpoint(121);
@@ -41,7 +41,7 @@ xdescribe("Fixtures", function() {
    */
   it("pythagorean", function() {
     debugPage("pythagorean");
-    goToSource("pythagorean.js");
+    goToSource("localhost:8000/pythagorean.js");
     toggleBreakpoint(11);
     cy.debuggee(() => {
       window.dbg.click("button");

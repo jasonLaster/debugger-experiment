@@ -1,345 +1,283 @@
 {
-  "eventListeners": {
-    "activeEventNames": [],
-    "listeners": [],
-    "fetchingListeners": false
-  },
-  "sources": {
+  "appState": {
+    "eventListeners": {
+      "activeEventNames": {},
+      "listeners": {},
+      "fetchingListeners": false
+    },
     "sources": {
-      "server2.conn10.child1/28": {
-        "id": "server2.conn10.child1/28",
-        "url": "http://localhost:8000/pythagorean/"
-      },
-      "server2.conn10.child1/29": {
-        "id": "server2.conn10.child1/29",
-        "url": "http://localhost:8000/pythagorean/pythagorean.js"
-      },
-      "server2.conn10.child1/32": {
-        "id": "server2.conn10.child1/32",
-        "url": null
-      },
-      "server2.conn10.child1/37": {
-        "id": "server2.conn10.child1/37",
-        "url": null
-      }
-    },
-    "sourceTree": [
-      "root",
-      []
-    ],
-    "selectedSource": {
-      "id": "server2.conn10.child1/29",
-      "url": "http://localhost:8000/pythagorean/pythagorean.js"
-    },
-    "sourcesText": {
-      "server2.conn10.child1/29": {
-        "text": "\"use strict\";\n\nfunction math(a, b) {\n  var bar = 4;\n  function pythagorean(a, b) {\n    var foo = 3;\n    function exponential(num) {\n      foo, bar;\n      return num * num;\n    }\n    return exponential(a) + exponential(b);\n  }\n\n  pythagorean(a,b);\n}\n",
-        "contentType": "text/javascript"
-      }
-    },
-    "tabs": [
-      {
-        "id": "server2.conn10.child1/29",
-        "url": "http://localhost:8000/pythagorean/pythagorean.js"
-      }
-    ]
-  },
-  "breakpoints": {
-    "breakpoints": {
-      "server2.conn10.child1/29:11": {
-        "location": {
-          "sourceId": "server2.conn10.child1/29",
-          "line": 11
+      "sources": {
+        "28": {
+          "id": "28",
+          "url": "http://localhost:8000/pythagorean/pythagorean.js",
+          "isPrettyPrinted": false
         },
-        "condition": null,
-        "disabled": false,
-        "loading": false,
-        "id": "server2.conn10.child1/31",
-        "text": "return exponential(a) + exponential(b);"
-      }
-    }
-  },
-  "asyncRequests": [],
-  "tabs": {
-    "tabs": {},
-    "selectedTab": null
-  },
-  "pause": {
-    "pause": {
-      "from": "server2.conn10.child1/26",
-      "type": "paused",
-      "actor": "server2.conn10.child1/pause38",
-      "frame": {
-        "id": "server2.conn10.child1/39",
-        "displayName": "pythagorean",
-        "location": {
-          "sourceId": "server2.conn10.child1/29",
-          "line": 11,
-          "column": 4
+        "31": {
+          "id": "31",
+          "url": {},
+          "isPrettyPrinted": false
         },
-        "scope": {
-          "actor": "server2.conn10.child1/41",
-          "type": "function",
-          "parent": {
-            "actor": "server2.conn10.child1/42",
-            "type": "function",
-            "parent": {
-              "actor": "server2.conn10.child1/43",
-              "type": "block",
-              "parent": {
-                "actor": "server2.conn10.child1/44",
-                "type": "object",
-                "object": {
-                  "type": "object",
-                  "class": "Window",
-                  "actor": "server2.conn10.child1/pausedobj45",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 777,
-                  "preview": {
-                    "kind": "ObjectWithURL",
-                    "url": "http://localhost:8000/pythagorean/"
-                  }
-                }
-              },
-              "bindings": {
-                "arguments": [],
-                "variables": {}
-              }
-            },
-            "function": {
-              "frozen": false,
-              "name": "math",
-              "displayName": "math",
-              "actor": "server2.conn10.child1/pausedobj46",
-              "location": {
-                "url": "http://localhost:8000/pythagorean/pythagorean.js",
-                "line": 3
-              },
-              "class": "Function",
-              "type": "object",
-              "extensible": true,
-              "sealed": false,
-              "parameterNames": [
-                "a",
-                "b"
-              ]
-            },
-            "bindings": {
-              "arguments": [
-                {
-                  "a": {
-                    "enumerable": true,
-                    "configurable": false,
-                    "value": {
-                      "type": "null",
-                      "optimizedOut": true
-                    },
-                    "writable": false
-                  }
-                },
-                {
-                  "b": {
-                    "enumerable": true,
-                    "configurable": false,
-                    "value": {
-                      "type": "null",
-                      "optimizedOut": true
-                    },
-                    "writable": false
-                  }
-                }
-              ],
-              "variables": {
-                "arguments": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "missingArguments": true
-                  },
-                  "writable": false
-                },
-                "bar": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": 4,
-                  "writable": true
-                },
-                "pythagorean": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                }
-              }
-            }
-          },
-          "function": {
-            "frozen": false,
-            "name": "pythagorean",
-            "displayName": "pythagorean",
-            "actor": "server2.conn10.child1/pausedobj47",
-            "location": {
-              "url": "http://localhost:8000/pythagorean/pythagorean.js",
-              "line": 5
-            },
-            "class": "Function",
-            "type": "object",
-            "extensible": true,
-            "sealed": false,
-            "parameterNames": [
-              "a",
-              "b"
-            ]
-          },
-          "bindings": {
-            "arguments": [
-              {
-                "a": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": 2,
-                  "writable": true
-                }
-              },
-              {
-                "b": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": 3,
-                  "writable": true
-                }
-              }
-            ],
-            "variables": {
-              "arguments": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "object",
-                  "class": "Arguments",
-                  "actor": "server2.conn10.child1/pausedobj48",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 5,
-                  "preview": {
-                    "kind": "Object",
-                    "ownProperties": {},
-                    "ownPropertiesLength": 5,
-                    "safeGetterValues": {}
-                  }
-                },
-                "writable": true
-              },
-              "foo": {
-                "enumerable": true,
-                "configurable": false,
-                "value": 3,
-                "writable": true
-              },
-              "exponential": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "frozen": false,
-                  "name": "exponential",
-                  "displayName": "exponential",
-                  "actor": "server2.conn10.child1/pausedobj49",
-                  "location": {
-                    "url": "http://localhost:8000/pythagorean/pythagorean.js",
-                    "line": 7
-                  },
-                  "class": "Function",
-                  "type": "object",
-                  "extensible": true,
-                  "sealed": false,
-                  "parameterNames": [
-                    "num"
-                  ]
-                },
-                "writable": true
-              }
-            }
-          }
+        "36": {
+          "id": "36",
+          "url": {},
+          "isPrettyPrinted": false
+        },
+        "37": {
+          "id": "37",
+          "url": "http://localhost:8000/pythagorean/",
+          "isPrettyPrinted": false
         }
       },
-      "poppedFrames": [],
-      "why": {
-        "type": "breakpoint",
-        "actors": [
-          "server2.conn10.child1/31"
-        ]
+      "selectedSource": {
+        "id": "28",
+        "url": "http://localhost:8000/pythagorean/pythagorean.js",
+        "isPrettyPrinted": false
       },
-      "isInterrupted": false
+      "sourcesText": {
+        "28": {
+          "text": "\"use strict\";\n\nfunction math(a, b) {\n  var bar = 4;\n  function pythagorean(a, b) {\n    var foo = 3;\n    function exponential(num) {\n      foo, bar;\n      return num * num;\n    }\n    return exponential(a) + exponential(b);\n  }\n\n  pythagorean(a,b);\n}\n",
+          "contentType": "text/javascript"
+        }
+      },
+      "sourceMaps": {},
+      "tabs": {
+        "0": {
+          "id": "28",
+          "url": "http://localhost:8000/pythagorean/pythagorean.js",
+          "isPrettyPrinted": false
+        }
+      }
     },
-    "isWaitingOnBreak": false,
-    "frames": [
-      {
-        "id": "server2.conn10.child1/39",
-        "displayName": "pythagorean",
-        "location": {
-          "sourceId": "server2.conn10.child1/29",
-          "line": 11,
-          "column": 4
+    "breakpoints": {
+      "breakpoints": {
+        "28:11": {
+          "location": {
+            "sourceId": "28",
+            "line": 11,
+            "source": {
+              "id": "28",
+              "url": "http://localhost:8000/pythagorean/pythagorean.js",
+              "isPrettyPrinted": false
+            }
+          },
+          "condition": {},
+          "disabled": false,
+          "loading": false,
+          "id": "30",
+          "text": "return exponential(a) + exponential(b);"
+        }
+      }
+    },
+    "asyncRequests": {},
+    "tabs": {
+      "tabs": {
+        "child1/tab1": {
+          "title": "Pythagorean",
+          "url": "http://localhost:8000/pythagorean/",
+          "id": "child1/tab1",
+          "tab": {
+            "actor": "tab1",
+            "title": "Pythagorean",
+            "url": "http://localhost:8000/pythagorean/",
+            "outerWindowID": 2147483649,
+            "consoleActor": "consoleActor2",
+            "inspectorActor": "inspectorActor3",
+            "callWatcherActor": "callWatcherActor4",
+            "canvasActor": "canvasActor5",
+            "webglActor": "webglActor6",
+            "webaudioActor": "webaudioActor7",
+            "styleSheetsActor": "styleSheetsActor8",
+            "styleEditorActor": "styleEditorActor9",
+            "storageActor": "storageActor10",
+            "gcliActor": "gcliActor11",
+            "memoryActor": "memoryActor12",
+            "framerateActor": "framerateActor13",
+            "eventLoopLagActor": "eventLoopLagActor14",
+            "reflowActor": "reflowActor15",
+            "cssPropertiesActor": "cssPropertiesActor16",
+            "cssUsageActor": "cssUsageActor17",
+            "monitorActor": "monitorActor18",
+            "timelineActor": "timelineActor19",
+            "directorManagerActor": "directorManagerActor20",
+            "profilerActor": "profilerActor21",
+            "performanceActor": "performanceActor22",
+            "animationsActor": "animationsActor23",
+            "promisesActor": "promisesActor24",
+            "performanceEntriesActor": "performanceEntriesActor25"
+          },
+          "browser": "firefox"
+        }
+      },
+      "selectedTab": {
+        "title": "Pythagorean",
+        "url": "http://localhost:8000/pythagorean/",
+        "id": "child1/tab1",
+        "tab": {
+          "actor": "tab1",
+          "title": "Pythagorean",
+          "url": "http://localhost:8000/pythagorean/",
+          "outerWindowID": 2147483649,
+          "consoleActor": "consoleActor2",
+          "inspectorActor": "inspectorActor3",
+          "callWatcherActor": "callWatcherActor4",
+          "canvasActor": "canvasActor5",
+          "webglActor": "webglActor6",
+          "webaudioActor": "webaudioActor7",
+          "styleSheetsActor": "styleSheetsActor8",
+          "styleEditorActor": "styleEditorActor9",
+          "storageActor": "storageActor10",
+          "gcliActor": "gcliActor11",
+          "memoryActor": "memoryActor12",
+          "framerateActor": "framerateActor13",
+          "eventLoopLagActor": "eventLoopLagActor14",
+          "reflowActor": "reflowActor15",
+          "cssPropertiesActor": "cssPropertiesActor16",
+          "cssUsageActor": "cssUsageActor17",
+          "monitorActor": "monitorActor18",
+          "timelineActor": "timelineActor19",
+          "directorManagerActor": "directorManagerActor20",
+          "profilerActor": "profilerActor21",
+          "performanceActor": "performanceActor22",
+          "animationsActor": "animationsActor23",
+          "promisesActor": "promisesActor24",
+          "performanceEntriesActor": "performanceEntriesActor25"
         },
-        "scope": {
-          "actor": "server2.conn10.child1/41",
-          "type": "function",
-          "parent": {
-            "actor": "server2.conn10.child1/42",
+        "browser": "firefox"
+      }
+    },
+    "pause": {
+      "pause": {
+        "frame": {
+          "id": "39",
+          "displayName": "pythagorean",
+          "location": {
+            "sourceId": "28",
+            "line": 11,
+            "column": 4
+          },
+          "scope": {
+            "actor": "41",
             "type": "function",
             "parent": {
-              "actor": "server2.conn10.child1/43",
-              "type": "block",
+              "actor": "42",
+              "type": "function",
               "parent": {
-                "actor": "server2.conn10.child1/44",
-                "type": "object",
-                "object": {
+                "actor": "43",
+                "type": "block",
+                "parent": {
+                  "actor": "44",
                   "type": "object",
-                  "class": "Window",
-                  "actor": "server2.conn10.child1/pausedobj45",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 777,
-                  "preview": {
-                    "kind": "ObjectWithURL",
-                    "url": "http://localhost:8000/pythagorean/"
+                  "object": {
+                    "type": "object",
+                    "class": "Window",
+                    "actor": "pausedobj45",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 761,
+                    "preview": {
+                      "kind": "ObjectWithURL",
+                      "url": "http://localhost:8000/pythagorean/"
+                    }
                   }
+                },
+                "bindings": {
+                  "arguments": {},
+                  "variables": {}
+                }
+              },
+              "function": {
+                "frozen": false,
+                "name": "math",
+                "displayName": "math",
+                "actor": "pausedobj46",
+                "location": {
+                  "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                  "line": 3
+                },
+                "class": "Function",
+                "type": "object",
+                "extensible": true,
+                "sealed": false,
+                "parameterNames": {
+                  "0": "a",
+                  "1": "b"
                 }
               },
               "bindings": {
-                "arguments": [],
-                "variables": {}
+                "arguments": {
+                  "0": {
+                    "a": {
+                      "enumerable": true,
+                      "configurable": false,
+                      "value": {
+                        "type": "null",
+                        "optimizedOut": true
+                      },
+                      "writable": false
+                    }
+                  },
+                  "1": {
+                    "b": {
+                      "enumerable": true,
+                      "configurable": false,
+                      "value": {
+                        "type": "null",
+                        "optimizedOut": true
+                      },
+                      "writable": false
+                    }
+                  }
+                },
+                "variables": {
+                  "arguments": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "missingArguments": true
+                    },
+                    "writable": false
+                  },
+                  "bar": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 4,
+                    "writable": true
+                  },
+                  "pythagorean": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                }
               }
             },
             "function": {
-              "type": "object",
-              "class": "Function",
-              "actor": "server2.conn10.child1/pausedobj46",
-              "extensible": true,
               "frozen": false,
-              "sealed": false,
-              "name": "math",
-              "displayName": "math",
-              "parameterNames": [
-                "a",
-                "b"
-              ],
+              "name": "pythagorean",
+              "displayName": "pythagorean",
+              "actor": "pausedobj47",
               "location": {
                 "url": "http://localhost:8000/pythagorean/pythagorean.js",
-                "line": 3
+                "line": 5
+              },
+              "class": "Function",
+              "type": "object",
+              "extensible": true,
+              "sealed": false,
+              "parameterNames": {
+                "0": "a",
+                "1": "b"
               }
             },
             "bindings": {
-              "arguments": [
-                {
+              "arguments": {
+                "0": {
                   "a": {
                     "enumerable": true,
                     "configurable": false,
@@ -347,7 +285,7 @@
                     "writable": true
                   }
                 },
-                {
+                "1": {
                   "b": {
                     "enumerable": true,
                     "configurable": false,
@@ -355,7 +293,7 @@
                     "writable": true
                   }
                 }
-              ],
+              },
               "variables": {
                 "arguments": {
                   "enumerable": true,
@@ -363,7 +301,362 @@
                   "value": {
                     "type": "object",
                     "class": "Arguments",
-                    "actor": "server2.conn10.child1/pausedobj50",
+                    "actor": "pausedobj48",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 5,
+                    "preview": {
+                      "kind": "Object",
+                      "ownProperties": {},
+                      "ownPropertiesLength": 5,
+                      "safeGetterValues": {}
+                    }
+                  },
+                  "writable": true
+                },
+                "foo": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": 3,
+                  "writable": true
+                },
+                "exponential": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "frozen": false,
+                    "name": "exponential",
+                    "displayName": "exponential",
+                    "actor": "pausedobj49",
+                    "location": {
+                      "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                      "line": 7
+                    },
+                    "class": "Function",
+                    "type": "object",
+                    "extensible": true,
+                    "sealed": false,
+                    "parameterNames": {
+                      "0": "num"
+                    }
+                  },
+                  "writable": true
+                }
+              }
+            }
+          }
+        },
+        "why": {
+          "type": "breakpoint",
+          "actors": {
+            "0": "30"
+          }
+        },
+        "isInterrupted": false
+      },
+      "isWaitingOnBreak": false,
+      "frames": {
+        "0": {
+          "id": "39",
+          "displayName": "pythagorean",
+          "location": {
+            "sourceId": "28",
+            "line": 11,
+            "column": 4
+          },
+          "scope": {
+            "actor": "41",
+            "type": "function",
+            "parent": {
+              "actor": "42",
+              "type": "function",
+              "parent": {
+                "actor": "43",
+                "type": "block",
+                "parent": {
+                  "actor": "44",
+                  "type": "object",
+                  "object": {
+                    "type": "object",
+                    "class": "Window",
+                    "actor": "pausedobj45",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 761,
+                    "preview": {
+                      "kind": "ObjectWithURL",
+                      "url": "http://localhost:8000/pythagorean/"
+                    }
+                  }
+                },
+                "bindings": {
+                  "arguments": {},
+                  "variables": {}
+                }
+              },
+              "function": {
+                "type": "object",
+                "class": "Function",
+                "actor": "pausedobj46",
+                "extensible": true,
+                "frozen": false,
+                "sealed": false,
+                "name": "math",
+                "displayName": "math",
+                "parameterNames": {
+                  "0": "a",
+                  "1": "b"
+                },
+                "location": {
+                  "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                  "line": 3
+                }
+              },
+              "bindings": {
+                "arguments": {
+                  "0": {
+                    "a": {
+                      "enumerable": true,
+                      "configurable": false,
+                      "value": 2,
+                      "writable": true
+                    }
+                  },
+                  "1": {
+                    "b": {
+                      "enumerable": true,
+                      "configurable": false,
+                      "value": 3,
+                      "writable": true
+                    }
+                  }
+                },
+                "variables": {
+                  "arguments": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Arguments",
+                      "actor": "pausedobj50",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "ownPropertyLength": 5,
+                      "preview": {
+                        "kind": "Object",
+                        "ownProperties": {},
+                        "ownPropertiesLength": 5,
+                        "safeGetterValues": {}
+                      }
+                    },
+                    "writable": true
+                  },
+                  "bar": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 4,
+                    "writable": true
+                  },
+                  "pythagorean": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj47",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "pythagorean",
+                      "displayName": "pythagorean",
+                      "parameterNames": {
+                        "0": "a",
+                        "1": "b"
+                      },
+                      "location": {
+                        "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                        "line": 5
+                      }
+                    },
+                    "writable": true
+                  }
+                }
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj47",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "pythagorean",
+              "displayName": "pythagorean",
+              "parameterNames": {
+                "0": "a",
+                "1": "b"
+              },
+              "location": {
+                "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                "line": 5
+              }
+            },
+            "bindings": {
+              "arguments": {
+                "0": {
+                  "a": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 2,
+                    "writable": true
+                  }
+                },
+                "1": {
+                  "b": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 3,
+                    "writable": true
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "Arguments",
+                    "actor": "pausedobj51",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 5,
+                    "preview": {
+                      "kind": "Object",
+                      "ownProperties": {},
+                      "ownPropertiesLength": 5,
+                      "safeGetterValues": {}
+                    }
+                  },
+                  "writable": true
+                },
+                "foo": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": 3,
+                  "writable": true
+                },
+                "exponential": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "Function",
+                    "actor": "pausedobj49",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "name": "exponential",
+                    "displayName": "exponential",
+                    "parameterNames": {
+                      "0": "num"
+                    },
+                    "location": {
+                      "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                      "line": 7
+                    }
+                  },
+                  "writable": true
+                }
+              }
+            }
+          }
+        },
+        "1": {
+          "id": "52",
+          "displayName": "math",
+          "location": {
+            "sourceId": "28",
+            "line": 14,
+            "column": 2
+          },
+          "scope": {
+            "actor": "42",
+            "type": "function",
+            "parent": {
+              "actor": "43",
+              "type": "block",
+              "parent": {
+                "actor": "44",
+                "type": "object",
+                "object": {
+                  "type": "object",
+                  "class": "Window",
+                  "actor": "pausedobj45",
+                  "extensible": true,
+                  "frozen": false,
+                  "sealed": false,
+                  "ownPropertyLength": 761,
+                  "preview": {
+                    "kind": "ObjectWithURL",
+                    "url": "http://localhost:8000/pythagorean/"
+                  }
+                }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {}
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj46",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "math",
+              "displayName": "math",
+              "parameterNames": {
+                "0": "a",
+                "1": "b"
+              },
+              "location": {
+                "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                "line": 3
+              }
+            },
+            "bindings": {
+              "arguments": {
+                "0": {
+                  "a": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 2,
+                    "writable": true
+                  }
+                },
+                "1": {
+                  "b": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": 3,
+                    "writable": true
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "Arguments",
+                    "actor": "pausedobj54",
                     "extensible": true,
                     "frozen": false,
                     "sealed": false,
@@ -389,16 +682,16 @@
                   "value": {
                     "type": "object",
                     "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj47",
+                    "actor": "pausedobj47",
                     "extensible": true,
                     "frozen": false,
                     "sealed": false,
                     "name": "pythagorean",
                     "displayName": "pythagorean",
-                    "parameterNames": [
-                      "a",
-                      "b"
-                    ],
+                    "parameterNames": {
+                      "0": "a",
+                      "1": "b"
+                    },
                     "location": {
                       "url": "http://localhost:8000/pythagorean/pythagorean.js",
                       "line": 5
@@ -408,28 +701,750 @@
                 }
               }
             }
+          }
+        },
+        "2": {
+          "id": "56",
+          "displayName": "onclick",
+          "location": {
+            "sourceId": "37",
+            "line": 1,
+            "column": 0
+          },
+          "scope": {
+            "actor": "58",
+            "type": "function",
+            "parent": {
+              "actor": "59",
+              "type": "block",
+              "parent": {
+                "actor": "60",
+                "type": "with",
+                "parent": {
+                  "actor": "61",
+                  "type": "with",
+                  "parent": {
+                    "actor": "43",
+                    "type": "block",
+                    "parent": {
+                      "actor": "44",
+                      "type": "object",
+                      "object": {
+                        "type": "object",
+                        "class": "Window",
+                        "actor": "pausedobj45",
+                        "extensible": true,
+                        "frozen": false,
+                        "sealed": false,
+                        "ownPropertyLength": 761,
+                        "preview": {
+                          "kind": "ObjectWithURL",
+                          "url": "http://localhost:8000/pythagorean/"
+                        }
+                      }
+                    },
+                    "bindings": {
+                      "arguments": {},
+                      "variables": {}
+                    }
+                  },
+                  "object": {
+                    "type": "object",
+                    "class": "HTMLDocument",
+                    "actor": "pausedobj62",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 1,
+                    "preview": {
+                      "kind": "DOMNode",
+                      "nodeType": 9,
+                      "nodeName": "#document",
+                      "location": "http://localhost:8000/pythagorean/"
+                    }
+                  }
+                },
+                "object": {
+                  "type": "object",
+                  "class": "HTMLButtonElement",
+                  "actor": "pausedobj63",
+                  "extensible": true,
+                  "frozen": false,
+                  "sealed": false,
+                  "ownPropertyLength": 0,
+                  "preview": {
+                    "kind": "DOMNode",
+                    "nodeType": 1,
+                    "nodeName": "button",
+                    "attributes": {
+                      "onclick": "math(2,3)"
+                    },
+                    "attributesLength": 1
+                  }
+                }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {}
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj64",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "onclick",
+              "displayName": "onclick",
+              "parameterNames": {
+                "0": "event"
+              },
+              "location": {
+                "url": "http://localhost:8000/pythagorean/",
+                "line": 1
+              }
+            },
+            "bindings": {
+              "arguments": {
+                "0": {
+                  "event": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "MouseEvent",
+                      "actor": "pausedobj65",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "ownPropertyLength": 1,
+                      "preview": {
+                        "kind": "DOMEvent",
+                        "type": "click",
+                        "properties": {
+                          "buttons": 0,
+                          "clientX": 0,
+                          "clientY": 0,
+                          "layerX": 0,
+                          "layerY": 0
+                        },
+                        "target": {
+                          "type": "object",
+                          "class": "HTMLButtonElement",
+                          "actor": "pausedobj66",
+                          "extensible": true,
+                          "frozen": false,
+                          "sealed": false,
+                          "ownPropertyLength": 0,
+                          "preview": {
+                            "kind": "DOMNode",
+                            "nodeType": 1,
+                            "nodeName": "button",
+                            "attributes": {
+                              "onclick": "math(2,3)"
+                            },
+                            "attributesLength": 1
+                          }
+                        }
+                      }
+                    },
+                    "writable": true
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "Arguments",
+                    "actor": "pausedobj67",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 3,
+                    "preview": {
+                      "kind": "Object",
+                      "ownProperties": {},
+                      "ownPropertiesLength": 3,
+                      "safeGetterValues": {}
+                    }
+                  },
+                  "writable": true
+                }
+              }
+            }
+          }
+        },
+        "3": {
+          "id": "69",
+          "displayName": "click",
+          "location": {
+            "sourceId": "31",
+            "line": 83,
+            "column": 5
+          },
+          "scope": {
+            "actor": "71",
+            "type": "function",
+            "parent": {
+              "actor": "72",
+              "type": "function",
+              "parent": {
+                "actor": "73",
+                "type": "block",
+                "parent": {
+                  "actor": "74",
+                  "type": "with",
+                  "parent": {
+                    "actor": "43",
+                    "type": "block",
+                    "parent": {
+                      "actor": "44",
+                      "type": "object",
+                      "object": {
+                        "type": "object",
+                        "class": "Window",
+                        "actor": "pausedobj45",
+                        "extensible": true,
+                        "frozen": false,
+                        "sealed": false,
+                        "ownPropertyLength": 761,
+                        "preview": {
+                          "kind": "ObjectWithURL",
+                          "url": "http://localhost:8000/pythagorean/"
+                        }
+                      }
+                    },
+                    "bindings": {
+                      "arguments": {},
+                      "variables": {}
+                    }
+                  },
+                  "object": {
+                    "type": "object",
+                    "class": "Object",
+                    "actor": "pausedobj75",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 15,
+                    "preview": {
+                      "kind": "Object",
+                      "ownProperties": {},
+                      "ownPropertiesLength": 15,
+                      "safeGetterValues": {}
+                    }
+                  }
+                },
+                "bindings": {
+                  "arguments": {},
+                  "variables": {
+                    "Debuggee": {
+                      "enumerable": true,
+                      "configurable": false,
+                      "value": {
+                        "type": "object",
+                        "class": "Function",
+                        "actor": "pausedobj76",
+                        "extensible": true,
+                        "frozen": false,
+                        "sealed": false,
+                        "name": "Debuggee",
+                        "displayName": "Debuggee",
+                        "parameterNames": {},
+                        "location": {
+                          "url": "debugger eval code",
+                          "line": 1
+                        }
+                      },
+                      "writable": true
+                    }
+                  }
+                }
+              },
+              "function": {
+                "type": "object",
+                "class": "Function",
+                "actor": "pausedobj76",
+                "extensible": true,
+                "frozen": false,
+                "sealed": false,
+                "name": "Debuggee",
+                "displayName": "Debuggee",
+                "parameterNames": {},
+                "location": {
+                  "url": "debugger eval code",
+                  "line": 1
+                }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {
+                  "arguments": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "missingArguments": true
+                    },
+                    "writable": false
+                  },
+                  "$": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj77",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "$",
+                      "displayName": "$",
+                      "parameterNames": {
+                        "0": "selector"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 2
+                      }
+                    },
+                    "writable": true
+                  },
+                  "mouseEvent": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj78",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "mouseEvent",
+                      "displayName": "mouseEvent",
+                      "parameterNames": {
+                        "0": "eventType"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 12
+                      }
+                    },
+                    "writable": true
+                  },
+                  "specialKeysMap": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Object",
+                      "actor": "pausedobj79",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "ownPropertyLength": 1,
+                      "preview": {
+                        "kind": "Object",
+                        "ownProperties": {
+                          "{enter}": {
+                            "configurable": true,
+                            "enumerable": true,
+                            "writable": true,
+                            "value": 13
+                          }
+                        },
+                        "ownPropertiesLength": 1,
+                        "safeGetterValues": {}
+                      }
+                    },
+                    "writable": true
+                  },
+                  "isSpecialCharacter": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj80",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "isSpecialCharacter",
+                      "displayName": "isSpecialCharacter",
+                      "parameterNames": {
+                        "0": "text"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 25
+                      }
+                    },
+                    "writable": true
+                  },
+                  "keyInfo": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj81",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "keyInfo",
+                      "displayName": "keyInfo",
+                      "parameterNames": {
+                        "0": "key",
+                        "1": "eventType"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 29
+                      }
+                    },
+                    "writable": true
+                  },
+                  "keyEvent": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj82",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "keyEvent",
+                      "displayName": "keyEvent",
+                      "parameterNames": {
+                        "0": "eventType",
+                        "1": "key"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 45
+                      }
+                    },
+                    "writable": true
+                  },
+                  "sendKey": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "object",
+                      "class": "Function",
+                      "actor": "pausedobj83",
+                      "extensible": true,
+                      "frozen": false,
+                      "sealed": false,
+                      "name": "sendKey",
+                      "displayName": "sendKey",
+                      "parameterNames": {
+                        "0": "element",
+                        "1": "key"
+                      },
+                      "location": {
+                        "url": "debugger eval code",
+                        "line": 71
+                      }
+                    },
+                    "writable": true
+                  },
+                  "click": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  },
+                  "dblclick": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  },
+                  "type": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                }
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj84",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "click",
+              "displayName": "click",
+              "parameterNames": {
+                "0": "selector"
+              },
+              "location": {
+                "url": "debugger eval code",
+                "line": 80
+              }
+            },
+            "bindings": {
+              "arguments": {
+                "0": {
+                  "selector": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": "button",
+                    "writable": true
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "Arguments",
+                    "actor": "pausedobj85",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 3,
+                    "preview": {
+                      "kind": "Object",
+                      "ownProperties": {},
+                      "ownPropertiesLength": 3,
+                      "safeGetterValues": {}
+                    }
+                  },
+                  "writable": true
+                },
+                "element": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "object",
+                    "class": "HTMLButtonElement",
+                    "actor": "pausedobj86",
+                    "extensible": true,
+                    "frozen": false,
+                    "sealed": false,
+                    "ownPropertyLength": 0,
+                    "preview": {
+                      "kind": "DOMNode",
+                      "nodeType": 1,
+                      "nodeName": "button",
+                      "attributes": {
+                        "onclick": "math(2,3)"
+                      },
+                      "attributesLength": 1
+                    }
+                  },
+                  "writable": true
+                }
+              }
+            }
+          }
+        },
+        "4": {
+          "id": "90",
+          "displayName": "(global)",
+          "location": {
+            "sourceId": "36",
+            "line": 1,
+            "column": 0
+          },
+          "scope": {
+            "actor": "91",
+            "type": "with",
+            "parent": {
+              "actor": "43",
+              "type": "block",
+              "parent": {
+                "actor": "44",
+                "type": "object",
+                "object": {
+                  "type": "object",
+                  "class": "Window",
+                  "actor": "pausedobj45",
+                  "extensible": true,
+                  "frozen": false,
+                  "sealed": false,
+                  "ownPropertyLength": 761,
+                  "preview": {
+                    "kind": "ObjectWithURL",
+                    "url": "http://localhost:8000/pythagorean/"
+                  }
+                }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {}
+              }
+            },
+            "object": {
+              "type": "object",
+              "class": "Object",
+              "actor": "pausedobj92",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "ownPropertyLength": 15,
+              "preview": {
+                "kind": "Object",
+                "ownProperties": {},
+                "ownPropertiesLength": 15,
+                "safeGetterValues": {}
+              }
+            }
+          }
+        }
+      },
+      "selectedFrame": {
+        "id": "39",
+        "displayName": "pythagorean",
+        "location": {
+          "sourceId": "28",
+          "line": 11,
+          "column": 4
+        },
+        "scope": {
+          "actor": "41",
+          "type": "function",
+          "parent": {
+            "actor": "42",
+            "type": "function",
+            "parent": {
+              "actor": "43",
+              "type": "block",
+              "parent": {
+                "actor": "44",
+                "type": "object",
+                "object": {
+                  "type": "object",
+                  "class": "Window",
+                  "actor": "pausedobj45",
+                  "extensible": true,
+                  "frozen": false,
+                  "sealed": false,
+                  "ownPropertyLength": 761,
+                  "preview": {
+                    "kind": "ObjectWithURL",
+                    "url": "http://localhost:8000/pythagorean/"
+                  }
+                }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {}
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj46",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "math",
+              "displayName": "math",
+              "parameterNames": {
+                "0": "a",
+                "1": "b"
+              },
+              "location": {
+                "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                "line": 3
+              }
+            },
+            "bindings": {
+              "arguments": {
+                "0": {
+                  "a": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                },
+                "1": {
+                  "b": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "null",
+                    "missingArguments": true
+                  },
+                  "writable": false
+                },
+                "bar": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": 4,
+                  "writable": true
+                },
+                "pythagorean": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "null",
+                    "optimizedOut": true
+                  },
+                  "writable": false
+                }
+              }
+            }
           },
           "function": {
             "type": "object",
             "class": "Function",
-            "actor": "server2.conn10.child1/pausedobj47",
+            "actor": "pausedobj47",
             "extensible": true,
             "frozen": false,
             "sealed": false,
             "name": "pythagorean",
             "displayName": "pythagorean",
-            "parameterNames": [
-              "a",
-              "b"
-            ],
+            "parameterNames": {
+              "0": "a",
+              "1": "b"
+            },
             "location": {
               "url": "http://localhost:8000/pythagorean/pythagorean.js",
               "line": 5
             }
           },
           "bindings": {
-            "arguments": [
-              {
+            "arguments": {
+              "0": {
                 "a": {
                   "enumerable": true,
                   "configurable": false,
@@ -437,7 +1452,7 @@
                   "writable": true
                 }
               },
-              {
+              "1": {
                 "b": {
                   "enumerable": true,
                   "configurable": false,
@@ -445,7 +1460,7 @@
                   "writable": true
                 }
               }
-            ],
+            },
             "variables": {
               "arguments": {
                 "enumerable": true,
@@ -453,7 +1468,7 @@
                 "value": {
                   "type": "object",
                   "class": "Arguments",
-                  "actor": "server2.conn10.child1/pausedobj51",
+                  "actor": "pausedobj48",
                   "extensible": true,
                   "frozen": false,
                   "sealed": false,
@@ -479,15 +1494,15 @@
                 "value": {
                   "type": "object",
                   "class": "Function",
-                  "actor": "server2.conn10.child1/pausedobj49",
+                  "actor": "pausedobj49",
                   "extensible": true,
                   "frozen": false,
                   "sealed": false,
                   "name": "exponential",
                   "displayName": "exponential",
-                  "parameterNames": [
-                    "num"
-                  ],
+                  "parameterNames": {
+                    "0": "num"
+                  },
                   "location": {
                     "url": "http://localhost:8000/pythagorean/pythagorean.js",
                     "line": 7
@@ -499,63 +1514,232 @@
           }
         }
       },
-      {
-        "id": "server2.conn10.child1/52",
-        "displayName": "math",
-        "location": {
-          "sourceId": "server2.conn10.child1/29",
-          "line": 14,
-          "column": 2
+      "loadedObjects": {},
+      "shouldPauseOnExceptions": false
+    }
+  },
+  "events": {
+    "0": {
+      "from": "26",
+      "type": "resumed"
+    },
+    "1": {
+      "from": "26",
+      "type": "newSource",
+      "source": {
+        "actor": "28",
+        "generatedUrl": {},
+        "url": "http://localhost:8000/pythagorean/pythagorean.js",
+        "isBlackBoxed": false,
+        "isPrettyPrinted": false,
+        "isSourceMapped": false,
+        "introductionUrl": {},
+        "introductionType": "scriptElement"
+      }
+    },
+    "2": {
+      "from": "26",
+      "type": "paused",
+      "actor": "pause29",
+      "poppedFrames": {},
+      "why": {
+        "type": "interrupted"
+      }
+    },
+    "3": {
+      "from": "26",
+      "type": "resumed"
+    },
+    "4": {
+      "from": "26",
+      "type": "newSource",
+      "source": {
+        "actor": "31",
+        "generatedUrl": {},
+        "url": {},
+        "isBlackBoxed": false,
+        "isPrettyPrinted": false,
+        "isSourceMapped": false,
+        "introductionUrl": {},
+        "introductionType": "debugger eval"
+      }
+    },
+    "5": {
+      "from": "26",
+      "type": "newSource",
+      "source": {
+        "actor": "37",
+        "generatedUrl": {},
+        "url": "http://localhost:8000/pythagorean/",
+        "isBlackBoxed": false,
+        "isPrettyPrinted": false,
+        "isSourceMapped": false,
+        "introductionUrl": {},
+        "introductionType": {}
+      }
+    },
+    "6": {
+      "from": "26",
+      "type": "newSource",
+      "source": {
+        "actor": "36",
+        "generatedUrl": {},
+        "url": {},
+        "isBlackBoxed": false,
+        "isPrettyPrinted": false,
+        "isSourceMapped": false,
+        "introductionUrl": {},
+        "introductionType": "debugger eval"
+      }
+    },
+    "7": {
+      "from": "26",
+      "type": "paused",
+      "actor": "pause38",
+      "frame": {
+        "actor": "39",
+        "type": "call",
+        "callee": {
+          "type": "object",
+          "class": "Function",
+          "actor": "pausedobj40",
+          "extensible": true,
+          "frozen": false,
+          "sealed": false,
+          "name": "pythagorean",
+          "displayName": "pythagorean",
+          "parameterNames": {
+            "0": "a",
+            "1": "b"
+          },
+          "location": {
+            "url": "http://localhost:8000/pythagorean/pythagorean.js",
+            "line": 5
+          }
         },
-        "scope": {
-          "actor": "server2.conn10.child1/42",
+        "environment": {
+          "actor": "41",
           "type": "function",
           "parent": {
-            "actor": "server2.conn10.child1/43",
-            "type": "block",
+            "actor": "42",
+            "type": "function",
             "parent": {
-              "actor": "server2.conn10.child1/44",
-              "type": "object",
-              "object": {
+              "actor": "43",
+              "type": "block",
+              "parent": {
+                "actor": "44",
                 "type": "object",
-                "class": "Window",
-                "actor": "server2.conn10.child1/pausedobj45",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "ownPropertyLength": 777,
-                "preview": {
-                  "kind": "ObjectWithURL",
-                  "url": "http://localhost:8000/pythagorean/"
+                "object": {
+                  "type": "object",
+                  "class": "Window",
+                  "actor": "pausedobj45",
+                  "extensible": true,
+                  "frozen": false,
+                  "sealed": false,
+                  "ownPropertyLength": 761,
+                  "preview": {
+                    "kind": "ObjectWithURL",
+                    "url": "http://localhost:8000/pythagorean/"
+                  }
                 }
+              },
+              "bindings": {
+                "arguments": {},
+                "variables": {}
+              }
+            },
+            "function": {
+              "type": "object",
+              "class": "Function",
+              "actor": "pausedobj46",
+              "extensible": true,
+              "frozen": false,
+              "sealed": false,
+              "name": "math",
+              "displayName": "math",
+              "parameterNames": {
+                "0": "a",
+                "1": "b"
+              },
+              "location": {
+                "url": "http://localhost:8000/pythagorean/pythagorean.js",
+                "line": 3
               }
             },
             "bindings": {
-              "arguments": [],
-              "variables": {}
+              "arguments": {
+                "0": {
+                  "a": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                },
+                "1": {
+                  "b": {
+                    "enumerable": true,
+                    "configurable": false,
+                    "value": {
+                      "type": "null",
+                      "optimizedOut": true
+                    },
+                    "writable": false
+                  }
+                }
+              },
+              "variables": {
+                "arguments": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "null",
+                    "missingArguments": true
+                  },
+                  "writable": false
+                },
+                "bar": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": 4,
+                  "writable": true
+                },
+                "pythagorean": {
+                  "enumerable": true,
+                  "configurable": false,
+                  "value": {
+                    "type": "null",
+                    "optimizedOut": true
+                  },
+                  "writable": false
+                }
+              }
             }
           },
           "function": {
             "type": "object",
             "class": "Function",
-            "actor": "server2.conn10.child1/pausedobj46",
+            "actor": "pausedobj47",
             "extensible": true,
             "frozen": false,
             "sealed": false,
-            "name": "math",
-            "displayName": "math",
-            "parameterNames": [
-              "a",
-              "b"
-            ],
+            "name": "pythagorean",
+            "displayName": "pythagorean",
+            "parameterNames": {
+              "0": "a",
+              "1": "b"
+            },
             "location": {
               "url": "http://localhost:8000/pythagorean/pythagorean.js",
-              "line": 3
+              "line": 5
             }
           },
           "bindings": {
-            "arguments": [
-              {
+            "arguments": {
+              "0": {
                 "a": {
                   "enumerable": true,
                   "configurable": false,
@@ -563,7 +1747,7 @@
                   "writable": true
                 }
               },
-              {
+              "1": {
                 "b": {
                   "enumerable": true,
                   "configurable": false,
@@ -571,7 +1755,7 @@
                   "writable": true
                 }
               }
-            ],
+            },
             "variables": {
               "arguments": {
                 "enumerable": true,
@@ -579,7 +1763,7 @@
                 "value": {
                   "type": "object",
                   "class": "Arguments",
-                  "actor": "server2.conn10.child1/pausedobj54",
+                  "actor": "pausedobj48",
                   "extensible": true,
                   "frozen": false,
                   "sealed": false,
@@ -593,850 +1777,119 @@
                 },
                 "writable": true
               },
-              "bar": {
+              "foo": {
                 "enumerable": true,
                 "configurable": false,
-                "value": 4,
+                "value": 3,
                 "writable": true
               },
-              "pythagorean": {
+              "exponential": {
                 "enumerable": true,
                 "configurable": false,
                 "value": {
                   "type": "object",
                   "class": "Function",
-                  "actor": "server2.conn10.child1/pausedobj47",
+                  "actor": "pausedobj49",
                   "extensible": true,
                   "frozen": false,
                   "sealed": false,
-                  "name": "pythagorean",
-                  "displayName": "pythagorean",
-                  "parameterNames": [
-                    "a",
-                    "b"
-                  ],
+                  "name": "exponential",
+                  "displayName": "exponential",
+                  "parameterNames": {
+                    "0": "num"
+                  },
                   "location": {
                     "url": "http://localhost:8000/pythagorean/pythagorean.js",
-                    "line": 5
+                    "line": 7
                   }
                 },
                 "writable": true
               }
             }
           }
+        },
+        "this": {
+          "type": "undefined"
+        },
+        "arguments": {
+          "0": 2,
+          "1": 3
+        },
+        "where": {
+          "source": {
+            "actor": "28",
+            "generatedUrl": {},
+            "url": "http://localhost:8000/pythagorean/pythagorean.js",
+            "isBlackBoxed": false,
+            "isPrettyPrinted": false,
+            "isSourceMapped": false,
+            "introductionUrl": {},
+            "introductionType": "scriptElement"
+          },
+          "line": 11,
+          "column": 4
         }
       },
-      {
-        "id": "server2.conn10.child1/56",
-        "displayName": "onclick",
-        "location": {
-          "sourceId": "server2.conn10.child1/28",
-          "line": 1,
-          "column": 0
-        },
-        "scope": {
-          "actor": "server2.conn10.child1/58",
-          "type": "function",
-          "parent": {
-            "actor": "server2.conn10.child1/59",
-            "type": "block",
-            "parent": {
-              "actor": "server2.conn10.child1/60",
-              "type": "with",
-              "parent": {
-                "actor": "server2.conn10.child1/61",
-                "type": "with",
-                "parent": {
-                  "actor": "server2.conn10.child1/43",
-                  "type": "block",
-                  "parent": {
-                    "actor": "server2.conn10.child1/44",
-                    "type": "object",
-                    "object": {
-                      "type": "object",
-                      "class": "Window",
-                      "actor": "server2.conn10.child1/pausedobj45",
-                      "extensible": true,
-                      "frozen": false,
-                      "sealed": false,
-                      "ownPropertyLength": 777,
-                      "preview": {
-                        "kind": "ObjectWithURL",
-                        "url": "http://localhost:8000/pythagorean/"
-                      }
-                    }
-                  },
-                  "bindings": {
-                    "arguments": [],
-                    "variables": {}
-                  }
-                },
-                "object": {
-                  "type": "object",
-                  "class": "HTMLDocument",
-                  "actor": "server2.conn10.child1/pausedobj62",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 1,
-                  "preview": {
-                    "kind": "DOMNode",
-                    "nodeType": 9,
-                    "nodeName": "#document",
-                    "location": "http://localhost:8000/pythagorean/"
-                  }
-                }
-              },
-              "object": {
-                "type": "object",
-                "class": "HTMLButtonElement",
-                "actor": "server2.conn10.child1/pausedobj63",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "ownPropertyLength": 0,
-                "preview": {
-                  "kind": "DOMNode",
-                  "nodeType": 1,
-                  "nodeName": "button",
-                  "attributes": {
-                    "onclick": "math(2,3)"
-                  },
-                  "attributesLength": 1
-                }
-              }
-            },
-            "bindings": {
-              "arguments": [],
-              "variables": {}
-            }
-          },
-          "function": {
-            "type": "object",
-            "class": "Function",
-            "actor": "server2.conn10.child1/pausedobj64",
-            "extensible": true,
-            "frozen": false,
-            "sealed": false,
-            "name": "onclick",
-            "displayName": "onclick",
-            "parameterNames": [
-              "event"
-            ],
-            "location": {
-              "url": "http://localhost:8000/pythagorean/",
-              "line": 1
-            }
-          },
-          "bindings": {
-            "arguments": [
-              {
-                "event": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "MouseEvent",
-                    "actor": "server2.conn10.child1/pausedobj65",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "ownPropertyLength": 1,
-                    "preview": {
-                      "kind": "DOMEvent",
-                      "type": "click",
-                      "properties": {
-                        "buttons": 0,
-                        "clientX": 0,
-                        "clientY": 0,
-                        "layerX": 0,
-                        "layerY": 0
-                      },
-                      "target": {
-                        "type": "object",
-                        "class": "HTMLButtonElement",
-                        "actor": "server2.conn10.child1/pausedobj66",
-                        "extensible": true,
-                        "frozen": false,
-                        "sealed": false,
-                        "ownPropertyLength": 0,
-                        "preview": {
-                          "kind": "DOMNode",
-                          "nodeType": 1,
-                          "nodeName": "button",
-                          "attributes": {
-                            "onclick": "math(2,3)"
-                          },
-                          "attributesLength": 1
-                        }
-                      }
-                    }
-                  },
-                  "writable": true
-                }
-              }
-            ],
-            "variables": {
-              "arguments": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "object",
-                  "class": "Arguments",
-                  "actor": "server2.conn10.child1/pausedobj67",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 3,
-                  "preview": {
-                    "kind": "Object",
-                    "ownProperties": {},
-                    "ownPropertiesLength": 3,
-                    "safeGetterValues": {}
-                  }
-                },
-                "writable": true
-              }
-            }
-          }
-        }
-      },
-      {
-        "id": "server2.conn10.child1/69",
-        "displayName": "click",
-        "location": {
-          "sourceId": "server2.conn10.child1/32",
-          "line": 78,
-          "column": 5
-        },
-        "scope": {
-          "actor": "server2.conn10.child1/71",
-          "type": "function",
-          "parent": {
-            "actor": "server2.conn10.child1/72",
-            "type": "function",
-            "parent": {
-              "actor": "server2.conn10.child1/73",
-              "type": "block",
-              "parent": {
-                "actor": "server2.conn10.child1/74",
-                "type": "with",
-                "parent": {
-                  "actor": "server2.conn10.child1/43",
-                  "type": "block",
-                  "parent": {
-                    "actor": "server2.conn10.child1/44",
-                    "type": "object",
-                    "object": {
-                      "type": "object",
-                      "class": "Window",
-                      "actor": "server2.conn10.child1/pausedobj45",
-                      "extensible": true,
-                      "frozen": false,
-                      "sealed": false,
-                      "ownPropertyLength": 777,
-                      "preview": {
-                        "kind": "ObjectWithURL",
-                        "url": "http://localhost:8000/pythagorean/"
-                      }
-                    }
-                  },
-                  "bindings": {
-                    "arguments": [],
-                    "variables": {}
-                  }
-                },
-                "object": {
-                  "type": "object",
-                  "class": "Object",
-                  "actor": "server2.conn10.child1/pausedobj75",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 15,
-                  "preview": {
-                    "kind": "Object",
-                    "ownProperties": {},
-                    "ownPropertiesLength": 15,
-                    "safeGetterValues": {}
-                  }
-                }
-              },
-              "bindings": {
-                "arguments": [],
-                "variables": {
-                  "Debuggee": {
-                    "enumerable": true,
-                    "configurable": false,
-                    "value": {
-                      "type": "object",
-                      "class": "Function",
-                      "actor": "server2.conn10.child1/pausedobj76",
-                      "extensible": true,
-                      "frozen": false,
-                      "sealed": false,
-                      "name": "Debuggee",
-                      "displayName": "Debuggee",
-                      "parameterNames": [],
-                      "location": {
-                        "url": "debugger eval code",
-                        "line": 1
-                      }
-                    },
-                    "writable": true
-                  }
-                }
-              }
-            },
-            "function": {
-              "type": "object",
-              "class": "Function",
-              "actor": "server2.conn10.child1/pausedobj76",
-              "extensible": true,
-              "frozen": false,
-              "sealed": false,
-              "name": "Debuggee",
-              "displayName": "Debuggee",
-              "parameterNames": [],
-              "location": {
-                "url": "debugger eval code",
-                "line": 1
-              }
-            },
-            "bindings": {
-              "arguments": [],
-              "variables": {
-                "arguments": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "missingArguments": true
-                  },
-                  "writable": false
-                },
-                "$": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj77",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "$",
-                    "displayName": "$",
-                    "parameterNames": [
-                      "selector"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 2
-                    }
-                  },
-                  "writable": true
-                },
-                "mouseEvent": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj78",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "mouseEvent",
-                    "displayName": "mouseEvent",
-                    "parameterNames": [
-                      "eventType"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 12
-                    }
-                  },
-                  "writable": true
-                },
-                "isSpecialCharacter": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj79",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "isSpecialCharacter",
-                    "displayName": "isSpecialCharacter",
-                    "parameterNames": [
-                      "text"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 25
-                    }
-                  },
-                  "writable": true
-                },
-                "keyInfo": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj80",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "keyInfo",
-                    "displayName": "keyInfo",
-                    "parameterNames": [
-                      "key",
-                      "eventType"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 29
-                    }
-                  },
-                  "writable": true
-                },
-                "keyEvent": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj81",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "keyEvent",
-                    "displayName": "keyEvent",
-                    "parameterNames": [
-                      "eventType",
-                      "key"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 45
-                    }
-                  },
-                  "writable": true
-                },
-                "sendKey": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Function",
-                    "actor": "server2.conn10.child1/pausedobj82",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "name": "sendKey",
-                    "displayName": "sendKey",
-                    "parameterNames": [
-                      "element",
-                      "key"
-                    ],
-                    "location": {
-                      "url": "debugger eval code",
-                      "line": 66
-                    }
-                  },
-                  "writable": true
-                },
-                "specialKeysMap": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "object",
-                    "class": "Object",
-                    "actor": "server2.conn10.child1/pausedobj83",
-                    "extensible": true,
-                    "frozen": false,
-                    "sealed": false,
-                    "ownPropertyLength": 1,
-                    "preview": {
-                      "kind": "Object",
-                      "ownProperties": {
-                        "{enter}": {
-                          "configurable": true,
-                          "enumerable": true,
-                          "writable": true,
-                          "value": 13
-                        }
-                      },
-                      "ownPropertiesLength": 1,
-                      "safeGetterValues": {}
-                    }
-                  },
-                  "writable": true
-                },
-                "click": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                },
-                "dblclick": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                },
-                "type": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                }
-              }
-            }
-          },
-          "function": {
-            "type": "object",
-            "class": "Function",
-            "actor": "server2.conn10.child1/pausedobj84",
-            "extensible": true,
-            "frozen": false,
-            "sealed": false,
-            "name": "click",
-            "displayName": "click",
-            "parameterNames": [
-              "selector"
-            ],
-            "location": {
-              "url": "debugger eval code",
-              "line": 75
-            }
-          },
-          "bindings": {
-            "arguments": [
-              {
-                "selector": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": "button",
-                  "writable": true
-                }
-              }
-            ],
-            "variables": {
-              "arguments": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "object",
-                  "class": "Arguments",
-                  "actor": "server2.conn10.child1/pausedobj85",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 3,
-                  "preview": {
-                    "kind": "Object",
-                    "ownProperties": {},
-                    "ownPropertiesLength": 3,
-                    "safeGetterValues": {}
-                  }
-                },
-                "writable": true
-              },
-              "element": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "object",
-                  "class": "HTMLButtonElement",
-                  "actor": "server2.conn10.child1/pausedobj86",
-                  "extensible": true,
-                  "frozen": false,
-                  "sealed": false,
-                  "ownPropertyLength": 0,
-                  "preview": {
-                    "kind": "DOMNode",
-                    "nodeType": 1,
-                    "nodeName": "button",
-                    "attributes": {
-                      "onclick": "math(2,3)"
-                    },
-                    "attributesLength": 1
-                  }
-                },
-                "writable": true
-              }
-            }
-          }
-        }
-      },
-      {
-        "id": "server2.conn10.child1/90",
-        "displayName": "(global)",
-        "location": {
-          "sourceId": "server2.conn10.child1/37",
-          "line": 1,
-          "column": 0
-        },
-        "scope": {
-          "actor": "server2.conn10.child1/91",
-          "type": "with",
-          "parent": {
-            "actor": "server2.conn10.child1/43",
-            "type": "block",
-            "parent": {
-              "actor": "server2.conn10.child1/44",
-              "type": "object",
-              "object": {
-                "type": "object",
-                "class": "Window",
-                "actor": "server2.conn10.child1/pausedobj45",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "ownPropertyLength": 777,
-                "preview": {
-                  "kind": "ObjectWithURL",
-                  "url": "http://localhost:8000/pythagorean/"
-                }
-              }
-            },
-            "bindings": {
-              "arguments": [],
-              "variables": {}
-            }
-          },
-          "object": {
-            "type": "object",
-            "class": "Object",
-            "actor": "server2.conn10.child1/pausedobj92",
-            "extensible": true,
-            "frozen": false,
-            "sealed": false,
-            "ownPropertyLength": 15,
-            "preview": {
-              "kind": "Object",
-              "ownProperties": {},
-              "ownPropertiesLength": 15,
-              "safeGetterValues": {}
-            }
-          }
+      "poppedFrames": {},
+      "why": {
+        "type": "breakpoint",
+        "actors": {
+          "0": "30"
         }
       }
-    ],
-    "selectedFrame": {
-      "id": "server2.conn10.child1/39",
-      "displayName": "pythagorean",
-      "location": {
-        "sourceId": "server2.conn10.child1/29",
-        "line": 11,
-        "column": 4
+    }
+  },
+  "commands": {
+    "0": {
+      "command": "sourceContents",
+      "args": {
+        "0": "28"
       },
-      "scope": {
-        "actor": "server2.conn10.child1/41",
-        "type": "function",
-        "parent": {
-          "actor": "server2.conn10.child1/42",
-          "type": "function",
-          "parent": {
-            "actor": "server2.conn10.child1/43",
-            "type": "block",
-            "parent": {
-              "actor": "server2.conn10.child1/44",
-              "type": "object",
-              "object": {
-                "type": "object",
-                "class": "Window",
-                "actor": "server2.conn10.child1/pausedobj45",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "ownPropertyLength": 777,
-                "preview": {
-                  "kind": "ObjectWithURL",
-                  "url": "http://localhost:8000/pythagorean/"
-                }
-              }
-            },
-            "bindings": {
-              "arguments": [],
-              "variables": {}
-            }
-          },
-          "function": {
-            "type": "object",
-            "class": "Function",
-            "actor": "server2.conn10.child1/pausedobj46",
-            "extensible": true,
-            "frozen": false,
-            "sealed": false,
-            "name": "math",
-            "displayName": "math",
-            "parameterNames": [
-              "a",
-              "b"
-            ],
-            "location": {
-              "url": "http://localhost:8000/pythagorean/pythagorean.js",
-              "line": 3
-            }
-          },
-          "bindings": {
-            "arguments": [
-              {
-                "a": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                }
-              },
-              {
-                "b": {
-                  "enumerable": true,
-                  "configurable": false,
-                  "value": {
-                    "type": "null",
-                    "optimizedOut": true
-                  },
-                  "writable": false
-                }
-              }
-            ],
-            "variables": {
-              "arguments": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "null",
-                  "missingArguments": true
-                },
-                "writable": false
-              },
-              "bar": {
-                "enumerable": true,
-                "configurable": false,
-                "value": 4,
-                "writable": true
-              },
-              "pythagorean": {
-                "enumerable": true,
-                "configurable": false,
-                "value": {
-                  "type": "null",
-                  "optimizedOut": true
-                },
-                "writable": false
-              }
-            }
-          }
-        },
-        "function": {
-          "type": "object",
-          "class": "Function",
-          "actor": "server2.conn10.child1/pausedobj47",
-          "extensible": true,
-          "frozen": false,
-          "sealed": false,
-          "name": "pythagorean",
-          "displayName": "pythagorean",
-          "parameterNames": [
-            "a",
-            "b"
-          ],
-          "location": {
-            "url": "http://localhost:8000/pythagorean/pythagorean.js",
-            "line": 5
-          }
-        },
-        "bindings": {
-          "arguments": [
-            {
-              "a": {
-                "enumerable": true,
-                "configurable": false,
-                "value": 2,
-                "writable": true
-              }
-            },
-            {
-              "b": {
-                "enumerable": true,
-                "configurable": false,
-                "value": 3,
-                "writable": true
-              }
-            }
-          ],
-          "variables": {
-            "arguments": {
-              "enumerable": true,
-              "configurable": false,
-              "value": {
-                "type": "object",
-                "class": "Arguments",
-                "actor": "server2.conn10.child1/pausedobj48",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "ownPropertyLength": 5,
-                "preview": {
-                  "kind": "Object",
-                  "ownProperties": {},
-                  "ownPropertiesLength": 5,
-                  "safeGetterValues": {}
-                }
-              },
-              "writable": true
-            },
-            "foo": {
-              "enumerable": true,
-              "configurable": false,
-              "value": 3,
-              "writable": true
-            },
-            "exponential": {
-              "enumerable": true,
-              "configurable": false,
-              "value": {
-                "type": "object",
-                "class": "Function",
-                "actor": "server2.conn10.child1/pausedobj49",
-                "extensible": true,
-                "frozen": false,
-                "sealed": false,
-                "name": "exponential",
-                "displayName": "exponential",
-                "parameterNames": [
-                  "num"
-                ],
-                "location": {
-                  "url": "http://localhost:8000/pythagorean/pythagorean.js",
-                  "line": 7
-                }
-              },
-              "writable": true
-            }
-          }
-        }
+      "response": {
+        "source": "\"use strict\";\n\nfunction math(a, b) {\n  var bar = 4;\n  function pythagorean(a, b) {\n    var foo = 3;\n    function exponential(num) {\n      foo, bar;\n      return num * num;\n    }\n    return exponential(a) + exponential(b);\n  }\n\n  pythagorean(a,b);\n}\n",
+        "contentType": "text/javascript",
+        "from": "28"
       }
     },
-    "loadedObjects": {}
+    "1": {
+      "command": "setBreakpoint",
+      "args": {
+        "0": {
+          "sourceId": "28",
+          "line": 11,
+          "source": {
+            "size": 4,
+            "_root": {
+              "ownerID": {},
+              "entries": {
+                "0": {
+                  "0": "id",
+                  "1": "28"
+                },
+                "1": {
+                  "0": "url",
+                  "1": "http://localhost:8000/pythagorean/pythagorean.js"
+                },
+                "2": {
+                  "0": "isPrettyPrinted",
+                  "1": false
+                },
+                "3": {
+                  "0": "sourceMapURL"
+                }
+              }
+            },
+            "__altered": false
+          }
+        }
+      },
+      "response": {
+        "id": "30",
+        "actualLocation": {
+          "sourceId": "28",
+          "line": 11
+        }
+      }
+    }
   }
 }
