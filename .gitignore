@@ -3,6 +3,5 @@ build
 node_modules
 config/local.json
 npm-debug.log
-public/js/test/cypress/screenshots/
 .idea/
 .vscode/
