@@ -78,6 +78,19 @@ Any of the below APIs that takes a `url` will match it as a substring, meaning t
 * `waitForThreadEvents(dbg, eventName)` - Waits for specific thread events
 * `waitForDispatch(dbg, type)` - Wait for a specific action type to be dispatch. If an async action, will wait for it to be done.
 
+## Pausing
+
+Running mochitests with the `--jsdebugger` option lets you debug your tests. There are a couple of options for pausing.
+
+* **breakpoint** - adding a breakpoint in a source is easy, but needs to be added each time. Also, it requires pausing at the beginning of the test to set the breakpoints.
+* `debugger` - adding a debugger statement will pause the test at that location. The one downside is that you will not be able to interact with the debugger.
+* `yield pauseTest()` - the pauseTest command will pause the test and let you interact with the debugger. The test is also easy to resume with the `resumeTest` command in the console.
+
+```js
+yield stepIn();
+yield pauseTest();
+```
+
 ## Writing Tests
 
 Here are a few tips for writing mochitests:
