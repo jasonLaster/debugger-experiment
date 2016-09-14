@@ -6,36 +6,31 @@ function countSources(dbg) {
   return sources.size;
 }
 
-/**
- * Test navigating
- * navigating while paused will reset the pause state and sources
- */
-add_task(function* () {
-  const dbg = yield initDebugger(
-    "doc-script-switching.html",
-    "script-switching-01.js"
-  );
-
-  invokeInTab("firstCall");
-  yield waitForPaused(dbg);
-
-  yield navigate(dbg, "doc-scripts.html", "simple1.js", "long.js");
+function* loadScriptsPage(dbg) {
+  yield navigate(dbg, "scripts");
   yield addBreakpoint(dbg, "simple1.js", 4);
   invokeInTab("main");
   yield waitForPaused(dbg);
   assertPausedLocation(dbg, "simple1.js", 4);
   is(countSources(dbg), 4, "4 sources are loaded.");
+}
 
-  yield navigate(dbg, "about:blank");
-  yield waitForDispatch(dbg, "NAVIGATE");
+/**
+ * Test navigating
+ * navigating while paused will reset the pause state and sources
+ */
+add_task(function* () {
+  const dbg = yield initDebugger("switching");
+
+  invokeInTab("firstCall");
+  yield waitForPaused(dbg);
+
+  yield Task.spawn(loadScriptsPage(dbg));
+
+  yield navigate(dbg, "aboutBlank");
   is(countSources(dbg), 0, "0 sources are loaded.");
 
-  yield navigate(dbg,
-    "doc-scripts.html",
-    "simple1.js",
-    "simple2.js",
-    "long.js"
-  );
+  yield navigate(dbg, "scripts");
 
   is(countSources(dbg), 4, "4 sources are loaded.");
 });

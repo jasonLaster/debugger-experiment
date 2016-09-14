@@ -95,22 +95,17 @@ function waitForState(dbg, predicate) {
   });
 }
 
-function waitForSourcesToLoad(dbg, sources) {
-  if(sources.length == 0) {
-    return Promise.resolve();
+function waitForSources(dbg, sourceCount) {
+  if(sourceCount == 0) {
+    return waitForDispatch(dbg, "NAVIGATE");
   }
 
-  info("Waiting on sources: " + sources.join(", "));
+  const sourceStr = sourceCount == 1 ? "source" : "sources";
+  info(`Waiting for ${sourceCount} ${sourceStr} to load.`);
   const {selectors: {getSources}, store} = dbg;
-  return Promise.all(sources.map(url => {
-    function sourceExists(state) {
-      return getSources(state).some(s => s.get("url").includes(url));
-    }
-
-    if(!sourceExists(store.getState())) {
-      return waitForState(dbg, sourceExists);
-    }
-  }));
+  return waitForState(dbg, (state) => {
+    return getSources(state).size == sourceCount;
+  });
 }
 
 function assertPausedLocation(dbg, source, line) {
@@ -176,7 +171,7 @@ const initDebugger = Task.async(function* (url, ...sources) {
     win: win
   };
 
-  yield waitForSourcesToLoad(dbg, sources);
+  yield waitForSources(dbg, sources.length);
 
   return dbg;
 });
@@ -236,9 +231,22 @@ function reload(dbg) {
   return dbg.client.reload();
 }
 
-function navigate(dbg, url, ...sources) {
-  const response = dbg.client.navigate(url);
-  return waitForSourcesToLoad(dbg, sources)
+const pages = {
+  scripts: { url: "doc-scripts.html", sourceCount: 4 },
+  scriptSwitching: { url:"doc-script-switching.html", sourceCount: 2 },
+  iframes: { url: "doc-iframes.html", sourceCount: 0 },
+  debuggerStatements: { url: "doc-debugger-statements.html", sourceCount: 0 },
+  aboutBlank: {url:  "about:blank", sourceCount: 0 }
+}
+
+function navigate(dbg, example) {
+  if (!pages[example]) {
+    throw new Error(`Could not find page ${example}`);
+  }
+
+  const {url, sourceCount} = pages[example];
+  dbg.client.navigate(url);
+  return waitForSources(dbg, sourceCount)
 }
 
 function addBreakpoint(dbg, source, line, col) {

@@ -12,10 +12,7 @@ function isBreakpointVisible(dbg) {
 }
 
 add_task(function* () {
-  const dbg = yield initDebugger(
-    "doc-scripts.html",
-    "simple1.js", "simple2.js", "long.js"
-  );
+  const dbg = yield initDebugger("scripts");
   const { selectors: { getSelectedSource }, getState } = dbg;
   const simple1 = findSource(dbg, "simple1.js");
   const simple2 = findSource(dbg, "simple2.js");
