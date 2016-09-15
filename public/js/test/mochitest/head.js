@@ -118,7 +118,7 @@ function assertPausedLocation(dbg, source, line) {
   source = findSource(dbg, source);
 
   // Check the selected source
-  is(getSelectedSource(getState()).get("url"), source.url);
+  is(getSelectedSource(getState()).get("id"), source.id);
 
   // Check the pause location
   const location = getPause(getState()).getIn(["frame", "location"]);

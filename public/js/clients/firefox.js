@@ -7,6 +7,7 @@ const { getValue } = require("../feature");
 const { Tab } = require("../types");
 const { setupCommands, clientCommands } = require("./firefox/commands");
 const { setupEvents, clientEvents } = require("./firefox/events");
+const { createSource } = require("./firefox/create");
 
 let debuggerClient = null;
 let threadClient = null;
@@ -85,9 +86,38 @@ function connectTab(tab) {
   });
 }
 
+function listenForSources(actions) {
+  const threadClient = getThreadClient();
+
+  // Listen for new sources, and also keep track of which ones we've
+  // seen. See the comment below for more details.
+  const knownSourceIds = new Set();
+  threadClient.addListener("newSource", (_, packet) => {
+    const { source } = packet;
+    knownSourceIds.add(source.actor);
+    clientEvents.newSource(_, packet);
+  });
+
+  // In Firefox, we need to initially request all of the sources. In
+  // the usual case, the debugger hasn't seen the sources before and
+  // will trigger `newSource` notifications for them. However, in a
+  // few cases these sources may already exist in the debugger server:
+  // other tools have interacted with them, a `debugger` statement was
+  // hit before the debugger is initialized, or a page was loading
+  // from bfcache. In all these cases, we need to make sure to fire
+  // `newSource` notifications even if the server doesn't. Otherwise
+  // they won't appear in the debugger.
+  return threadClient.getSources().then(packet => {
+    const sources = packet.sources.filter(src => {
+      return !knownSourceIds.has(src.actor);
+    });
+    sources.forEach(src => clientEvents.newSource(null, { source: src }));
+  });
+}
+
 function initPage(actions) {
-  tabTarget = getTabTarget();
-  threadClient = getThreadClient();
+  const tabTarget = getTabTarget();
+  const threadClient = getThreadClient();
 
   setupCommands({ threadClient, tabTarget, debuggerClient });
 
@@ -97,19 +127,20 @@ function initPage(actions) {
   // Listen to all the requested events.
   setupEvents({ threadClient, actions });
   Object.keys(clientEvents).forEach(eventName => {
-    threadClient.addListener(eventName, clientEvents[eventName]);
+    // `newSource` is handled specially below
+    if(eventName !== "newSource") {
+      threadClient.addListener(eventName, clientEvents[eventName]);
+    }
   });
 
-  threadClient.reconfigure({
-    "useSourceMaps": false,
-    "autoBlackBox": false
+  listenForSources(actions).then(() => {
+    // If the threadClient is already paused, make sure to show a
+    // paused state.
+    const pausedPacket = threadClient.getLastPausePacket();
+    if(pausedPacket) {
+      clientEvents.paused(null, pausedPacket);
+    }
   });
-
-  // In Firefox, we need to initially request all of the sources which
-  // makes the server iterate over them and fire individual
-  // `newSource` notifications. We don't need to do anything with the
-  // response since `newSource` notifications are fired.
-  threadClient.getSources();
 }
 
 module.exports = {

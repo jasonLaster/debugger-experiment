@@ -35,13 +35,6 @@ function _shouldSourceMap(generatedSource) {
   return isEnabled("sourceMaps") && generatedSource.sourceMapURL;
 }
 
-function _addSource(source) {
-  return {
-    type: constants.ADD_SOURCE,
-    source
-  };
-}
-
 async function _prettyPrintSource({ source, sourceText, url }) {
   const contentType = sourceText ? sourceText.contentType : null;
   const indent = 2;
@@ -76,7 +69,10 @@ function newSource(source) {
       dispatch(loadSourceMap(source));
     }
 
-    dispatch(_addSource(source));
+    dispatch({
+      type: constants.ADD_SOURCE,
+      source
+    });
 
     // If a request has been made to show this source, go ahead and
     // select it.
@@ -237,7 +233,10 @@ function togglePrettyPrint(id) {
 
     const url = source.url + ":formatted";
     const originalSource = makeOriginalSource({ url, source });
-    dispatch(_addSource(originalSource));
+    dispatch({
+      type: constants.ADD_SOURCE,
+      source: originalSource
+    });
 
     return dispatch({
       type: constants.TOGGLE_PRETTY_PRINT,
