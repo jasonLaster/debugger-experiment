@@ -7,7 +7,6 @@ const { getValue } = require("../feature");
 const { Tab } = require("../types");
 const { setupCommands, clientCommands } = require("./firefox/commands");
 const { setupEvents, clientEvents } = require("./firefox/events");
-const { createSource } = require("./firefox/create");
 
 let debuggerClient = null;
 let threadClient = null;
@@ -86,16 +85,19 @@ function connectTab(tab) {
   });
 }
 
-function listenForSources(actions) {
-  const threadClient = getThreadClient();
+function initPage(actions) {
+  tabTarget = getTabTarget();
+  threadClient = getThreadClient();
 
-  // Listen for new sources, and also keep track of which ones we've
-  // seen. See the comment below for more details.
-  const knownSourceIds = new Set();
-  threadClient.addListener("newSource", (_, packet) => {
-    const { source } = packet;
-    knownSourceIds.add(source.actor);
-    clientEvents.newSource(_, packet);
+  setupCommands({ threadClient, tabTarget, debuggerClient });
+
+  tabTarget.on("will-navigate", actions.willNavigate);
+  tabTarget.on("navigate", actions.navigated);
+
+  // Listen to all the requested events.
+  setupEvents({ threadClient, actions });
+  Object.keys(clientEvents).forEach(eventName => {
+    threadClient.addListener(eventName, clientEvents[eventName]);
   });
 
   // In Firefox, we need to initially request all of the sources. In
@@ -107,39 +109,12 @@ function listenForSources(actions) {
   // from bfcache. In all these cases, we need to make sure to fire
   // `newSource` notifications even if the server doesn't. Otherwise
   // they won't appear in the debugger.
-  return threadClient.getSources().then(packet => {
-    const sources = packet.sources.filter(src => {
-      return !knownSourceIds.has(src.actor);
-    });
-    sources.forEach(src => clientEvents.newSource(null, { source: src }));
-  });
-}
+  return threadClient.getSources().then(({ sources }) => {
+    sources.forEach(source => clientEvents.newSource(null, { source }));
 
-function initPage(actions) {
-  const tabTarget = getTabTarget();
-  const threadClient = getThreadClient();
-
-  setupCommands({ threadClient, tabTarget, debuggerClient });
-
-  tabTarget.on("will-navigate", actions.willNavigate);
-  tabTarget.on("navigate", actions.navigated);
-
-  // Listen to all the requested events.
-  setupEvents({ threadClient, actions });
-  Object.keys(clientEvents).forEach(eventName => {
-    // `newSource` is handled specially below
-    if(eventName !== "newSource") {
-      threadClient.addListener(eventName, clientEvents[eventName]);
-    }
-  });
-
-  listenForSources(actions).then(() => {
     // If the threadClient is already paused, make sure to show a
     // paused state.
-    const pausedPacket = threadClient.getLastPausePacket();
-    if(pausedPacket) {
-      clientEvents.paused(null, pausedPacket);
-    }
+    clientEvents.paused(null, threadClient.getLastPausePacket());
   });
 }
 
