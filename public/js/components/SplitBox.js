@@ -7,6 +7,14 @@ const ReactDOM = require("react-dom");
 const Draggable = React.createFactory(require("./Draggable"));
 require("./SplitBox.css");
 
+const buttonStyles = {
+  position: "absolute",
+  zIndex: 1000,
+  color: "white",
+  padding: "2px",
+  top: "4px"
+};
+
 const { DOM: dom, PropTypes } = React;
 
 const SplitBox = React.createClass({
@@ -22,7 +30,10 @@ const SplitBox = React.createClass({
   displayName: "SplitBox",
 
   getInitialState() {
-    return { width: this.props.initialWidth };
+    return {
+      width: this.props.initialWidth,
+      prevWidth: this.props.initialWidth
+    };
   },
 
   onMove(x) {
@@ -34,6 +45,19 @@ const SplitBox = React.createClass({
     });
   },
 
+  toggleSidebar() {
+    if (this.state.width != 0) {
+      this.setState({
+        width: 0,
+        prevWidth: this.state.width
+      });
+    } else {
+      this.setState({
+        width: this.state.prevWidth
+      });
+    }
+  },
+
   render() {
     const { left, right, rightFlex } = this.props;
     const { width } = this.state;
@@ -43,14 +67,22 @@ const SplitBox = React.createClass({
         style: this.props.style },
       dom.div(
         { className: rightFlex ? "uncontrolled" : "controlled",
-          style: { width: rightFlex ? null : width }},
+          style: { width: rightFlex ? null : width, position: "relative" }},
+          rightFlex ? dom.div({
+            style: Object.assign({}, buttonStyles, { background: "red", right: "4px" }),
+            onClick: () => this.toggleSidebar()
+          }, "yo") : null,
         left
       ),
       Draggable({ className: "splitter",
                   onMove: x => this.onMove(x) }),
       dom.div(
         { className: rightFlex ? "controlled" : "uncontrolled",
-          style: { width: rightFlex ? width : null }},
+          style: { width: rightFlex ? width : null, position: "relative" }},
+        !rightFlex ? dom.div({
+          style: Object.assign({}, buttonStyles, { background: "blue", left: "4px" }),
+          onClick: () => this.toggleSidebar()
+        }, "yo") : null,
         right
       )
     );
