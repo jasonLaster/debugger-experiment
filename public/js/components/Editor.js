@@ -20,6 +20,8 @@ function isTextForSource(sourceText) {
   return !sourceText.get("loading") && !sourceText.get("error");
 }
 
+let sourceDocs = {};
+
 /**
  * Forces the breakpoint gutter to be the same size as the line
  * numbers gutter. Editor CSS will absolutely position the gutter
@@ -174,23 +176,39 @@ const Editor = React.createClass({
   componentWillReceiveProps(nextProps) {
     // This lifecycle method is responsible for updating the editor
     // text.
-    const sourceText = nextProps.sourceText;
+    const { sourceText, selectedLocation } = nextProps;
 
     if (!sourceText) {
-      this.setText("");
-      this.editor.setMode({ name: "text" });
+      // is this ever called
+      // this.setText("");
+      // this.editor.setMode({ name: "text" });
+    } else if (sourceText.get("loading")) {
+      //
     } else if (!isTextForSource(sourceText)) {
       // There are only 2 possible states: errored or loading. Do
       // nothing except put a message in the editor.
-      this.setText(sourceText.get("error") || "Loading...");
-      this.editor.setMode({ name: "text" });
+      // this.setText(sourceText.get("error") || "Loading...");
+      // this.editor.setMode({ name: "text" });
     } else if (this.props.sourceText !== sourceText) {
       // Only update it if the `sourceText` object has actually changed.
       // It is immutable so it will always change when updated.
-      this.setText(sourceText.get("text"));
-      this.setMode(sourceText);
+      this.updateEditor(sourceText, selectedLocation);
       resizeBreakpointGutter(this.editor.codeMirror);
     }
+  },
+
+  updateEditor(sourceText, selectedLocation) {
+    let doc = sourceDocs[selectedLocation.sourceId];
+    if (doc) {
+      this.editor.replaceDocument(doc);
+      return doc;
+    }
+
+    doc = this.editor.createDocument();
+    sourceDocs[selectedLocation.sourceId] = doc;
+    this.editor.replaceDocument(doc);
+    this.setText(sourceText.get("text"));
+    this.setMode(sourceText);
   },
 
   componentDidUpdate(prevProps) {
