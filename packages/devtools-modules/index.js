@@ -1,5 +1,5 @@
-const Services = require("./client/shared/shim/Services").Services;
-const SplitBox = require("./client/shared/components/splitter/SplitBox")
+const Services = require("./client/shared/shim/Services");
+const SplitBox = require("./client/shared/components/splitter/SplitBox");
 // const SplitBoxCSS = require("./client/shared/components/splitter/SplitBox.css")
 const rep = require("./client/shared/components/reps/rep");
 // const repCSS = require("./client/shared/components/reps/reps.css");
@@ -12,4 +12,4 @@ module.exports = {
   rep,
   // repCSS,
   Grip
-}
+};

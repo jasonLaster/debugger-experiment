@@ -16,7 +16,7 @@ const { updateFrameLocations } = require("../utils/pause");
 const {
   getOriginalURLs, getOriginalSourceText,
   generatedToOriginalId, isOriginalId,
-  applySourceMap
+  applySourceMap, shouldSourceMap
 } = require("../utils/source-map");
 
 const constants = require("../constants");
@@ -57,7 +57,7 @@ async function _prettyPrintSource({ source, sourceText, url }) {
  */
 function newSource(source) {
   return ({ dispatch, getState }) => {
-    if (isEnabled("sourceMaps")) {
+    if (shouldSourceMap()) {
       dispatch(loadSourceMap(source));
     }
 
