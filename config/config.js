@@ -3,22 +3,35 @@
 const _ = require("lodash");
 const fs = require("fs");
 const path = require("path");
+const set = require("lodash/set");
 
 const firefoxPanel = require("./firefox-panel.json");
 const development = require("./development.json");
 const envConfig = process.env.TARGET === "firefox-panel" ?
    firefoxPanel : development;
 
-let config;
+const localConfigPath = path.join(__dirname, "./local.json");
+const localConfigExists = fs.existsSync(localConfigPath);
 
-if(process.env.TARGET === "firefox-panel") {
+let config;
+let localConfig;
+
+if (process.env.TARGET === "firefox-panel") {
   config = firefoxPanel;
-}
-else {
-  const localConfig = fs.existsSync(path.join(__dirname, "./local.json")) ?
-        require("./local.json") : {};
+} else {
+  localConfig = localConfigExists ? require("./local.json") : {};
 
   config = _.merge({}, envConfig, localConfig);
+}
+
+function updateLocalConfig(configPath, value) {
+  if (!localConfigExists) {
+    return;
+  }
+
+  const newConfig = set(localConfig, configPath, value);
+  fs.writeFileSync(localConfigPath, JSON.stringify(localConfig, null, "  "));
+  return newConfig;
 }
 
 function getConfig() {
@@ -26,5 +39,6 @@ function getConfig() {
 }
 
 module.exports = {
-  getConfig
+  getConfig,
+  updateLocalConfig
 };

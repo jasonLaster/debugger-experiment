@@ -15,11 +15,10 @@ const http = require("http");
 const serveIndex = require("serve-index");
 
 // Setup Config
-const getConfig = require("../config/config").getConfig;
+const config = require("../config/config");
 const feature = require("../config/feature");
-const config = getConfig();
 
-feature.setConfig(config);
+feature.setConfig(config.getConfig());
 
 if (!feature.getValue("firefox.webSocketConnection")) {
   const firefoxProxy = require("./firefox-proxy");
@@ -71,13 +70,19 @@ app.get("/", function(req, res) {
   res.send(Mustache.render(tplFile, { isDevelopment }));
 });
 
+app.post("/config", function(req, res) {
+  console.log("Updating config", req.query.path, req.query.value);
+  const newConfig = config.updateLocalConfig(req.query.path, req.query.value);
+  res.status(200);
+  res.send(newConfig);
+});
+
 app.get("/get", function(req, res) {
   const url = req.query.url;
-  if(url.indexOf("file://") === 0) {
-    const path = url.replace("file://", "");
-    res.json(JSON.parse(fs.readFileSync(path, "utf8")));
-  }
-  else {
+  if (url.indexOf("file://") === 0) {
+    const _path = url.replace("file://", "");
+    res.json(JSON.parse(fs.readFileSync(_path, "utf8")));
+  } else {
     const httpReq = httpGet(
       req.query.url,
       body => {
