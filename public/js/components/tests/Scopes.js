@@ -7,7 +7,7 @@ function getScopes($el) {
 
 describe("Scopes", function() {
   it("Not Paused", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
@@ -16,7 +16,7 @@ describe("Scopes", function() {
   });
 
   it("TodoMVC Event Handler", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 

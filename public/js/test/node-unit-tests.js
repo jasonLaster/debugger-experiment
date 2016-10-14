@@ -21,6 +21,31 @@ const args = minimist(process.argv.slice(2),
 
 const mock = require("mock-require");
 
+global.DebuggerConfig = getConfig();
+
+if (!global.document || !global.window) {
+  const jsdom = require("jsdom").jsdom;
+
+  global.document = jsdom(
+    "<html><head><script></script></head><body></body></html>", {
+      FetchExternalResources: ["script"],
+      ProcessExternalResources: ["script"]
+    }
+  );
+
+  global.window = document.defaultView;
+  global.navigator = global.window.navigator;
+
+  global.localStorage = global.window.localStorage = global.window.sessionStorage = {
+    getItem: function(key) {
+      return this[key];
+    },
+    setItem: function(key, value) {
+      this[key] = value;
+    }
+  };
+}
+
 const isCI = args.ci;
 const useDots = args.dots;
 

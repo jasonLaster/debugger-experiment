@@ -12,7 +12,7 @@ function getTitle($el) {
 
 describe("SourceTabs", function() {
   it("Many Tabs", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
@@ -23,7 +23,7 @@ describe("SourceTabs", function() {
   });
 
   it("Disabled", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 

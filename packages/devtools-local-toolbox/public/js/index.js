@@ -2,10 +2,8 @@
 
 const { bindActionCreators, combineReducers } = require("redux");
 const { Provider } = require("react-redux");
-const ReactDOM = require("react-dom");
-const React = require("react");
 
-const {DevToolsUtils, AppConstants} = require("devtools-sham-modules");
+const { DevToolsUtils, AppConstants } = require("devtools-sham-modules");
 const { injectGlobals, debugGlobal } = require("./utils/debug");
 const { setConfig, isEnabled, getValue, isDevelopment } = require("devtools-config");
 

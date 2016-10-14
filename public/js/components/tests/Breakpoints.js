@@ -15,7 +15,7 @@ function getBreakpointClasses($breakpoint) {
 
 describe("Breakpoint Component", function() {
   it("Not Paused", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
@@ -24,7 +24,7 @@ describe("Breakpoint Component", function() {
   });
 
   it("3 Breakpoints", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 

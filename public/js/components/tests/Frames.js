@@ -15,7 +15,7 @@ function getFrameLocation($frame) {
 
 describe("Frames", function() {
   it("Not Paused", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
@@ -24,7 +24,7 @@ describe("Frames", function() {
   });
 
   it("Event Handler", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
@@ -39,7 +39,7 @@ describe("Frames", function() {
   });
 
   it("Nested Closure", function() {
-    if (typeof window != "object") {
+    if (typeof require == "object") {
       return;
     }
 
