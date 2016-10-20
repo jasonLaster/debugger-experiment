@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 
 if [[ -e ~/downloads/mochitest-runner.tar ]]; then
-  docker load -i ~/downloads/mochitest-runner.tar;
+  echo "about to load!"
+  time docker load -i ~/downloads/mochitest-runner.tar;
+  echo "loaded docker image"
 fi
 
 docker images
 
-docker pull jlongster/mochitest-runner
+time docker pull jlongster/mochitest-runner
+
+docker images
 
 mkdir -p ~/downloads
 
-docker save jlongster/mochitest-runner > ~/downloads/mochitest-runner.tar
+echo "created downloads directory"
+
+time docker save jlongster/mochitest-runner > ~/downloads/mochitest-runner.tar
+
+echo "saved docker image to downloads"
