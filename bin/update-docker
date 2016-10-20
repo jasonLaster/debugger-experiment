@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [[ -e ~/downloads/mochitest-runner.tar ]]; then
+  docker load -i ~/downloads/mochitest-runner.tar;
+fi
+
+docker images
+
+docker pull jlongster/mochitest-runner
+
+mkdir -p ~/downloads
+
+docker save jlongster/mochitest-runner > ~/downloads/mochitest-runner.tar

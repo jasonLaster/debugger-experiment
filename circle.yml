@@ -32,12 +32,13 @@ test:
 dependencies:
   cache_directories:
     - "~/downloads"
+
   override:
     - npm i -g jasonlaster/lerna
     - lerna bootstrap
     - ./bin/install-chrome
     - ./bin/install-firefox
-    - docker pull jlongster/mochitest-runner
+    - ./bin/update-docker
 experimental:
   notify:
     branches:
