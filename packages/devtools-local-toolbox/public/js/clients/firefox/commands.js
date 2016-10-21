@@ -1,5 +1,6 @@
 const { BreakpointResult, Location } = require("../../types");
 const defer = require("../../utils/defer");
+const remove = require("lodash/remove");
 
 let bpClients;
 let threadClient;
@@ -78,8 +79,12 @@ function onNewBreakpoint(location, res) {
 }
 
 function removeBreakpoint(breakpointId) {
-  const bpClient = bpClients[breakpointId];
-  bpClients[breakpointId] = null;
+  let bpClient = bpClients[breakpointId];
+  if (!bpClient) {
+    bpClient = remove(lastDisabledBreakpoints, bp => bp.id == breakpointId)[0];
+  }
+
+  delete bpClients[breakpointId];
   return bpClient.remove();
 }
 
@@ -87,32 +92,54 @@ let lastDisabledBreakpoints = [];
 
 async function toggleAllBreakpoints(shouldDisableBreakpoints) {
   if (shouldDisableBreakpoints) {
-    for (let id of Object.keys(bpClients)) {
-      const bp = bpClients[id];
-      if (bp) {
-        await removeBreakpoint(bp.actor);
-
-        const bpResult = BreakpointResult({
-          id: bp.actor,
-          actualLocation: Location({
-            sourceId: bp.location.actor,
-            line: bp.location.line,
-            column: bp.location.column
-          })
-        });
-
-        lastDisabledBreakpoints.push(bpResult);
-      }
-    }
-
-    return lastDisabledBreakpoints;
+    return await disableAllBreakpoints();
   }
 
-  for (let bp of lastDisabledBreakpoints) {
-    await setBreakpoint(bp.actualLocation, bp.condition);
+  return await enableAllBreakoints();
+}
+
+/**
+ * Disable the breakpoints on the server, but keep the breakpoints
+ * in the UI so that the user can easily re-enable them again.
+ *
+ * Save the disabled breakpoints as they're represented in the
+ * store in lastDisabledBreakpoints.
+ *
+ */
+async function disableAllBreakpoints() {
+  for (let id of Object.keys(bpClients)) {
+    const bpClient = bpClients[id];
+    await removeBreakpoint(bpClient.actor);
+    lastDisabledBreakpoints.push(BreakpointResult({
+      id: bpClient.actor,
+      actualLocation: Location({
+        sourceId: bpClient.location.actor,
+        line: bpClient.location.line,
+        column: bpClient.location.column
+      })
+    }));
   }
 
-  const changed = lastDisabledBreakpoints;
+  return lastDisabledBreakpoints;
+}
+
+
+/**
+ * Re-Enables the breakpoint in the UI, by iterating over the
+ * disabled breakpoints and setting them again.
+ *
+ * We then update the store with the new breakpoint IDs.
+ *
+ */
+async function enableAllBreakoints() {
+  let changed = [];
+  for (const bp of lastDisabledBreakpoints) {
+    const bpClient = await setBreakpoint(bp.actualLocation, bp.condition);
+    changed.push(BreakpointResult({
+      id: bpClient.id,
+      actualLocation: bp.actualLocation
+    }))
+  }
 
   lastDisabledBreakpoints = [];
   return changed;
@@ -120,7 +147,7 @@ async function toggleAllBreakpoints(shouldDisableBreakpoints) {
 
 function setBreakpointCondition(breakpointId, location, condition, noSliding) {
   let bpClient = bpClients[breakpointId];
-  bpClients[breakpointId] = null;
+  delete bpClients[breakpointId];
 
   return bpClient.setCondition(threadClient, condition, noSliding)
     .then(_bpClient => onNewBreakpoint(location, [{}, _bpClient]));

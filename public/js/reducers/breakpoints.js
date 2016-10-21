@@ -120,10 +120,7 @@ function update(state = State(), action: Action) {
 
           return updatedState.setIn(
             ["breakpoints", locationId],
-            updateObj(breakpoint, {
-              disabled: shouldDisable,
-              id: bp.id
-            })
+            updateObj(breakpoint, { id: bp.id })
           );
         }, state);
       }

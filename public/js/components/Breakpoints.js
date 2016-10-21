@@ -4,7 +4,8 @@ const { bindActionCreators } = require("redux");
 const ImPropTypes = require("react-immutable-proptypes");
 const classnames = require("classnames");
 const actions = require("../actions");
-const { getSource, getPause, getBreakpoints } = require("../selectors");
+const { getSource, getPause, getBreakpoints,
+        getBreakpointsDisabled } = require("../selectors");
 const { makeLocationId } = require("../reducers/breakpoints");
 const { truncateStr } = require("../utils/utils");
 const { DOM: dom, PropTypes } = React;
@@ -106,14 +107,17 @@ const Breakpoints = React.createClass({
   },
 
   render() {
-    const { breakpoints } = this.props;
+    const { breakpoints, breakpointsDisabled } = this.props;
     return dom.div(
       { className: "pane breakpoints-list" },
       (breakpoints.size === 0 ?
        dom.div({ className: "pane-info" }, "No Breakpoints") :
-       breakpoints.valueSeq().map(bp => {
+       (
+         ([breakpointsDisabled ? dom.div({className: "panel-mask"}) : null]).concat(
+         breakpoints.valueSeq().map(bp => {
          return this.renderBreakpoint(bp);
-       }))
+       })))
+      )
     );
   }
 });
@@ -135,7 +139,8 @@ function _getBreakpoints(state) {
 
 module.exports = connect(
   (state, props) => ({
-    breakpoints: _getBreakpoints(state)
+    breakpoints: _getBreakpoints(state),
+    breakpointsDisabled: getBreakpointsDisabled(state)
   }),
   dispatch => bindActionCreators(actions, dispatch)
 )(Breakpoints);
