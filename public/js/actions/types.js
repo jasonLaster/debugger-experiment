@@ -15,10 +15,12 @@ import type { Source, Breakpoint, Location, SourceText } from "../types";
   * @typedef {Object} ThunkArgs
   */
 export type ThunkArgs = {
-  dispatch: () => Promise<any>,
+  dispatch: (a: Action) => Promise<ActionResult>,
   getState: () => any,
   client: any
 };
+
+type ThunkMiddleWare = (a: ThunkArgs) => any;
 
 /**
  * Tri-state status for async operations
@@ -38,7 +40,13 @@ type BreakpointResult = {
   text: string
 }
 
-type BreakpointAction =
+
+type TogglePrettyPrintResult = {
+  isPrettyPrinted: boolean,
+  sourceText: SourceText
+}
+
+export type BreakpointAction =
   { type: "ADD_BREAKPOINT",
     breakpoint: Breakpoint,
     condition: string,
@@ -62,7 +70,7 @@ type BreakpointAction =
       error: string,
       value: any };
 
-type SourceAction =
+export type SourceAction =
   { type: "ADD_SOURCE", source: Source }
   | { type: "SELECT_SOURCE", source: Source,
       line?: number,
@@ -73,19 +81,16 @@ type SourceAction =
       status: AsyncStatus,
       error: string,
       value: SourceText }
-  | { type: "BLACKBOX",
-      source: Source,
-      status: AsyncStatus,
-      error: string,
-      value: { isBlackBoxed: boolean }}
   | { type: "TOGGLE_PRETTY_PRINT",
       source: Source,
       originalSource: Source,
       status: AsyncStatus,
       error: string,
-      value: { isPrettyPrinted: boolean,
-               sourceText: SourceText }}
+      value: TogglePrettyPrintResult}
   | { type: "CLOSE_TAB", id: string };
+
+
+export type ActionResult = BreakpointResult | TogglePrettyPrintResult | SourceText;
 
 /**
  * Actions: Source, Breakpoint, and Navigation
@@ -93,7 +98,4 @@ type SourceAction =
  * @memberof actions/types
  * @static
  */
-export type Action =
-  SourceAction
-  | BreakpointAction
-  | { type: "NAVIGATE" };
+export type Action = SourceAction | BreakpointAction | { type: "NAVIGATE" } | ThunkMiddleWare;

@@ -8,7 +8,7 @@ const I = require("immutable");
 const makeRecord = require("../utils/makeRecord");
 
 import type { Source } from "../types";
-import type { Action } from "../actions/types";
+import type { SourceAction } from "../actions/types";
 import type { Record } from "../utils/makeRecord";
 
 export type SourcesState = {
@@ -35,7 +35,7 @@ const State = makeRecord(({
   tabs: I.List([])
 } : SourcesState));
 
-function update(state = State(), action: Action) : Record<SourcesState> {
+function update(state = State(), action: SourceAction) : Record<SourcesState> {
   switch (action.type) {
     case "ADD_SOURCE": {
       const source: Source = action.source;

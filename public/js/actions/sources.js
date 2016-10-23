@@ -29,8 +29,8 @@ const {
   getPendingSelectedLocation, getFrames
 } = require("../selectors");
 
-import type { Source } from "../types";
-import type { ThunkArgs } from "./types";
+import type { Source, SourceText } from "../types";
+import type { ThunkArgs, ActionResult } from "./types";
 
 /**
  * Handler for the debugger client's unsolicited newSource notification.
@@ -171,7 +171,7 @@ function closeTab(id: string) {
 function togglePrettyPrint(sourceId: string) {
   return ({ dispatch, getState, client }: ThunkArgs) => {
     const source = getSource(getState(), sourceId).toJS();
-    const sourceText = getSourceText(getState(), sourceId).toJS();
+    const sourceText: SourceText = getSourceText(getState(), sourceId).toJS();
 
     if (!isEnabled("prettyPrint") || sourceText.loading) {
       return {};
@@ -217,7 +217,7 @@ function togglePrettyPrint(sourceId: string) {
 function loadSourceText(source: Source) {
   return ({ dispatch, getState, client }: ThunkArgs) => {
     // Fetch the source text only once.
-    let textInfo = getSourceText(getState(), source.id);
+    let textInfo: SourceText = getSourceText(getState(), source.id);
     if (textInfo) {
       // It's already loaded or is loading
       return Promise.resolve(textInfo);
@@ -228,7 +228,8 @@ function loadSourceText(source: Source) {
       source: source,
       [PROMISE]: (async function () {
         if (isOriginalId(source.id)) {
-          return await getOriginalSourceText(source);
+          const sourceText: SourceText = await getOriginalSourceText(source);
+          return sourceText;
         }
 
         const response = await client.sourceContents(source.id);
@@ -278,11 +279,10 @@ function getTextForSources(actors: any[]) {
     // Try to fetch as many sources as possible.
     for (let actor of actors) {
       let source = getSource(getState(), actor);
-      dispatch(loadSourceText(source)).then(({ text, contentType }) => {
-        onFetch([source, text, contentType]);
-      }, err => {
-        onError(source, err);
-      });
+      dispatch(loadSourceText(source)).then(
+        ({ text, contentType }:any) => onFetch([source, text, contentType]),
+        err => onError(source, err)
+      );
     }
 
     setTimeout(onTimeout, FETCH_SOURCE_RESPONSE_DELAY);

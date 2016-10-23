@@ -9,7 +9,7 @@ const I = require("immutable");
 const makeRecord = require("../utils/makeRecord");
 
 import type { Breakpoint, Location } from "../types";
-import type { Action } from "../actions/types";
+import type { BreakpointAction } from "../actions/types";
 import type { Record } from "../utils/makeRecord";
 
 export type BreakpointsState = {
@@ -43,7 +43,7 @@ function makeLocationId(location: Location) {
   return location.sourceId + ":" + location.line.toString();
 }
 
-function update(state = State(), action: Action) {
+function update(state = State(), action: BreakpointAction) {
   switch (action.type) {
     case "ADD_BREAKPOINT": {
       const id = makeLocationId(action.breakpoint.location);
