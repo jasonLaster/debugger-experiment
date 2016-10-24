@@ -1,6 +1,6 @@
 // @flow
 
-import type { Source, Breakpoint, Location, SourceText } from "../types";
+import type { Source, Breakpoint, Location, SourceText, Frame } from "../types";
 
 /**
  * Flow types
@@ -42,28 +42,36 @@ type BreakpointResult = {
 
 
 type TogglePrettyPrintResult = {
-  isPrettyPrinted: boolean,
-  sourceText: SourceText
+  text: string,
+  contentType: string,
+  frames: Frame[]
 }
 
 export type BreakpointAction =
   { type: "ADD_BREAKPOINT",
+    PROMISEti: any,
     breakpoint: Breakpoint,
-    condition: string,
-    status: AsyncStatus,
-    error: string,
-    value: BreakpointResult}
-  | { type: "REMOVE_BREAKPOINT",
+    condition: string }
+  | { type: "ADD_BREAKPOINT",
       breakpoint: Breakpoint,
+      condition: string,
       status: AsyncStatus,
       error: string,
+      value: BreakpointResult}
+  | { type: "REMOVE_BREAKPOINT",
+      breakpoint: Breakpoint,
       disabled: boolean }
+  | { type: "SET_BREAKPOINT_CONDITION",
+      breakpoint: Breakpoint,
+      condition: string }
   | { type: "SET_BREAKPOINT_CONDITION",
       breakpoint: Breakpoint,
       condition: string,
       status: AsyncStatus,
       value: BreakpointResult,
       error: string }
+  | { type: "TOGGLE_BREAKPOINTS",
+      shouldDisableBreakpoints: boolean }
   | { type: "TOGGLE_BREAKPOINTS",
       shouldDisableBreakpoints: boolean,
       status: AsyncStatus,
@@ -76,14 +84,15 @@ export type SourceAction =
       line?: number,
       tabIndex?: number }
   | { type: "SELECT_SOURCE_URL", url: string, line?: number }
+  | { type: "LOAD_SOURCE_TEXT", source: Source }
   | { type: "LOAD_SOURCE_TEXT",
       source: Source,
       status: AsyncStatus,
       error: string,
       value: SourceText }
+  | { type: "TOGGLE_PRETTY_PRINT", source: Source }
   | { type: "TOGGLE_PRETTY_PRINT",
       source: Source,
-      originalSource: Source,
       status: AsyncStatus,
       error: string,
       value: TogglePrettyPrintResult}

@@ -55,3 +55,5 @@ export type SourceText = {
   text: string,
   contentType: string
 };
+
+export type Frame = any;

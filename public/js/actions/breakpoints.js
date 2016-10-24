@@ -106,11 +106,11 @@ function disableBreakpoint(location: Location) {
  * @static
  */
 function removeBreakpoint(location: Location) {
-  return _removeOrDisableBreakpoint(location);
+  return _removeOrDisableBreakpoint(location, false);
 }
 
-function _removeOrDisableBreakpoint(location, isDisabled) {
-  return ({ dispatch, getState, client }: ThunkArgs) => {
+function _removeOrDisableBreakpoint(location: Location, isDisabled: boolean) {
+  return async function({ dispatch, getState, client }: ThunkArgs) {
     let bp = getBreakpoint(getState(), location);
     if (!bp) {
       throw new Error("attempt to remove breakpoint that does not exist");
@@ -121,22 +121,19 @@ function _removeOrDisableBreakpoint(location, isDisabled) {
       throw new Error("attempt to remove unsaved breakpoint");
     }
 
-    const action = {
-      type: constants.REMOVE_BREAKPOINT,
-      breakpoint: bp,
-      disabled: isDisabled
-    };
-
     // If the breakpoint is already disabled, we don't need to remove
     // it from the server. We just need to dispatch an action
     // simulating a successful server request to remove it, and it
     // will be removed completely from the state.
     if (!bp.disabled) {
-      return dispatch(Object.assign({}, action, {
-        [PROMISE]: client.removeBreakpoint(bp.id)
-      }));
+      await client.removeBreakpoint(bp.id);
     }
-    return dispatch(Object.assign({}, action, { status: "done" }));
+
+    return dispatch({
+      type: constants.REMOVE_BREAKPOINT,
+      breakpoint: bp,
+      disabled: isDisabled
+    });
   };
 }
 

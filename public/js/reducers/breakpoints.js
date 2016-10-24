@@ -92,19 +92,16 @@ function update(state = State(), action: BreakpointAction) {
     }
 
     case "REMOVE_BREAKPOINT": {
-      if (action.status === "done") {
-        const id = makeLocationId(action.breakpoint.location);
+      const id = makeLocationId(action.breakpoint.location);
 
-        if (action.disabled) {
-          const bp = state.breakpoints.get(id);
-          return state.setIn(["breakpoints", id], updateObj(bp, {
-            loading: false, disabled: true
-          }));
-        }
-
-        return state.deleteIn(["breakpoints", id]);
+      if (action.disabled) {
+        const bp = state.breakpoints.get(id);
+        return state.setIn(["breakpoints", id], updateObj(bp, {
+          loading: false, disabled: true
+        }));
       }
-      break;
+
+      return state.deleteIn(["breakpoints", id]);
     }
 
     case "TOGGLE_BREAKPOINTS": {
