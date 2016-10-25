@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DOWNLOADS_PATH=${DOWNLOADS_PATH:-"~/downloads"}
+DOWNLOADS_PATH=${DOWNLOADS_PATH:-"$HOME/downloads"}
 
 mkdir -p $DOWNLOADS_PATH
 
