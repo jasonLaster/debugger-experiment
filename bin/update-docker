@@ -6,7 +6,7 @@ mkdir -p $DOWNLOADS_PATH
 
 echo "created $DOWNLOADS_PATH directory"
 
-ls $DOWNLOADS_PATH
+ls -la $DOWNLOADS_PATH
 
 if [[ -e $DOWNLOADS_PATH/mochitest-runner.tar ]]; then
   echo "about to load!"
@@ -22,6 +22,6 @@ docker images
 
 time docker save jlongster/mochitest-runner > $DOWNLOADS_PATH/mochitest-runner.tar
 
-ls $DOWNLOADS_PATH
+ls -la $DOWNLOADS_PATH
 
 echo "saved docker image to $DOWNLOADS_PATH"
