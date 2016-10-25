@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
-ls ~/downloads/
+DOWNLOADS_PATH=${DOWNLOADS_PATH:-"~/downloads"}
 
-if [[ -e ~/downloads/mochitest-runner.tar ]]; then
+mkdir -p $DOWNLOADS_PATH
+
+echo "created $DOWNLOADS_PATH directory"
+
+ls $DOWNLOADS_PATH
+
+if [[ -e $DOWNLOADS_PATH/mochitest-runner.tar ]]; then
   echo "about to load!"
-  time docker load -i ~/downloads/mochitest-runner.tar;
+  time docker load -i $DOWNLOADS_PATH/mochitest-runner.tar;
   echo "loaded docker image"
 fi
 
@@ -14,12 +20,8 @@ time docker pull jlongster/mochitest-runner
 
 docker images
 
-mkdir -p ~/downloads
+time docker save jlongster/mochitest-runner > $DOWNLOADS_PATH/mochitest-runner.tar
 
-echo "created downloads directory"
+ls $DOWNLOADS_PATH
 
-time docker save jlongster/mochitest-runner > ~/downloads/mochitest-runner.tar
-
-ls ~/downloads/
-
-echo "saved docker image to downloads"
+echo "saved docker image to $DOWNLOADS_PATH"
