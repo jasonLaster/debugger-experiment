@@ -1,9 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-"use strict";
 
-const Prefs = require("../../sham/services/prefs");
+const { Services: { Prefs }} = require("devtools-modules");
 const EventEmitter = require("../../shared/event-emitter");
 
 /**
@@ -103,7 +102,7 @@ function map(self, cache, accessorName, prefType, prefsRoot, prefName, serialize
     return;
   }
   if (prefType == "Float") {
-    map(self, cache, accessorName, "Char", prefsRoot, prefName, { in: Number.parseFloat, out: (n) => n + ""});
+    map(self, cache, accessorName, "Char", prefsRoot, prefName, { in: Number.parseFloat, out: (n) => n + "" });
     return;
   }
 

@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 const { Ci, Cu } = require("../..//sham/chrome");
 const promise = require("../..//sham/promise");
 const EventEmitter = require("../..//shared/event-emitter");
-const { Services } = require("../..//sham/services");
+const { Services } = require("devtools-modules");
 
-/*const { DebuggerServer } = require("../../server/main");*/
+/* const { DebuggerServer } = require("../../server/main");*/
 const { DebuggerClient } = require("../../shared/client/main");
 
 const targets = new WeakMap();
@@ -642,7 +640,7 @@ function WorkerTarget(workerClient) {
  * requiring only minimal changes to the rest of the frontend.
  */
 WorkerTarget.prototype = {
-  destroy: function () {},
+  destroy: function() {},
 
   get isRemote() {
     return true;
@@ -676,7 +674,7 @@ WorkerTarget.prototype = {
 
   destroy: function() {},
 
-  hasActor: function (name) {
+  hasActor: function(name) {
     return false;
   },
 
@@ -684,7 +682,7 @@ WorkerTarget.prototype = {
     return undefined;
   },
 
-  makeRemote: function () {
+  makeRemote: function() {
     return Promise.resolve();
   }
 };

@@ -2,12 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 /* General utilities used throughout devtools. */
 
 var { Ci, Cu, Cc, components } = require("../sham/chrome");
-var Services = require("../sham/services");
+var { Services } = require("devtools-modules");
 var promise = require("../sham/promise");
 
 const { FileUtils } = require("../sham/fileutils");
@@ -78,7 +76,7 @@ exports.reportException = function reportException(aWho, aException) {
  */
 exports.makeInfallible = function makeInfallible(aHandler, aName) {
   if (!aName)
-    aName = aHandler.name;
+    {aName = aHandler.name;}
 
   return function(/* arguments */) {
     // try {
