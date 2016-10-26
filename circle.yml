@@ -4,9 +4,13 @@ machine:
   services:
     - docker
   environment:
-    DOWNLOADS_PATH: "$HOME/downloads"
+    RELEASE_PATH: "$HOME/release"
+    FIREFOX_PATH: "$HOME/firefox"
+    DOWNLOAD_PATH: "$HOME/download"
+    GODIST: "go1.7.linux-amd64.tar.gz"
+    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
   post:
-    - mkdir -p $DOWNLOADS_PATH
+    - mkdir -p $DOWNLOAD_PATH
 
 checkout:
   post:
