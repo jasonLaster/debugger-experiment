@@ -4,8 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 // Make this available to both AMD and CJS environments
 define(function (require, exports, module) {
   // Dependencies
@@ -119,12 +117,12 @@ define(function (require, exports, module) {
       let items;
       let brackets;
       let needSpace = function (space) {
-        return space ? { left: "[ ", right: " ]"} : { left: "[", right: "]"};
+        return space ? { left: "[ ", right: " ]" } : { left: "[", right: "]" };
       };
 
       if (mode == "tiny") {
         let isEmpty = object.length === 0;
-        items = DOM.span({className: "length"}, isEmpty ? "" : object.length);
+        items = DOM.span({ className: "length" }, isEmpty ? "" : object.length);
         brackets = needSpace(false);
       } else {
         let max = (mode == "short") ? 3 : 300;
@@ -136,7 +134,7 @@ define(function (require, exports, module) {
 
       return (
         DOM.span({
-          className: "objectBox objectBox-array"},
+          className: "objectBox objectBox-array" },
           objectLink({
             className: "arrayLeftBracket",
             object: object
@@ -148,7 +146,7 @@ define(function (require, exports, module) {
           }, brackets.right),
           DOM.span({
             className: "arrayProperties",
-            role: "group"}
+            role: "group" }
           )
         )
       );
@@ -169,7 +167,7 @@ define(function (require, exports, module) {
       let mode = this.props.mode;
       return (
         DOM.span({},
-          Rep({object: object, mode: mode}),
+          Rep({ object: object, mode: mode }),
           delim
         )
       );

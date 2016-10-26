@@ -3,7 +3,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-"use strict";
 
 // Make this available to both AMD and CJS environments
 define(function (require, exports, module) {
@@ -38,15 +37,15 @@ define(function (require, exports, module) {
       let objectLink = this.props.objectLink || span;
 
       return (
-        objectLink({className: "objectLink-Attr"},
+        objectLink({ className: "objectLink-Attr" },
           span({},
-            span({className: "attrTitle"},
+            span({ className: "attrTitle" },
               this.getTitle(grip)
             ),
-            span({className: "attrEqual"},
+            span({ className: "attrEqual" },
               "="
             ),
-            StringRepFactory({object: value})
+            StringRepFactory({ object: value })
           )
         )
       );

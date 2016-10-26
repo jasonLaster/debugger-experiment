@@ -4,8 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 // Make this available to both AMD and CJS environments
 define(function (require, exports, module) {
   // Dependencies
@@ -72,13 +70,13 @@ define(function (require, exports, module) {
           items.push(GripArrayItem(Object.assign({}, this.props, {
             key: i,
             object: value,
-            delim: delim}
+            delim: delim }
           )));
         } catch (exc) {
           items.push(GripArrayItem(Object.assign({}, this.props, {
             object: exc,
             delim: delim,
-            key: i}
+            key: i }
           )));
         }
       }
@@ -104,13 +102,13 @@ define(function (require, exports, module) {
       let items;
       let brackets;
       let needSpace = function (space) {
-        return space ? { left: "[ ", right: " ]"} : { left: "[", right: "]"};
+        return space ? { left: "[ ", right: " ]" } : { left: "[", right: "]" };
       };
 
       if (mode == "tiny") {
         let objectLength = this.getLength(object);
         let isEmpty = objectLength === 0;
-        items = span({className: "length"}, isEmpty ? "" : objectLength);
+        items = span({ className: "length" }, isEmpty ? "" : objectLength);
         brackets = needSpace(false);
       } else {
         let max = (mode == "short") ? 3 : 300;
@@ -123,7 +121,7 @@ define(function (require, exports, module) {
 
       return (
         span({
-          className: "objectBox objectBox-array"},
+          className: "objectBox objectBox-array" },
           title,
           objectLink({
             className: "arrayLeftBracket",
@@ -136,7 +134,7 @@ define(function (require, exports, module) {
           }, brackets.right),
           span({
             className: "arrayProperties",
-            role: "group"}
+            role: "group" }
           )
         )
       );

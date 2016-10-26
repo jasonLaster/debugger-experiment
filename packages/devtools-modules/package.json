@@ -6,6 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "devDependencies": {
+    "eslint": "^3.8.1",
+    "eslint-plugin-mozilla": "0.2.3",
+    "eslint-plugin-react": "^6.4.1"
+  },
   "author": "",
   "license": "ISC"
 }

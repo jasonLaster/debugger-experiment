@@ -38,7 +38,7 @@ Preference.prototype = {
    *         return a string, a number, or a boolean depending on the
    *         preference's type.
    */
-  get: function() {
+  get: function () {
     if (this.hasUserValue) {
       return this.userValue;
     }
@@ -52,7 +52,7 @@ Preference.prototype = {
    *
    * @param {Any} value the new value
    */
-  set: function(value) {
+  set: function (value) {
     if (!this.hasUserValue || value !== this.userValue) {
       this.userValue = value;
       this.hasUserValue = true;
@@ -66,7 +66,7 @@ Preference.prototype = {
    *
    * @param {Any} value the new default value
    */
-  setDefault: function(value) {
+  setDefault: function (value) {
     if (this.defaultValue !== value) {
       this.defaultValue = value;
       if (!this.hasUserValue) {
@@ -79,7 +79,7 @@ Preference.prototype = {
    * If this preference has a user value, clear it.  If a change was
    * made, emit a change notification.
    */
-  clearUserValue: function() {
+  clearUserValue: function () {
     if (this.hasUserValue) {
       this.userValue = null;
       this.hasUserValue = false;
@@ -91,7 +91,7 @@ Preference.prototype = {
    * Helper function to write the preference's value to local storage
    * and then emit a change notification.
    */
-  saveAndNotify: function() {
+  saveAndNotify: function () {
     let store = {
       type: this.type,
       defaultValue: this.defaultValue,
@@ -121,7 +121,7 @@ Preference.prototype = {
    *        and |hasUserValue| is a boolean indicating whether the user value
    *        is valid
    */
-  storageUpdated: function(type, userValue, hasUserValue, defaultValue) {
+  storageUpdated: function (type, userValue, hasUserValue, defaultValue) {
     this.type = type;
     this.defaultValue = defaultValue;
     this.hasUserValue = hasUserValue;
@@ -166,12 +166,12 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.getPrefType.  */
-  getPrefType: function(prefName) {
+  getPrefType: function (prefName) {
     return this._findPref(prefName).type;
   },
 
   /** @see nsIPrefBranch.getBoolPref.  */
-  getBoolPref: function(prefName) {
+  getBoolPref: function (prefName) {
     let thePref = this._findPref(prefName);
     if (thePref.type !== PREF_BOOL) {
       throw new Error(`${prefName} does not have bool type`);
@@ -180,7 +180,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.setBoolPref.  */
-  setBoolPref: function(prefName, value) {
+  setBoolPref: function (prefName, value) {
     if (typeof value !== "boolean") {
       throw new Error("non-bool passed to setBoolPref");
     }
@@ -192,7 +192,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.getCharPref.  */
-  getCharPref: function(prefName) {
+  getCharPref: function (prefName) {
     let thePref = this._findPref(prefName);
     if (thePref.type !== PREF_STRING) {
       throw new Error(`${prefName} does not have string type`);
@@ -201,7 +201,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.setCharPref.  */
-  setCharPref: function(prefName, value) {
+  setCharPref: function (prefName, value) {
     if (typeof value !== "string") {
       throw new Error("non-string passed to setCharPref");
     }
@@ -213,7 +213,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.getIntPref.  */
-  getIntPref: function(prefName) {
+  getIntPref: function (prefName) {
     let thePref = this._findPref(prefName);
     if (thePref.type !== PREF_INT) {
       throw new Error(`${prefName} does not have int type`);
@@ -222,7 +222,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.setIntPref.  */
-  setIntPref: function(prefName, value) {
+  setIntPref: function (prefName, value) {
     if (typeof value !== "number") {
       throw new Error("non-number passed to setIntPref");
     }
@@ -234,19 +234,19 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.clearUserPref */
-  clearUserPref: function(prefName) {
+  clearUserPref: function (prefName) {
     let thePref = this._findPref(prefName);
     thePref.clearUserValue();
   },
 
   /** @see nsIPrefBranch.prefHasUserValue */
-  prefHasUserValue: function(prefName) {
+  prefHasUserValue: function (prefName) {
     let thePref = this._findPref(prefName);
     return thePref.hasUserValue;
   },
 
   /** @see nsIPrefBranch.addObserver */
-  addObserver: function(domain, observer, holdWeak) {
+  addObserver: function (domain, observer, holdWeak) {
     if (domain !== "" && !domain.endsWith(".")) {
       throw new Error("invalid domain to addObserver: " + domain);
     }
@@ -261,7 +261,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefBranch.removeObserver */
-  removeObserver: function(domain, observer) {
+  removeObserver: function (domain, observer) {
     if (!(domain in this._observers)) {
       return;
     }
@@ -272,7 +272,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefService.savePrefFile */
-  savePrefFile: function(file) {
+  savePrefFile: function (file) {
     if (file) {
       throw new Error("shim prefs only supports null file in savePrefFile");
     }
@@ -280,7 +280,7 @@ PrefBranch.prototype = {
   },
 
   /** @see nsIPrefService.getBranch */
-  getBranch: function(prefRoot) {
+  getBranch: function (prefRoot) {
     if (!prefRoot) {
       return this;
     }
@@ -299,7 +299,7 @@ PrefBranch.prototype = {
    * @param {String} prefName the fully-qualified preference name
    * @return {Object} Either a Preference or PrefBranch object
    */
-  _findPref: function(prefName) {
+  _findPref: function (prefName) {
     let branchNames = prefName.split(".");
     let branch = this;
 
@@ -321,7 +321,7 @@ PrefBranch.prototype = {
    * @param {String} relativeName the name of the updated pref,
    *        relative to this branch
    */
-  _notify: function(relativeName) {
+  _notify: function (relativeName) {
     for (let domain in this._observers) {
       if (relativeName.startsWith(domain)) {
         // Allow mutation while walking.
@@ -350,7 +350,7 @@ PrefBranch.prototype = {
    *        of the branch to be created
    * @return {PrefBranch} the new branch
    */
-  _createBranch: function(branchList) {
+  _createBranch: function (branchList) {
     let parent = this;
     for (let branch of branchList) {
       if (!parent._children[branch]) {
@@ -374,7 +374,7 @@ PrefBranch.prototype = {
    * @param {Boolean} hasUserValue if a new pref is created, whether
    *        the default value is also a user value
    */
-  _findOrCreatePref: function(keyName, userValue, hasUserValue, defaultValue) {
+  _findOrCreatePref: function (keyName, userValue, hasUserValue, defaultValue) {
     let branchName = keyName.split(".");
     let prefName = branchName.pop();
 
@@ -414,7 +414,7 @@ PrefBranch.prototype = {
    * @param {StorageEvent} event the event representing the local
    *        storage change
    */
-  _onStorageChange: function(event) {
+  _onStorageChange: function (event) {
     if (event.storageArea !== localStorage) {
       return;
     }
@@ -437,7 +437,7 @@ PrefBranch.prototype = {
   /**
    * Helper function to initialize the root PrefBranch.
    */
-  _initializeRoot: function() {
+  _initializeRoot: function () {
     try {
       if (localStorage.length === 0) {
         // FIXME - this is where we'll load devtools.js to install the
@@ -516,13 +516,13 @@ const Services = {
    * the subset of Services.telemetry that is used by devtools.
    */
   telemetry: {
-    getHistogramById: function(name) {
+    getHistogramById: function (name) {
       return {
         add: () => {}
       };
     },
 
-    getKeyedHistogramById: function(name) {
+    getKeyedHistogramById: function (name) {
       return {
         add: () => {}
       };
@@ -547,7 +547,7 @@ const Services = {
       return document.activeElement;
     },
 
-    moveFocus: function(window, startElement, type, flags) {
+    moveFocus: function (window, startElement, type, flags) {
       if (flags !== 0) {
         throw new Error("shim Services.focus.moveFocus only accepts flags===0");
       }
@@ -562,7 +562,7 @@ const Services = {
       }
 
       let iter = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT, {
-        acceptNode: function(node) {
+        acceptNode: function (node) {
           let tabIndex = node.getAttribute("tabindex");
           if (tabIndex === "-1") {
             return NodeFilter.FILTER_SKIP;
