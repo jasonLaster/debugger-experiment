@@ -40,7 +40,7 @@ test:
 dependencies:
   cache_directories:
     # can't seem to use $DOWNLOADS_PATH here
-    - "downloads"
+    - "./downloads"
 
   override:
     - npm i -g jasonlaster/lerna
