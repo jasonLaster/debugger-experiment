@@ -57,6 +57,7 @@ function initApp() {
 }
 
 function renderRoot(_React, _ReactDOM, component, _store) {
+  const { createElement } = _React;
   const mount = document.querySelector("#mount");
 
   // bail in test environments that do not have a mount
@@ -64,14 +65,19 @@ function renderRoot(_React, _ReactDOM, component, _store) {
     return;
   }
 
-  _ReactDOM.render(
-    _React.createElement(
-      Provider,
-      { store: _store },
-      Root(component)
-    ),
-    mount
-  );
+  const root = Root();
+  mount.appendChild(root);
+
+  if (component.props || component.propTypes) {
+    _ReactDOM.render(
+      createElement(Provider, { store: _store }, createElement(component)),
+      root
+    );
+  } else {
+    root.appendChild(component);
+  }
+
+  // mount.appendChild(Root(component));
 }
 
 function getTargetFromQuery() {
@@ -94,9 +100,11 @@ function getTargetFromQuery() {
 function bootstrap(React, ReactDOM, App, appActions, appStore) {
   const connTarget = getTargetFromQuery();
   if (connTarget) {
-    startDebugging(connTarget, appActions).then((tabs) => {
-      renderRoot(React, ReactDOM, App, appStore);
-    });
+    return startDebugging(connTarget, appActions)
+      .then(({ tabs, client }) => {
+        renderRoot(React, ReactDOM, App, appStore);
+        return { connTarget, client };
+      });
   } else {
     const { store, actions, LandingPage } = initApp();
     renderRoot(React, ReactDOM, LandingPage, store);

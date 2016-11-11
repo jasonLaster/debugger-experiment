@@ -9,18 +9,20 @@ const path = require("path");
 const Mocha = require("mocha");
 const minimist = require("minimist");
 
-const getConfig = require("../../../packages/devtools-config/src/config").getConfig;
+const getConfig = require("../../../configs/getConfig");
 const setConfig = require("devtools-config").setConfig;
 
 // Mock various functions. This allows tests to load files from a
 // local directory easily.
-mock("devtools-network-request", require("../../../packages/devtools-network-request/stubNetworkRequest"));
+const networkRequest = require("devtools-network-request");
+mock("devtools-network-request", networkRequest.stubNetworkRequest);
 mock("../utils/prefs", { prefs: { clientSourceMapsEnabled: true }});
 
 const baseWorkerURL = path.join(__dirname, "../../build/");
 const packagesPath = path.join(__dirname, "../../../packages");
 
-setConfig(Object.assign({}, getConfig(), { baseWorkerURL }));
+const envConfig = getConfig();
+setConfig(Object.assign({}, envConfig, { baseWorkerURL }));
 
 const args = minimist(process.argv.slice(2),
 { boolean: ["ci", "dots"] });
@@ -29,7 +31,7 @@ const isCI = args.ci;
 const useDots = args.dots;
 
 const webpack = require("webpack");
-const webpackConfig = require("../../../webpack.config");
+const webpackConfig = require("../../../webpack.config")(envConfig);
 delete webpackConfig.entry.bundle;
 
 // The source map worker is compiled with webpack (and mock-require

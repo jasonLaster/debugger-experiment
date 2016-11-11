@@ -5,7 +5,7 @@
  * @module utils/source-map-worker
  */
 
-const networkRequest = require("devtools-network-request");
+const { networkRequest } = require("devtools-network-request");
 const { parse } = require("url");
 const path = require("./path");
 const { SourceMapConsumer, SourceMapGenerator } = require("source-map");

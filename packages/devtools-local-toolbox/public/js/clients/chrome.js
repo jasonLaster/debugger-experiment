@@ -4,7 +4,7 @@ const { connect } = require("chrome-remote-debugging-protocol");
 const defer = require("../utils/defer");
 const { Tab } = require("../tcomb-types");
 const { isEnabled, getValue } = require("devtools-config");
-const networkRequest = require("devtools-network-request");
+const { networkRequest } = require("devtools-network-request");
 const { setupCommands, clientCommands } = require("./chrome/commands");
 const { setupEvents, clientEvents, pageEvents } = require("./chrome/events");
 
@@ -38,7 +38,7 @@ function connectClient() {
   const deferred = defer();
 
   if(!getValue("chrome.debug")) {
-    return deferred.resolve(createTabs([]))
+    return Promise.resolve(createTabs([]))
   }
 
   const webSocketPort = getValue("chrome.webSocketPort");

@@ -1,2 +1,7 @@
 const networkRequest = require("./networkRequest");
-module.exports = networkRequest;
+const stubNetworkRequest = require("./stubNetworkRequest");
+
+module.exports = {
+  networkRequest,
+  stubNetworkRequest
+};
