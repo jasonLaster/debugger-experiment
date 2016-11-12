@@ -2,10 +2,8 @@ const React = require("react");
 const { bindActionCreators, combineReducers } = require("redux");
 const ReactDOM = require("react-dom");
 
-const {
-  client: { getClient, firefox },
-  renderRoot, bootstrap
-} = require("devtools-local-toolbox");
+const { renderRoot, bootstrap } = require("devtools-local-toolbox");
+const { client: { getClient, firefox }} = require("devtools-client-adapters");
 
 const { getValue, isFirefoxPanel } = require("devtools-config");
 

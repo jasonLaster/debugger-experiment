@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-"use strict";
-
 require("babel-register");
 
 const path = require("path");
@@ -82,7 +80,6 @@ function startDevServer(devConfig, webpackConfig) {
     }
   });
 
-
   if (!getValue("firefox.webSocketConnection")) {
     const firefoxProxy = require("./firefox-proxy");
     firefoxProxy({ logging: getValue("logging.firefoxProxy") });
@@ -114,9 +111,7 @@ function startDevServer(devConfig, webpackConfig) {
   const serverPort = getValue("development.serverPort");
   app.listen(serverPort, "0.0.0.0", onRequest);
 
-  return { express, app }
+  return { express, app };
 }
 
-module.exports = {
-  startDevServer
-}
+module.exports = startDevServer;

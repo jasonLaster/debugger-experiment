@@ -3,7 +3,7 @@ const path = require("path");
 const serveIndex = require("serve-index");
 const express = require("express");
 
-const toolbox = require("../node_modules/devtools-local-toolbox/index");
+const localEnvironment = require("devtools-local-environment");
 const feature = require("devtools-config");
 const getConfig = require("../configs/getConfig");
 
@@ -11,7 +11,7 @@ const envConfig = getConfig();
 feature.setConfig(envConfig);
 
 const webpackConfig = require("../webpack.config")(envConfig);
-toolbox.startDevServer(envConfig, webpackConfig);
+localEnvironment.startDevServer(envConfig, webpackConfig);
 
 const examples = express();
 examples.use(express.static("public/js/test/examples"));

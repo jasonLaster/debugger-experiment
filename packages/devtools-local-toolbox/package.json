@@ -23,6 +23,7 @@
     "devtools-config": "^0.0.3",
     "devtools-modules": "^0.0.3",
     "devtools-network-request": "^0.0.3",
+    "devtools-client-adapters": "^0.0.1",
     "devtools-sham-modules": "^0.0.3",
     "extract-text-webpack-plugin": "^1.0.1",
     "webpack": "1.13.1",

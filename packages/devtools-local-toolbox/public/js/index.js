@@ -14,7 +14,7 @@ if (isEnabled("logging.client")) {
   DevToolsUtils.dumpn.wantLogging = true;
 }
 
-const client = require("./clients");
+const client = require("devtools-client-adapters");
 const { getClient, connectClients, startDebugging } = client;
 
 const Root = require("./components/Root");

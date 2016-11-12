@@ -1,0 +1,16 @@
+{
+  "name": "devtools-client-adapters",
+  "version": "0.0.1",
+  "description": "Devtools client connection adapters",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "devtools-config": "^0.0.3",
+    "devtools-network-request": "^0.0.3",
+    "devtools-sham-modules": "^0.0.3",
+  },
+  "author": "",
+  "license": "ISC"
+}

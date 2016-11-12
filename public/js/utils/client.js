@@ -1,4 +1,4 @@
-const { client: { createSource }, } = require("devtools-local-toolbox");
+const { client: { createSource }} = require("devtools-client-adapters");
 
 function onConnect(actions, { connTarget, client }) {
   if (connTarget.type == "chrome") {

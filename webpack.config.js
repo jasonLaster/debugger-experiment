@@ -1,4 +1,4 @@
-const toolbox = require("./node_modules/devtools-local-toolbox/index");
+const localEnvironment = require("devtools-local-environment");
 
 const path = require("path");
 const projectPath = path.join(__dirname, "public/js");
@@ -18,5 +18,5 @@ module.exports = envConfig => {
       publicPath: "/public/build"
     }
   }
-  return toolbox.toolboxConfig(webpackConfig, envConfig);
+  return localEnvironment.buildConfig(webpackConfig, envConfig);
 };
