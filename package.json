@@ -32,8 +32,7 @@
     "prepush": "npm run lint; node src/test/node-unit-tests.js --dots",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "flow-coverage": "flow-coverage-report -i 'src/actions/*.js' -i 'src/reducers/*.js' -i 'src/utils/*.js' -t html -t text",
-    "preinstall": "./bin/preinstall"
+    "flow-coverage": "flow-coverage-report -i 'src/actions/*.js' -i 'src/reducers/*.js' -i 'src/utils/*.js' -t html -t text"
   },
   "dependencies": {
     "codemirror": "^5.1.0",
@@ -71,11 +70,11 @@
     "classnames": "^2.2.5",
     "co": "=4.6.0",
     "css-loader": "^0.26.0",
-    "devtools-config": "^0.0.8",
-    "devtools-local-toolbox": "^0.0.8",
-    "devtools-modules": "^0.0.8",
-    "devtools-network-request": "^0.0.8",
-    "devtools-sham-modules": "^0.0.8",
+    "devtools-config": "./packages/devtools-config",
+    "devtools-local-toolbox": "./packages/devtools-local-toolbox",
+    "devtools-modules": "./packages/devtools-modules",
+    "devtools-network-request": "./packages/devtools-network-request",
+    "devtools-sham-modules": "./packages/devtools-sham-modules",
     "documentation": "^4.0.0-beta11",
     "eslint": "^3.10.0",
     "eslint-plugin-babel": "^4.0.0",

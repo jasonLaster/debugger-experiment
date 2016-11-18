@@ -20,11 +20,13 @@
     "node": ">=6.9.0"
   },
   "dependencies": {
-    "chrome-remote-debugging-protocol": "^0.0.9",
-    "devtools-config": "^0.0.8",
-    "devtools-modules": "^0.0.8",
-    "devtools-network-request": "^0.0.8",
-    "devtools-sham-modules": "^0.0.8",
+    "chrome-remote-debugging-protocol": "../chrome-remote-debugging-protocol",
+    "devtools-config": "../devtools-config",
+    "devtools-local-toolbox": "../devtools-local-toolbox",
+    "devtools-modules": "../devtools-modules",
+    "devtools-network-request": "../devtools-network-request",
+    "devtools-sham-modules": "../devtools-sham-modules",
+
     "extract-text-webpack-plugin": "^1.0.1",
     "webpack": "1.13.1",
     "webpack-dev-middleware": "^1.6.1",
