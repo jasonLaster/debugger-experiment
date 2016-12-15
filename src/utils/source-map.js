@@ -21,7 +21,7 @@ function restartWorker() {
 
   sourceMapWorker.postMessage({ id: 0, method: "enableSourceMaps" });
 }
-restartWorker();
+// restartWorker();
 
 function destroyWorker() {
   if (sourceMapWorker) {

@@ -1,7 +1,7 @@
 const expect = require("expect.js");
 const { Map } = require("immutable");
 const {
-  createNode, nodeHasChildren, addToTree, collapseTree, getExpandedItems
+  createNode, nodeHasChildren, addToTree, collapseTree, getExpandedItems, getDirectories
 } = require("../sources-tree.js");
 
 describe("sources-tree", () => {
@@ -370,9 +370,129 @@ describe("sources-tree", () => {
     addToTree(tree, source1);
     addToTree(tree, source2);
     addToTree(tree, source3);
-    const paths = getExpandedItems("http://a/b.js", tree);
+    const paths = getExpandedItems(tree, "http://a/b.js");
 
-    expect(paths[0].path).to.be("/a");
-    expect(paths[1].path).to.be("/a/b.js");
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it.only("handles '?' in target url", function() {
+    const source1 = Map({
+      url: "http://a/b.js",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "http://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories(tree, "http://a/b.js?key=hi");
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it("handles '?' in tree url", function() {
+    const source1 = Map({
+      url: "http://a/b.js?key=hi",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "http://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories(tree, "http://a/b.js");
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it("handles 'https' in target url", function() {
+    const source1 = Map({
+      url: "https://a/b.js",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "https://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories("https://a/b.js", tree);
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it("handles 'file' in target url", function() {
+    const source1 = Map({
+      url: "file://a/b.js",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "file://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories("file://a/b.js", tree);
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it("handles 'javascript' in target url, but not in tree", function() {
+    const source1 = Map({
+      url: "javascript://var x = 2",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "javascript://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories("javascript://a/b.js", tree);
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
+  });
+
+  it("handles 'http' in target url, but not in tree", function() {
+    const source1 = Map({
+      url: "a/b.js",
+      actor: "actor1"
+    });
+
+    const source2 = Map({
+      url: "http://b/b.js",
+      actor: "actor1"
+    });
+
+    const tree = createNode("root", "", []);
+    addToTree(tree, source1);
+    addToTree(tree, source2);
+    const paths = getDirectories("http://a/b.js", tree);
+
+    expect(paths[1].path).to.be("/a");
+    expect(paths[0].path).to.be("/a/b.js");
   });
 });
