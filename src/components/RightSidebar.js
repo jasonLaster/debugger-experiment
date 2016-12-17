@@ -4,6 +4,9 @@ const { connect } = require("react-redux");
 const { bindActionCreators } = require("redux");
 const { isEnabled } = require("devtools-config");
 const Svg = require("./utils/Svg");
+const ImPropTypes = require("react-immutable-proptypes");
+
+const { getPause } = require("../selectors");
 
 const actions = require("../actions");
 const WhyPaused = React.createFactory(require("./WhyPaused"));
@@ -27,6 +30,7 @@ function debugBtn(onClick, type, className, tooltip) {
 const RightSidebar = React.createClass({
   propTypes: {
     evaluateExpressions: PropTypes.func,
+    pauseData: ImPropTypes.map
   },
 
   contextTypes: {
@@ -71,15 +75,18 @@ const RightSidebar = React.createClass({
 
   getItems() {
     const { expressionInputVisibility } = this.state;
+    const isPaused = () => !!this.props.pauseData;
 
     const items = [
       { header: L10N.getStr("breakpoints.header"),
         component: Breakpoints,
         opened: true },
       { header: L10N.getStr("callStack.header"),
-        component: Frames },
+        component: Frames,
+        shouldOpen: isPaused },
       { header: L10N.getStr("scopes.header"),
-        component: Scopes }
+        component: Scopes,
+        shouldOpen: isPaused },
     ];
 
     if (isEnabled("eventListeners")) {
@@ -117,6 +124,8 @@ const RightSidebar = React.createClass({
 });
 
 module.exports = connect(
-  () => ({}),
+  state => ({
+    pauseData: getPause(state)
+  }),
   dispatch => bindActionCreators(actions, dispatch)
 )(RightSidebar);
