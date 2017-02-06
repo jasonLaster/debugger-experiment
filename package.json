@@ -37,16 +37,16 @@
     "postmerge": "node bin/post-merge.js"
   },
   "dependencies": {
+    "babel-plugin-transform-es2015-classes": "^6.22.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.22.0",
     "codemirror": "^5.1.0",
-    "devtools-launchpad": "^0.0.38",
-    "devtools-reps": "^0.0.5",
+    "devtools-launchpad": "file:../devtools-core/packages/devtools-launchpad/devtools-launchpad-0.0.44.tgz",
+    "devtools-reps": "file:../devtools-reps/devtools-reps-0.0.7.tgz",
     "documentation": "^4.0.0-beta11",
     "eslint": "^3.12.0",
     "expect.js": "^0.3.1",
     "firefox-profile": "^0.4.8",
     "flow-bin": "^0.38.0",
-    "flow-coverage-report": "^0.3.0",
     "fuzzaldrin-plus": "^0.4.1",
     "glob": "^7.0.3",
     "husky": "^0.13.1",
@@ -56,11 +56,8 @@
     "mocha-circleci-reporter": "0.0.2",
     "mock-require": "^2.0.0",
     "pretty-fast": "^0.2.0",
-    "react": "=0.14.7",
     "source-map": "^0.5.6",
     "stylelint": "^7.8.0",
-    "svg-inline-react": "^1.0.2",
-    "webpack": "1.14.0",
     "workerjs": "github:jlongster/workerjs"
   },
   "files": [

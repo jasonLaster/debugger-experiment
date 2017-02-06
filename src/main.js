@@ -58,7 +58,7 @@ if (isFirefoxPanel()) {
   const prettyPrint = require("./utils/pretty-print");
 
   module.exports = {
-    bootstrap: ({ threadClient, tabTarget, toolbox }: any) => {
+    bootstrap: ({ threadClient, tabTarget, toolbox }) => {
       firefox.setThreadClient(threadClient);
       firefox.setTabTarget(tabTarget);
       renderRoot(React, ReactDOM, App, store);

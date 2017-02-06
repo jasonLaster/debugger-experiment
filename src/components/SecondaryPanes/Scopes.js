@@ -6,9 +6,11 @@ import { connect } from "react-redux";
 import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
 import { getSelectedFrame, getLoadedObjects, getPause } from "../../selectors";
-const ObjectInspector = createFactory(require("../shared/ObjectInspector"));
-import toPairs from "lodash/toPairs";
-import "./Scopes.css";
+// const ObjectInspector = createFactory(require("../shared/ObjectInspector"));
+// import toPairs from "lodash/toPairs";
+// import "./Scopes.css";
+
+const toPairs = () => {};
 
 function info(text) {
   return dom.div({ className: "pane-info" }, text);

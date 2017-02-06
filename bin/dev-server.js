@@ -11,7 +11,10 @@ const envConfig = getConfig();
 feature.setConfig(envConfig);
 
 let webpackConfig = require("../webpack.config");
-webpackConfig = mochaWebpackConfig(webpackConfig);
+// webpackConfig = mochaWebpackConfig(webpackConfig);
+
+// console.log(webpackConfig);
+// 0();
 
 let { app } = toolbox.startDevServer(envConfig, webpackConfig, __dirname);
 

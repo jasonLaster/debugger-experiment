@@ -28,14 +28,6 @@ function buildConfig(envConfig) {
       filename: "[name].js",
       publicPath: "/assets/build",
       libraryTarget: "umd"
-    },
-
-    resolve: {
-      alias: {
-        "react-dom": "react-dom/dist/react-dom",
-        "devtools/client/shared/vendor/react": "react",
-        "devtools/client/shared/vendor/react-dom": "react-dom"
-      }
     }
   };
 
@@ -46,7 +38,7 @@ function buildConfig(envConfig) {
     const mappings = [
       [/\.\/mocha/, "./mochitest"],
       [/\.\.\/utils\/mocha/, "../utils/mochitest"],
-      [/\.\/utils\/mocha/, "./utils/mochitest"]
+      [/\.\/utils\/mocha/, "./utils/mochitest"],
     ]
 
     mappings.forEach(([regex, res]) => {
@@ -58,7 +50,6 @@ function buildConfig(envConfig) {
 
   return toolbox.toolboxConfig(webpackConfig, envConfig);
 }
-
 
 
 const envConfig = getConfig();
