@@ -9,7 +9,7 @@
   "features": {
     "watchExpressions": {
       "label": "Watch Expressions",
-      "enabled": false
+      "enabled": true
     },
     "chromeScopes": {
       "label": "Chrome Scopes",
