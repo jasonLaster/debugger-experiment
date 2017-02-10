@@ -74,7 +74,7 @@ if (isCI) {
 testFiles.forEach(file => mocha.addFile(file));
 
 // flip this if you want (dangerous), but faster runs
-if (true) {
+if (false) {
   webpack(webpackConfig).run(function(_, stats) {
     if (stats.compilation.errors.length) {
       stats.compilation.errors.forEach(err => {
