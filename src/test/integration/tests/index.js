@@ -3,6 +3,7 @@ module.exports = {
   breaking: require("./breaking"),
   breakpoints: require("./breakpoints"),
   breakpointsCond: require("./breakpoints-cond"),
+  expressions: require("./expressions"),
   callStack: require("./call-stack"),
   debuggerButtons: require("./debugger-buttons"),
   editorSelect: require("./editor-select"),
