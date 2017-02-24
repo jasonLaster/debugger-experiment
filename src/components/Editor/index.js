@@ -36,6 +36,7 @@ const {
   shouldShowFooter,
   clearLineClass,
   onKeyDown,
+  onWheel,
   createEditor,
   isTextForSource,
   breakpointAtLine,
@@ -44,7 +45,8 @@ const {
   resizeBreakpointGutter,
   traverseResults
 } = require("../../utils/editor");
-const { isFirefox } = require("devtools-config");
+
+const { isFirefox, isFirefoxPanel } = require("devtools-config");
 
 require("./Editor.css");
 
@@ -132,6 +134,13 @@ const Editor = React.createClass({
     codeMirrorWrapper.tabIndex = 0;
     codeMirrorWrapper
       .addEventListener("keydown", e => onKeyDown(codeMirror, e));
+
+    if (isFirefoxPanel()) {
+      this.editor.editor.getScrollerElement().addEventListener(
+        "wheel",
+        ev => onWheel(codeMirror, ev)
+      );
+    }
 
     const ctx = { ed: this.editor, cm: codeMirror };
     const { query, searchModifiers } = this.state;
