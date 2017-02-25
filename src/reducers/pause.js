@@ -101,12 +101,12 @@ function update(state = State(), action: Action): Record<PauseState> {
         const prototype = action.value.prototype;
 
         // Create a reason object for Promise
-        if (action.reason) {
-          const actionReason: any = action.reason;
-          const promiseReason = { value: actionReason.type == "undefined" ?
-            actionReason.type : actionReason };
-          ownProperties.reason = promiseReason;
-        }
+        // if (action.reason) {
+        //   const actionReason: any = action.reason;
+        //   const promiseReason = { value: actionReason.type == "undefined" ?
+        //     actionReason.type : actionReason };
+        //   ownProperties.reason = promiseReason;
+        // }
 
         return state.setIn(["loadedObjects", action.objectId],
                            { ownProperties, prototype, ownSymbols });

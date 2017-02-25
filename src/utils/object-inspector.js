@@ -1,8 +1,13 @@
+const get = require("lodash/get");
 
 let WINDOW_PROPERTIES = {};
 
 if (typeof window == "object") {
   WINDOW_PROPERTIES = Object.getOwnPropertyNames(window);
+}
+
+function getValue(item) {
+  return get(item, "contents.value", undefined);
 }
 
 function isBucket(item) {
@@ -13,17 +18,24 @@ function nodeHasChildren(item) {
   return Array.isArray(item.contents) || isBucket(item);
 }
 
+function nodeIsObject(item) {
+  const value = getValue(item);
+  return value && value.type === "object";
+}
+
 function nodeIsOptimizedOut(item) {
-  return !nodeHasChildren(item) && item.contents.value.optimizedOut === true;
+  const value = getValue(item);
+  return !nodeHasChildren(item) && value && value.optimizedOut;
 }
 
 function nodeIsMissingArguments(item) {
+  const value = getValue(item);
   return !nodeHasChildren(item) &&
-    item.contents.value.missingArguments === true;
+    value && value.missingArguments;
 }
 
 function nodeHasProperties(item) {
-  return !nodeHasChildren(item) && item.contents.value.type === "object";
+  return !nodeHasChildren(item) && nodeIsObject(item);
 }
 
 function nodeIsPrimitive(item) {
@@ -32,6 +44,19 @@ function nodeIsPrimitive(item) {
 
 function isDefault(item) {
   return WINDOW_PROPERTIES.includes(item.name);
+}
+
+function isPromise(item) {
+  const value = getValue(item);
+  return value.class == "Promise";
+}
+
+function getPromiseProperties(item) {
+  const { promiseState: { state, reason }} = getValue(item);
+  return [
+    createNode("state", `${item.path}/state`, state),
+    createNode("reason", `${item.path}/reason`, { value: reason })
+  ];
 }
 
 function sortProperties(properties) {
@@ -156,14 +181,19 @@ function getChildren({
     return item.contents.children;
   }
 
-  const loadedProps = getObjectProperties(actor);
-  const { ownProperties, prototype } = loadedProps || {};
-
-  if (!ownProperties && !prototype) {
-    return [];
+  let children = [];
+  if (isPromise(item)) {
+    children.push(...getPromiseProperties(item));
   }
 
-  const children = makeNodesForProperties(loadedProps, item.path);
+  const loadedProps = getObjectProperties(actor);
+  const { ownProperties, prototype, ownSymbols } = loadedProps || {};
+
+  if (!ownProperties && !prototype && !ownSymbols) {
+    return children;
+  }
+
+  children.push(...makeNodesForProperties(loadedProps, item.path));
   actors[key] = children;
   return children;
 }
