@@ -21,7 +21,7 @@ const {
   getSourceText, getBreakpointsForSource,
   getSelectedLocation, getSelectedFrame,
   getSelectedSource, getHitCountForSource,
-  getCoverageEnabled, getLoadedObjects
+  getCoverageEnabled, getLoadedObjects, getSourceById
 } = require("../../selectors");
 const { makeLocationId } = require("../../reducers/breakpoints");
 const actions = require("../../actions");
@@ -386,6 +386,7 @@ const Editor = React.createClass({
     } else {
       this.props.addBreakpoint(
         { sourceId: this.props.selectedLocation.sourceId,
+          sourceUrl: this.props.selectedSource.get("url"),
           line: line + 1 },
         // Pass in a function to get line text because the breakpoint
         // may slide and it needs to compute the value at the new
@@ -615,6 +616,7 @@ const Editor = React.createClass({
 module.exports = connect(state => {
   const selectedLocation = getSelectedLocation(state);
   const sourceId = selectedLocation && selectedLocation.sourceId;
+  const sourceUrl = selectedLocation && getSourceById(state, sourceId).get("url");
   const selectedSource = getSelectedSource(state);
 
   return {
@@ -622,7 +624,7 @@ module.exports = connect(state => {
     selectedSource,
     sourceText: getSourceText(state, sourceId),
     loadedObjects: getLoadedObjects(state),
-    breakpoints: getBreakpointsForSource(state, sourceId),
+    breakpoints: getBreakpointsForSource(state, sourceId, sourceUrl),
     hitCount: getHitCountForSource(state, sourceId),
     selectedFrame: getSelectedFrame(state),
     coverageOn: getCoverageEnabled(state)

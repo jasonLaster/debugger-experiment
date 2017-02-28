@@ -12,6 +12,7 @@ const fromJS = require("../utils/fromJS");
 const { updateObj } = require("../utils/utils");
 const I = require("immutable");
 const makeRecord = require("../utils/makeRecord");
+const { prefs } = require("../utils/prefs");
 
 import type { Breakpoint, Location } from "../types";
 import type { Action } from "../actions/types";
@@ -23,7 +24,7 @@ export type BreakpointsState = {
 }
 
 const State = makeRecord(({
-  breakpoints: I.Map(),
+  breakpoints: restoreBreakpoints(),
   breakpointsDisabled: false
 } : BreakpointsState));
 
@@ -60,7 +61,7 @@ function update(state = State(), action: Action) {
       if (action.status === "start") {
         let bp = state.breakpoints.get(id) || action.breakpoint;
 
-        return state.setIn(["breakpoints", id], updateObj(bp, {
+        const newState = state.setIn(["breakpoints", id], updateObj(bp, {
           disabled: false,
           loading: true,
           // We want to do an OR here, but we can't because we need
@@ -69,6 +70,8 @@ function update(state = State(), action: Action) {
           condition: firstString(action.condition, bp.condition)
         }))
         .set("breakpointsDisabled", false);
+        prefs.breakpoints = newState;
+        return newState;
       } else if (action.status === "done") {
         const { id: breakpointId, text } = action.value;
         let location = action.breakpoint.location;
@@ -171,9 +174,9 @@ function getBreakpoints(state: OuterState) {
   return state.breakpoints.breakpoints;
 }
 
-function getBreakpointsForSource(state: OuterState, sourceId: string) {
+function getBreakpointsForSource(state: OuterState, sourceId: string, sourceUrl: string) {
   return state.breakpoints.breakpoints.filter(bp => {
-    return bp.location.sourceId === sourceId;
+    return bp.location.sourceUrl === sourceUrl;
   });
 }
 
@@ -188,6 +191,15 @@ function getBreakpointsLoading(state: OuterState) {
                     .first();
 
   return breakpoints.size > 0 && isLoading;
+}
+
+function restoreBreakpoints() {
+  debugger
+  let prefsBreakpoints = prefs.breakpoints || [];
+  if (Object.keys(prefsBreakpoints).length == 0) {
+    return I.Map();
+  }
+  return I.Map(prefsBreakpoints.breakpoints);
 }
 
 module.exports = {

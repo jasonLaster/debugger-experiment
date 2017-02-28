@@ -127,6 +127,7 @@ pref("devtools.debugger.start-panel-collapsed", false);
 pref("devtools.debugger.end-panel-collapsed", false);
 pref("devtools.debugger.tabs", "[]");
 pref("devtools.debugger.pending-selected-location", "{}");
+pref("devtools.debugger.breakpoints", "[]");
 
 // Enable the Memory tools
 pref("devtools.memory.enabled", true);
