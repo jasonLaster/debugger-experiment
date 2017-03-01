@@ -15,6 +15,7 @@ const assert = require("../utils/assert");
 const { updateFrameLocations } = require("../utils/pause");
 const { parse } = require("../utils/parser");
 const { isEnabled } = require("devtools-config");
+const { addBreakpoint } = require("./breakpoints");
 
 const {
   getOriginalURLs, getOriginalSourceText,
@@ -30,12 +31,41 @@ const constants = require("../constants");
 const { removeDocument } = require("../utils/editor");
 
 const {
-  getSource, getSourceByURL, getSourceText,
-  getPendingSelectedLocation, getFrames
+  getSource, getSourceByURL, getSourceText, getBreakpoint,
+  getPendingSelectedLocation, getPendingBreakpoints, getFrames
 } = require("../selectors");
 
 import type { Source, SourceText } from "../types";
 import type { ThunkArgs } from "./types";
+
+// If a request has been made to show this source, go ahead and
+// select it.
+function checkSelectedSource(state, dispatch, source) {
+  const pendingLocation = getPendingSelectedLocation(state);
+  if (pendingLocation && pendingLocation.url === source.url) {
+    dispatch(selectSource(source.id, { line: pendingLocation.line }));
+  }
+}
+
+function checkPendingBreakpoints(state, dispatch, source) {
+  const pendingBreakpoints = getPendingBreakpoints(state);
+
+  pendingBreakpoints.forEach(pendingBreakpoint => {
+    const sameSource = pendingBreakpoint == source.url;
+    const { location: { line }, condition } = pendingBreakpoint;
+
+    const location = {
+      sourceId: source.id,
+      line
+    };
+
+    const bp = getBreakpoint(state, location);
+
+    if (sameSource && !bp) {
+      dispatch(addBreakpoint(location, { condition }));
+    }
+  });
+}
 
 /**
  * Handler for the debugger client's unsolicited newSource notification.
@@ -53,12 +83,8 @@ function newSource(source: Source) {
       source
     });
 
-    // If a request has been made to show this source, go ahead and
-    // select it.
-    const pendingLocation = getPendingSelectedLocation(getState());
-    if (pendingLocation && pendingLocation.url === source.url) {
-      dispatch(selectSource(source.id, { line: pendingLocation.line }));
-    }
+    checkSelectedSource(getState(), dispatch, source);
+    checkPendingBreakpoints(getState(), dispatch, source);
   };
 }
 
@@ -81,12 +107,18 @@ function loadSourceMap(generatedSource) {
       return;
     }
 
+    let state = getState();
     const originalSources = urls.map(originalUrl => {
       return {
         url: originalUrl,
         id: generatedToOriginalId(generatedSource.id, originalUrl),
         isPrettyPrinted: false
       };
+    });
+
+    originalSources.forEach(source => {
+      checkSelectedSource(state, dispatch, source);
+      checkPendingBreakpoints(state, dispatch, source);
     });
 
     dispatch({

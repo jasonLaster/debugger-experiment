@@ -14,7 +14,7 @@ if (isDevelopment()) {
   pref("devtools.debugger.end-panel-collapsed", false);
   pref("devtools.debugger.tabs", "[]");
   pref("devtools.debugger.pending-selected-location", "{}");
-  pref("devtools.debugger.breakpoints", "[]");
+  pref("devtools.debugger.pending-breakpoints", "[]");
 }
 
 const prefs = new PrefsHelper("devtools", {
@@ -27,7 +27,7 @@ const prefs = new PrefsHelper("devtools", {
   endPanelCollapsed: ["Bool", "debugger.end-panel-collapsed"],
   tabs: ["Json", "debugger.tabs"],
   pendingSelectedLocation: ["Json", "debugger.pending-selected-location"],
-  breakpoints: ["Json", "debugger.breakpoints"]
+  pendingBreakpoints: ["Json", "debugger.pending-breakpoints"]
 });
 
 module.exports = { prefs };
