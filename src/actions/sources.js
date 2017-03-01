@@ -51,8 +51,8 @@ function checkPendingBreakpoints(state, dispatch, source) {
   const pendingBreakpoints = getPendingBreakpoints(state);
 
   pendingBreakpoints.forEach(pendingBreakpoint => {
-    const sameSource = pendingBreakpoint == source.url;
-    const { location: { line }, condition } = pendingBreakpoint;
+    const { location: { line, sourceUrl }, condition } = pendingBreakpoint;
+    const sameSource = sourceUrl == source.url;
 
     const location = {
       sourceId: source.id,
@@ -170,7 +170,13 @@ function selectSource(id: string, options: SelectSourceOptions = {}) {
       return;
     }
 
-    const source = getSource(getState(), id).toJS();
+    let source = getSource(getState(), id);
+
+    if (!source) {
+      return;
+    }
+
+    source = source.toJS();
 
     // Make sure to start a request to load the source text.
     dispatch(loadSourceText(source));
