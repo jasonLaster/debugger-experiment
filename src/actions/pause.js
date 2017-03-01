@@ -70,6 +70,10 @@ function paused(pauseInfo: Pause) {
 function pauseOnExceptions(
   shouldPauseOnExceptions: boolean, shouldIgnoreCaughtExceptions: boolean) {
   return ({ dispatch, client }: ThunkArgs) => {
+    console.log(">>>> PAUSE_ON_EXCEPTIONS",
+      shouldPauseOnExceptions,
+      shouldIgnoreCaughtExceptions
+    );
     dispatch({
       type: constants.PAUSE_ON_EXCEPTIONS,
       shouldPauseOnExceptions,

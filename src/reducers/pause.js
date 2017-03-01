@@ -109,7 +109,12 @@ function update(state = State(), action: Action): Record<PauseState> {
       return State();
 
     case constants.PAUSE_ON_EXCEPTIONS:
+
       const { shouldPauseOnExceptions, shouldIgnoreCaughtExceptions } = action;
+      console.log(">>>> DONE PAUSE_ON_EXCEPTIONS",
+        shouldPauseOnExceptions,
+        shouldIgnoreCaughtExceptions
+      );
 
       prefs.pauseOnExceptions = shouldPauseOnExceptions;
       prefs.ignoreCaughtExceptions = shouldIgnoreCaughtExceptions;
