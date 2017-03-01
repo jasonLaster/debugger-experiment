@@ -172,15 +172,18 @@ async function togglePauseOnExceptions(
   pauseOnExceptions,
   ignoreCaughtExceptions
 ) {
+  console.log(">>> command pause on execptions")
   const command = dbg.actions.pauseOnExceptions(
     pauseOnExceptions,
     ignoreCaughtExceptions
   );
 
   if (!isPaused(dbg)) {
+    console.log(">>> not paused")
     return waitForThreadEvents(dbg, "resumed");
   }
 
+  console.log(">>> paused, waiting on poe")
   return command;
 }
 
