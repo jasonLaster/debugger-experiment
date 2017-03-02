@@ -8,6 +8,7 @@ const { connect } = require("react-redux");
 const classnames = require("classnames");
 
 const { getMode } = require("../../utils/source");
+const { getVariablesInScope } = require("../../utils/scope");
 
 const Footer = createFactory(require("./Footer"));
 const SearchBar = createFactory(require("./SearchBar"));
@@ -21,7 +22,7 @@ const {
   getSourceText, getBreakpointsForSource,
   getSelectedLocation, getSelectedFrame,
   getSelectedSource, getHitCountForSource,
-  getCoverageEnabled, getLoadedObjects
+  getCoverageEnabled, getLoadedObjects, getPause
 } = require("../../selectors");
 const { makeLocationId } = require("../../reducers/breakpoints");
 const actions = require("../../actions");
@@ -260,7 +261,7 @@ const Editor = React.createClass({
   },
 
   previewSelectedToken(e, ctx, modifiers) {
-    const { selectedFrame } = this.props;
+    const { selectedFrame, pauseData } = this.props;
     const { selectedToken } = this.state;
     const token = e.target;
 
@@ -272,7 +273,7 @@ const Editor = React.createClass({
       selectedToken.classList.remove("selected-token");
     }
 
-    const variables = selectedFrame.scope.bindings.variables;
+    const variables = getVariablesInScope(pauseData, selectedFrame);
 
     if (!variables.hasOwnProperty(token.innerText)) {
       this.setState({ selectedToken: null });
@@ -631,6 +632,7 @@ module.exports = connect(state => {
     breakpoints: getBreakpointsForSource(state, sourceId),
     hitCount: getHitCountForSource(state, sourceId),
     selectedFrame: getSelectedFrame(state),
+    pauseData: getPause(state),
     coverageOn: getCoverageEnabled(state)
   };
 }, dispatch => bindActionCreators(actions, dispatch))(Editor);

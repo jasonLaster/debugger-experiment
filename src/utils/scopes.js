@@ -141,6 +141,18 @@ function getScopes(pauseInfo, selectedFrame) {
   return scopes;
 }
 
+function getVariablesInScope(pauseInfo, selectedFrame) {
+  const scopes = getScopes(pauseInfo, selectedFrame);
+  let variables = [];
+
+  // reverse so that the local variables shadow global variables
+  scopes.reverse().forEach(scope => {
+    variables.push(...scope.contents);
+  });
+
+  return variables;
+}
+
 module.exports = {
   getScopes,
   getSpecialVariables
