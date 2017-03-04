@@ -105,7 +105,7 @@ const CommandBar = createClass({
     stepOut: PropTypes.func,
     stepOver: PropTypes.func,
     breakOnNext: PropTypes.func,
-    pause: ImPropTypes.map,
+    pause: PropTypes.object,
     pauseOnExceptions: PropTypes.func,
     shouldPauseOnExceptions: PropTypes.bool,
     shouldIgnoreCaughtExceptions: PropTypes.bool,

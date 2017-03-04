@@ -176,7 +176,6 @@ function getAndProcessFrames(state) {
   }
 
   return frames
-    .toJS()
     .filter(frame => getSourceForFrame(state, frame))
     .map(frame => Object.assign({}, frame, {
       source: getSourceForFrame(state, frame).toJS()

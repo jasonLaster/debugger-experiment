@@ -46,7 +46,7 @@ const Expressions = React.createClass({
     updateExpression: PropTypes.func.isRequired,
     deleteExpression: PropTypes.func.isRequired,
     loadObjectProperties: PropTypes.func,
-    loadedObjects: ImPropTypes.map.isRequired
+    loadedObjects: PropTypes.object
   },
 
   _input: (null: any),

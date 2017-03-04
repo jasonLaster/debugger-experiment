@@ -1,5 +1,6 @@
 // @flow
 const { getOriginalLocation } = require("./source-map");
+const get = require("lodash/get");
 
 import type { Pause, Frame } from "../types";
 
@@ -46,7 +47,7 @@ function getPauseReason(pauseInfo: Pause): string | null {
     return null;
   }
 
-  let reasonType = pauseInfo.getIn(["why"]).get("type");
+  let reasonType = get(pauseInfo, "why.type", null);
   if (!reasons[reasonType]) {
     console.log("Please file an issue: reasonType=", reasonType);
   }

@@ -4,7 +4,6 @@ import {
 } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
 import { getSelectedFrame, getLoadedObjects, getPause } from "../../selectors";
 import { getScopes } from "../../utils/scopes";
@@ -20,8 +19,8 @@ let actorsCache = [];
 
 const Scopes = createClass({
   propTypes: {
-    pauseInfo: ImPropTypes.map,
-    loadedObjects: ImPropTypes.map,
+    pauseInfo: PropTypes.object,
+    loadedObjects: PropTypes.object,
     loadObjectProperties: PropTypes.func,
     selectedFrame: PropTypes.object
   },
@@ -60,7 +59,7 @@ const Scopes = createClass({
     if (scopes) {
       scopeInspector = ObjectInspector({
         roots: scopes,
-        getObjectProperties: id => loadedObjects.get(id),
+        getObjectProperties: id => loadedObjects[id],
         loadObjectProperties: loadObjectProperties,
         setExpanded: expanded => {
           expandedCache = expanded;

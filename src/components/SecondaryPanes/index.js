@@ -51,7 +51,7 @@ function debugBtn(onClick, type, className, tooltip) {
 const SecondaryPanes = React.createClass({
   propTypes: {
     evaluateExpressions: PropTypes.func.isRequired,
-    pauseData: ImPropTypes.map,
+    pauseData: PropTypes.object,
     horizontal: PropTypes.bool,
     breakpoints: ImPropTypes.map.isRequired,
     breakpointsDisabled: PropTypes.bool,

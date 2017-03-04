@@ -1,10 +1,10 @@
 // @flow
-import { DOM as dom, Component } from "react";
+import { DOM as dom, Component, PropTypes } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
 import { getPause } from "../../selectors";
+const get = require("lodash/get");
 
 import { getPauseReason } from "../../utils/pause";
 
@@ -17,7 +17,7 @@ class WhyPaused extends Component {
       return null;
     }
 
-    const message = pauseInfo.getIn(["why"]).get("message");
+    const message = get(pauseInfo, "why.message", "");
     if (!message) {
       return null;
     }
@@ -44,7 +44,7 @@ class WhyPaused extends Component {
 WhyPaused.displayName = "WhyPaused";
 
 WhyPaused.propTypes = {
-  pauseInfo: ImPropTypes.map
+  pauseInfo: PropTypes.object
 };
 
 export default connect(

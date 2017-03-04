@@ -4,39 +4,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const constants = require("../constants");
-const fromJS = require("../utils/fromJS");
-const makeRecord = require("../utils/makeRecord");
 const { prefs } = require("../utils/prefs");
-const I = require("immutable");
 
-import type { Frame, Pause,
-  Expression } from "../types";
 import type { Action } from "../actions/types";
-import type { Record } from "../utils/makeRecord";
 
 type PauseState = {
-  pause: ?Pause,
+  pause: ?any,
   isWaitingOnBreak: boolean,
-  frames: ?Frame[],
+  frames: ?any[],
   selectedFrameId: ?string,
   loadedObjects: Object,
   shouldPauseOnExceptions: boolean,
   shouldIgnoreCaughtExceptions: boolean,
-  expressions: I.List<Expression>
 }
 
-const State = makeRecord(({
+const State = (): PauseState => ({
   pause: undefined,
   isWaitingOnBreak: false,
   frames: undefined,
   selectedFrameId: undefined,
-  loadedObjects: I.Map(),
+  loadedObjects: {},
   shouldPauseOnExceptions: prefs.pauseOnExceptions,
   shouldIgnoreCaughtExceptions: prefs.ignoreCaughtExceptions,
-  expressions: I.List()
-} : PauseState));
+});
 
-function update(state = State(), action: Action): Record<PauseState> {
+function update(state: PauseState = State(), action: Action): PauseState {
   switch (action.type) {
     case constants.PAUSED: {
       const { selectedFrameId, frames, loadedObjects, pauseInfo } = action;
@@ -48,9 +40,9 @@ function update(state = State(), action: Action): Record<PauseState> {
         objectMap[obj.value.objectId] = obj;
       });
 
-      return state.merge({
+      return Object.assign(state, {
         isWaitingOnBreak: false,
-        pause: fromJS(pauseInfo),
+        pause: pauseInfo,
         selectedFrameId,
         frames,
         loadedObjects: objectMap
@@ -58,7 +50,8 @@ function update(state = State(), action: Action): Record<PauseState> {
     }
 
     case constants.RESUME:
-      return state.merge({
+      return Object.assign(state, {
+        isWaitingOnBreak: false,
         pause: null,
         frames: null,
         selectedFrameId: null,
@@ -68,27 +61,22 @@ function update(state = State(), action: Action): Record<PauseState> {
     case constants.TOGGLE_PRETTY_PRINT:
       if (action.status == "done") {
         const frames = action.value.frames;
-        let pause = state.get("pause");
-        if (pause) {
-          pause = pause.set("frame", fromJS(frames[0]));
-        }
+        const pause = frames[0];
 
-        return state.merge({ pause, frames });
+        return Object.assign(state, { pause, frames });
       }
 
       break;
     case constants.BREAK_ON_NEXT:
-      return state.set("isWaitingOnBreak", true);
+      return Object.assign(state, { isWaitingOnBreak: true });
 
     case constants.SELECT_FRAME:
-      return state.set("selectedFrameId", action.frame.id);
+      return Object.assign(state, { selectedFrameId: action.frame.id });
 
     case constants.LOAD_OBJECT_PROPERTIES:
       if (action.status === "start") {
-        return state.setIn(
-          ["loadedObjects", action.objectId],
-          {}
-        );
+        state.loadedObjects[action.objectId] = {};
+        return state;
       }
 
       if (action.status === "done") {
@@ -100,8 +88,9 @@ function update(state = State(), action: Action): Record<PauseState> {
         const ownSymbols = action.value.ownSymbols || [];
         const prototype = action.value.prototype;
 
-        return state.setIn(["loadedObjects", action.objectId],
-                           { ownProperties, prototype, ownSymbols });
+        const obj = { ownProperties, prototype, ownSymbols };
+        state.loadedObjects[action.objectId] = obj;
+        return state;
       }
       break;
 
@@ -114,7 +103,7 @@ function update(state = State(), action: Action): Record<PauseState> {
       prefs.pauseOnExceptions = shouldPauseOnExceptions;
       prefs.ignoreCaughtExceptions = shouldIgnoreCaughtExceptions;
 
-      return state.merge({
+      return Object.assign(state, {
         shouldPauseOnExceptions,
         shouldIgnoreCaughtExceptions
       });
@@ -132,51 +121,51 @@ function update(state = State(), action: Action): Record<PauseState> {
 // top-level app state, so we'd have to "wrap" them to automatically
 // pick off the piece of state we're interested in. It's impossible
 // (right now) to type those wrapped functions.
-type OuterState = { pause: Record<PauseState> };
+type OuterState = { pause: PauseState };
 
 function getPause(state: OuterState) {
-  return state.pause.get("pause");
+  return state.pause.pause;
 }
 
 function getLoadedObjects(state: OuterState) {
-  return state.pause.get("loadedObjects");
+  return state.pause.loadedObjects;
 }
 
 function getLoadedObject(state: OuterState, objectId: string) {
-  return getLoadedObjects(state).get(objectId);
+  return getLoadedObjects(state)[objectId];
 }
 
 function getObjectProperties(state: OuterState, parentId: string) {
   return getLoadedObjects(state)
-    .filter(obj => obj.get("parentId") == parentId);
+    .filter(obj => obj.parentId == parentId);
 }
 
 function getIsWaitingOnBreak(state: OuterState) {
-  return state.pause.get("isWaitingOnBreak");
+  return state.pause.isWaitingOnBreak;
 }
 
 function getShouldPauseOnExceptions(state: OuterState) {
-  return state.pause.get("shouldPauseOnExceptions");
+  return state.pause.shouldPauseOnExceptions;
 }
 
 function getShouldIgnoreCaughtExceptions(state: OuterState) {
-  return state.pause.get("shouldIgnoreCaughtExceptions");
+  return state.pause.shouldIgnoreCaughtExceptions;
 }
 
 function getFrames(state: OuterState) {
-  return state.pause.get("frames");
+  return state.pause.frames;
 }
 
 function getSelectedFrame(state: OuterState) {
-  const selectedFrameId = state.pause.get("selectedFrameId");
-  const frames = state.pause.get("frames");
+  const selectedFrameId = state.pause.selectedFrameId;
+  const frames = state.pause.frames;
   if (!frames) {
     return null;
   }
 
   return frames.find(
-    frame => frame.get("id") == selectedFrameId
-  ).toJS();
+    frame => frame.id == selectedFrameId
+  );
 }
 
 // NOTE: currently only used for chrome

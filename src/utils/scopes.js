@@ -1,4 +1,5 @@
 import toPairs from "lodash/toPairs";
+const get = require("lodash/get");
 
 // Create the tree nodes representing all the variables and arguments
 // for the bindings from a scope.
@@ -17,23 +18,12 @@ function getBindingVariables(bindings, parentName) {
 // Support dehydrating immutable objects, while ignoring
 // primitive values like strings, numbers...
 function dehydrateValue(value) {
-  if (typeof value == "object" && !!value && value.toJS) {
-    value = value.toJS();
-  }
-
   return value;
 }
 
 function getSpecialVariables(pauseInfo, path) {
-  let thrown = pauseInfo.getIn(
-    ["why", "frameFinished", "throw"],
-    undefined
-  );
-
-  let returned = pauseInfo.getIn(
-    ["why", "frameFinished", "return"],
-    undefined
-  );
+  let thrown = get(pauseInfo, "why.frameFinished.throw");
+  let returned = get(pauseInfo, "why.frameFinished.return");
 
   const vars = [];
 
@@ -90,7 +80,7 @@ function getScopes(pauseInfo, selectedFrame) {
   const scopes = [];
 
   let scope = selectedScope;
-  let pausedScopeActor = pauseInfo.getIn(["frame", "scope"]).get("actor");
+  let pausedScopeActor = get(pauseInfo, "frame.scope.actor");
 
   do {
     const type = scope.type;

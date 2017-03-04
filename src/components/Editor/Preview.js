@@ -28,7 +28,7 @@ class Preview extends Component {
       return;
     }
 
-    if (!loadedObjects.has(value.actor)) {
+    if (!loadedObjects[value.actor]) {
       loadObjectProperties(value);
     }
   }
