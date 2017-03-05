@@ -31,9 +31,9 @@
 }
 
 .close-btn-big {
-  padding: 13px;
-  width: 40px;
-  height: 40px;
+  padding: 6px;
+  width: 27px;
+  height: 27px;
 }
 
 .close-btn-big .close {
@@ -50,6 +50,10 @@
 .close-btn-big .close svg {
   width: 9px;
   height: 9px;
+}
+
+.close-btn-big .close path {
+  fill: var(--theme-comment-alt);
 }
 
 .close-btn-big .close:hover {

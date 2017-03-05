@@ -1,16 +1,17 @@
 .search-field {
   width: calc(100% - 1px);
-  height: 40px;
-  background-color: var(--theme-body-background);
+  height: 27px;
+  background-color: var(--theme-toolbar-background);
   border-bottom: 1px solid var(--theme-splitter-color);
+  padding-right: 10px;
   display: flex;
   flex-shrink: 0;
 }
 
 .search-field i {
   display: block;
-  padding: 13px;
-  width: 40px;
+  padding: 6px;
+  width: 27px;
 }
 
 .search-field i svg {
@@ -20,19 +21,19 @@
 .search-field input {
   border: none;
   line-height: 30px;
-  font-size: 14px;
-  background-color: var(--theme-body-background);
-  color: var(--theme-comment-alt);
+  font-size: 12px;
+  background-color: var(--theme-toolbar-background);
+  color: var(--theme-body-color-inactive);
   width: calc(100% - 38px);
   flex: 1;
 }
 
 .theme-dark .search-field input {
-  color: var(--theme-comment-alt);
+  color: var(--theme-body-color-inactive);
 }
 
 .search-field .magnifying-glass {
-  background-color: var(--theme-body-background);
+  background-color: var(--theme-toolbar-background);
 }
 
 .search-field .magnifying-glass path,
@@ -40,8 +41,12 @@
   stroke: var(--theme-splitter-color);
 }
 
+.search-field ::-webkit-input-placeholder {
+  color: var(--theme-body-color-inactive);
+}
+
 .search-field input::placeholder {
-  color: var(--theme-comment-alt);
+  color: var(--theme-body-color-inactive);
 }
 
 .search-field input:focus {
@@ -53,7 +58,8 @@
 }
 
 .search-field .summary {
-  line-height: 40px;
+  line-height: 27px;
   padding-right: 10px;
+  font-size: 11px;
   color: var(--theme-body-color-inactive);
 }

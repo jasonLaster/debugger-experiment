@@ -14,8 +14,8 @@
   flex-shrink: 0;
   justify-content: space-between;
   width: calc(100% - 1px);
-  height: 40px;
-  background-color: var(--theme-body-background);
+  height: 27px;
+  background-color: var(--theme-toolbar-background);
   border-bottom: 1px solid var(--theme-splitter-color);
   padding: 0 13px;
 }
@@ -79,8 +79,9 @@
 }
 
 .search-bottom-bar .search-type-toggles .search-toggle-title {
-  color: var(--theme-comment-alt);
+  color: var(--theme-body-color-inactive);
   font-size: 12px;
+  font-weight: normal;
   margin: 0;
 }
 
@@ -110,7 +111,7 @@
 .search-bar .result-list {
   max-height: 230px;
   border-bottom: 1px solid var(--theme-splitter-color);
-  background-color: var(--theme-body-background);
+  background-color: var(--theme-toolbar-background);
 }
 
 .search-bar .result-list li {

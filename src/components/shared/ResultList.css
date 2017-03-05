@@ -26,15 +26,21 @@
 
 .result-list li.selected {
   border: 2px solid var(--theme-selection-background);
+  color: white;
 }
 
 .result-list li .title {
   line-height: 1.5em;
   word-break: break-all;
+  color: var(--theme-body-color-inactive);
+}
+
+.result-list li.selected .title {
+  color: white;
 }
 
 .result-list li .subtitle {
   line-height: 1.5em;
-  color: grey;
+  color:  var(--theme-comment-alt);
   word-break: break-all;
 }
