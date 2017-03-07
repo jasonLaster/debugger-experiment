@@ -40,6 +40,7 @@ const {
   breakpointAtLine,
   getTextForLine,
   getCursorLine,
+  getTokenLocation,
   resizeBreakpointGutter,
   traverseResults
 } = require("../../utils/editor");
@@ -274,10 +275,7 @@ const Editor = React.createClass({
       selectedToken.classList.remove("selected-token");
     }
 
-    const lineOffset = 1;
-    const { left, top } = token.getBoundingClientRect();
-    const { line, ch } = ctx.cm.coordsChar({ left, top });
-    const loc = { line: line + lineOffset, column: ch };
+    const loc = getTokenLocation(token, ctx.cm);
 
     const variables = selectedFrame.scope.bindings.variables;
 
