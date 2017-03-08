@@ -48,6 +48,11 @@ const { isFirefox } = require("devtools-config");
 
 require("./Editor.css");
 
+function getExpresionFromToken(cm, sourceText, token) {
+  const loc = getTokenLocation(token, cm);
+  return getExpression(sourceText.toJS(), token.innerText, loc);
+}
+
 const Editor = React.createClass({
   propTypes: {
     breakpoints: ImPropTypes.map.isRequired,
@@ -79,7 +84,6 @@ const Editor = React.createClass({
         count: 0
       },
       selectedToken: null,
-      previewExpression: null,
       searchModifiers: {
         caseSensitive: true,
         wholeWord: false,
@@ -143,7 +147,7 @@ const Editor = React.createClass({
 
     codeMirrorWrapper
       .addEventListener("mouseover", e => this.onMouseOver(
-        e, ctx, searchModifiers
+        e, searchModifiers
       ));
 
     if (!isFirefox()) {
@@ -258,13 +262,14 @@ const Editor = React.createClass({
     }
   },
 
-  onMouseOver(e, ctx, modifiers) {
-    this.previewSelectedToken(e, ctx, modifiers);
+  onMouseOver(e, modifiers) {
+    this.previewSelectedToken(e, modifiers);
   },
 
-  previewSelectedToken(e, ctx, modifiers) {
+  previewSelectedToken(e, modifiers) {
     const { selectedFrame, sourceText } = this.props;
     const { selectedToken } = this.state;
+    const cm = this.editor.codeMirror;
     const token = e.target;
 
     if (!selectedFrame || !isEnabled("editorPreview")) {
@@ -275,23 +280,13 @@ const Editor = React.createClass({
       selectedToken.classList.remove("selected-token");
     }
 
-    const loc = getTokenLocation(token, ctx.cm);
-
     const variables = selectedFrame.scope.bindings.variables;
-    const expression = getExpression(sourceText.toJS(), token.innerText, loc);
-
+    const expression = getExpresionFromToken(cm, sourceText, token);
     if (!variables.hasOwnProperty(token.innerText) && !expression) {
-      this.setState({
-        selectedToken: null,
-        previewExpression: null
-      });
-      return;
+      return this.setState({ selectedToken: null });
     }
 
-    this.setState({
-      selectedToken: token,
-      previewExpression: expression
-    });
+    this.setState({ selectedToken: token });
   },
 
   openMenu(event, codeMirror) {
@@ -557,8 +552,13 @@ const Editor = React.createClass({
   },
 
   renderPreview() {
-    const { selectedToken, previewExpression } = this.state;
-    const { selectedFrame } = this.props;
+    if (!this.editor) {
+      return null;
+    }
+
+    const { selectedToken } = this.state;
+    const { selectedFrame, sourceText } = this.props;
+    const cm = this.editor.codeMirror;
 
     if (!selectedToken || !selectedFrame || !isEnabled("editorPreview")) {
       return;
@@ -578,7 +578,13 @@ const Editor = React.createClass({
       value = variables[token].value;
     }
 
-    if (previewExpression) {
+    const previewExpression = getExpresionFromToken(
+      cm,
+      sourceText,
+      selectedToken
+    );
+
+    if (previewExpression && isEnabled("previewMemberExpressions")) {
       value = previewExpression.value;
     }
 
@@ -589,8 +595,7 @@ const Editor = React.createClass({
       onClose: () => {
         selectedToken.classList.remove("selected-token");
         this.setState({
-          selectedToken: null,
-          selectedTokenLocation: null
+          selectedToken: null
         });
       }
     });
