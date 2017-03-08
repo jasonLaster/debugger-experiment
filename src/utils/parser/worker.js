@@ -7,7 +7,11 @@ const { isDevelopment } = require("devtools-config");
 const toPairs = require("lodash/toPairs");
 const get = require("lodash/get");
 
-import type { SourceText, Location } from "../types";
+import type { SourceText, Location } from "../../types";
+
+const ASTs = new Map();
+
+const symbolDeclarations = new Map();
 
 type ASTLocation = {
   start: {
@@ -38,10 +42,6 @@ export type SymbolDeclarations = {
   variables: Array<FormattedSymbolDeclaration>,
   classes: Array<FormattedSymbolDeclaration>,
 };
-
-const ASTs = new Map();
-
-const symbolDeclarations = new Map();
 
 function _parse(code) {
   return babylon.parse(code, {
@@ -219,6 +219,22 @@ function getVariablesInScope(source: SourceText, location: Location) {
     })
   );
 }
+
+const publicInterface = {
+  getSymbols,
+  getVariablesInScope
+};
+
+self.onmessage = function(msg: Message) {
+  const { id, method, args } = msg.data;
+  const response = publicInterface[method].apply(undefined, args);
+  if (response instanceof Promise) {
+    response.then(val => self.postMessage({ id, response: val }),
+                  err => self.postMessage({ id, error: err }));
+  } else {
+    self.postMessage({ id, response });
+  }
+};
 
 module.exports = {
   parse,

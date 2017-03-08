@@ -20,6 +20,7 @@ function buildConfig(envConfig) {
       debugger: getEntry("main.js"),
       "source-map-worker": getEntry("utils/source-map-worker.js"),
       "pretty-print-worker": getEntry("utils/pretty-print-worker.js"),
+      "parser-worker": getEntry("utils/parser/worker.js"),
       "integration-tests": getEntry("test/integration/tests.js"),
     },
 
