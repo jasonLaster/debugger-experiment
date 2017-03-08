@@ -558,7 +558,7 @@ const Editor = React.createClass({
 
   renderPreview() {
     const { selectedToken, previewExpression } = this.state;
-    const { selectedFrame, sourceText } = this.props;
+    const { selectedFrame } = this.props;
 
     if (!selectedToken || !selectedFrame || !isEnabled("editorPreview")) {
       return;
