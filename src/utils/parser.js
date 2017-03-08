@@ -200,25 +200,18 @@ function getSymbols(source: SourceText): SymbolDeclarations {
 
 function getExpression(source: SourceText, token: string, location: Location) {
   let expression = null;
-  const ast = getAst(source);
 
-  if (isEmpty(ast)) {
+  const path = getPathAtLocation(source, location);
+  if (!path) {
     return;
   }
 
-  traverse(ast, {
-    enter(path) {
-      const node = path.node;
-      if (node.type === "MemberExpression" && node.property.name === token
-        && nodeContainsLocation({ node, location })) {
-        const expr = getMemberExpression(node);
-        expression = {
-          value: expr.join("."),
-          location: node.loc
-        };
-      }
-    }
-  });
+  const { node } = path;
+  const expr = getMemberExpression(node);
+  expression = {
+    value: expr.join("."),
+    location: node.loc
+  };
 
   return expression;
 }
@@ -235,23 +228,27 @@ function nodeContainsLocation({ node, location }) {
    );
 }
 
-function getPathClosestToLocation(source: SourceText, location: Location) {
+function getPathAtLocation(source: SourceText, location: Location) {
   const ast = getAst(source);
-  let pathClosestToLocation = null;
+  let pathAtLocation;
+
+  if (isEmpty(ast)) {
+    return;
+  }
 
   traverse(ast, {
     enter(path) {
       if (nodeContainsLocation({ node: path.node, location })) {
-        pathClosestToLocation = path;
+        pathAtLocation = path;
       }
     }
   });
 
-  return pathClosestToLocation;
+  return pathAtLocation;
 }
 
 function getVariablesInScope(source: SourceText, location: Location) {
-  const path = getPathClosestToLocation(source, location);
+  const path = getPathAtLocation(source, location);
   const bindings = get(path, "scope.bindings", {});
 
   return toPairs(bindings)
@@ -265,7 +262,7 @@ function getVariablesInScope(source: SourceText, location: Location) {
 module.exports = {
   parse,
   getSymbols,
-  getPathClosestToLocation,
+  getPathAtLocation,
   getVariablesInScope,
   getExpression
 };

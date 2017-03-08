@@ -3,7 +3,7 @@ const {
   getSymbols,
   getVariablesInScope,
   getExpression,
-  getPathClosestToLocation
+  getPathAtLocation
 } = require("../parser");
 
 // re-formats the code to correct for webpack indentations
@@ -243,9 +243,9 @@ describe("parser", () => {
     });
   });
 
-  describe("getPathClosestToLocation", () => {
+  describe("getPathAtLocation", () => {
     it("Can find the function declaration for square", () => {
-      const closestPath = getPathClosestToLocation(
+      const closestPath = getPathAtLocation(
         getSourceText("func"),
         {
           line: 2,
@@ -262,7 +262,7 @@ describe("parser", () => {
     });
 
     it("Can find the path at the exact column", () => {
-      const closestPath = getPathClosestToLocation(
+      const closestPath = getPathAtLocation(
         getSourceText("func"),
         {
           line: 2,
