@@ -1,3 +1,5 @@
+// @flow
+
 const { isPretty, isJavaScript } = require("../source");
 const { isOriginalId } = require("devtools-source-map");
 const buildQuery = require("./build-query");
@@ -17,9 +19,12 @@ const {
   clearIndex
 } = require("./source-search");
 
+import type { SourceText, Breakpoint } from "../../types";
+import type { Record } from "../makeRecord";
+
 const SourceEditor = require("./source-editor");
 
-function shouldShowPrettyPrint(selectedSource) {
+function shouldShowPrettyPrint(selectedSource: any) {
   if (!selectedSource) {
     return false;
   }
@@ -37,7 +42,7 @@ function shouldShowPrettyPrint(selectedSource) {
   return true;
 }
 
-function onKeyDown(codeMirror, e) {
+function onKeyDown(codeMirror: any, e: SyntheticKeyboardEvent) {
   let { key, target } = e;
   let codeWrapper = codeMirror.getWrapperElement();
   let textArea = codeWrapper.querySelector("textArea");
@@ -53,7 +58,7 @@ function onKeyDown(codeMirror, e) {
   }
 }
 
-function shouldShowFooter(selectedSource, horizontal) {
+function shouldShowFooter(selectedSource: SourceText, horizontal: boolean) {
   if (!horizontal) {
     return true;
   }
@@ -69,31 +74,31 @@ function removeLineClass(codeMirror, line, className) {
   codeMirror.removeLineClass(line, "line", className);
 }
 
-function clearLineClass(codeMirror, className) {
+function clearLineClass(codeMirror: any, className: string) {
   forEachLine(codeMirror, line => {
     removeLineClass(codeMirror, line, className);
   });
 }
 
-function isTextForSource(sourceText) {
+function isTextForSource(sourceText: Record<SourceText>) {
   return !sourceText.get("loading") && !sourceText.get("error");
 }
 
-function breakpointAtLine(breakpoints, line) {
+function breakpointAtLine(breakpoints: Breakpoint[], line: number) {
   return breakpoints.find(b => {
     return b.location.line === line + 1;
   });
 }
 
-function getTextForLine(codeMirror, line) {
+function getTextForLine(codeMirror: any, line: number) {
   return codeMirror.getLine(line - 1).trim();
 }
 
-function getCursorLine(codeMirror) {
+function getCursorLine(codeMirror: any) {
   return codeMirror.getCursor().line;
 }
 
-function getTokenLocation(tokenEl, codeMirror) {
+function getTokenLocation(tokenEl: HTMLElement, codeMirror: any) {
   const lineOffset = 1;
   const { left, top } = tokenEl.getBoundingClientRect();
   const { line, ch } = codeMirror.coordsChar({ left, top });
@@ -109,14 +114,15 @@ function getTokenLocation(tokenEl, codeMirror) {
  * beneath the line numbers. This makes it easy to be flexible with
  * how we overlay breakpoints.
  */
-function resizeBreakpointGutter(editor) {
+function resizeBreakpointGutter(editor: any) {
   const gutters = editor.display.gutters;
   const lineNumbers = gutters.querySelector(".CodeMirror-linenumbers");
   const breakpoints = gutters.querySelector(".breakpoints");
   breakpoints.style.width = `${lineNumbers.clientWidth}px`;
 }
 
-function traverseResults(e, ctx, query, dir, modifiers) {
+function traverseResults(
+  e: SyntheticKeyboardEvent, ctx, query, dir, modifiers) {
   e.stopPropagation();
   e.preventDefault();
 
