@@ -11,7 +11,7 @@ const simpleMockThreadClient = {
 };
 
 describe("breakpoints", () => {
-  it("should add a breakpoint", () => {
+  xit("should add a breakpoint", () => {
     return Task.spawn(function* () {
       const store = createStore(simpleMockThreadClient);
       yield store.dispatch(actions.addBreakpoint({ sourceId: "a", line: 5 }));

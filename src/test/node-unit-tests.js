@@ -1,5 +1,18 @@
 require("amd-loader");
-require("babel-register");
+require("babel-register")({
+  ignore: function(filename) {
+    if (filename.includes("devtools-source-map")) {
+      return false;
+    }
+
+    if (filename.includes("node_modules")) {
+      return true;
+    }
+
+    return false;
+  }
+
+});
 const mock = require("mock-require");
 
 const glob = require("glob").sync;
