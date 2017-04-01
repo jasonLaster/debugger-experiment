@@ -166,6 +166,9 @@ type PauseAction =
     }
   | { type: "COMMAND", value: void }
   | { type: "SELECT_FRAME", frame: Frame }
+  | { type: "EXPAND_OBJECT", value: string }
+  | { type: "EXPAND_OBJECTS", value: string }
+  | { type: "COLLAPSE_OBJECT", value: string }
   | {
       type: "LOAD_OBJECT_PROPERTIES",
       objectId: string,

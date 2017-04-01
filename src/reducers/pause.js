@@ -19,6 +19,7 @@ type PauseState = {
   frames: ?(Frame[]),
   selectedFrameId: ?string,
   loadedObjects: Object,
+  expandedObjects: Object,
   shouldPauseOnExceptions: boolean,
   shouldIgnoreCaughtExceptions: boolean,
   debuggeeUrl: string,
@@ -31,6 +32,7 @@ const State = makeRecord(
     frames: undefined,
     selectedFrameId: undefined,
     loadedObjects: I.Map(),
+    expandedObjects: I.Set(),
     shouldPauseOnExceptions: prefs.pauseOnExceptions,
     shouldIgnoreCaughtExceptions: prefs.ignoreCaughtExceptions,
     debuggeeUrl: "",
@@ -83,6 +85,15 @@ function update(state = State(), action: Action): Record<PauseState> {
 
     case constants.SELECT_FRAME:
       return state.set("selectedFrameId", action.frame.id);
+
+    case constants.EXPAND_OBJECT:
+      return state.addIn(["expandedObjects", action.value]);
+
+    case constants.EXPAND_OBJECTS:
+      return state.addIn(["expandedObjects", action.value]);
+
+    case constants.COLLAPSE_OBJECT:
+      return state.deleteIn(["expandedObjects", action.value]);
 
     case constants.LOAD_OBJECT_PROPERTIES:
       if (action.status === "start") {

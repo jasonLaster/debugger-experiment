@@ -215,3 +215,30 @@ export function loadObjectProperties(object: any) {
     });
   };
 }
+
+export function expandObject(objectId: string) {
+  return ({ dispatch }: ThunkArgs) => {
+    return dispatch({
+      type: constants.EXPAND_OBJECT,
+      value: objectId,
+    });
+  };
+}
+
+export function collapseObject(objectId: string) {
+  return ({ dispatch }: ThunkArgs) => {
+    return dispatch({
+      type: constants.COLLAPSE_OBJECT,
+      value: objectId,
+    });
+  };
+}
+
+export function expandObjects(objectIds: string[]) {
+  return ({ dispatch }: ThunkArgs) => {
+    return dispatch({
+      type: constants.EXPAND_OBJECTS,
+      value: objectIds,
+    });
+  };
+}

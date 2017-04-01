@@ -4,7 +4,12 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
-import { getSelectedFrame, getLoadedObjects, getPause } from "../../selectors";
+import {
+  getSelectedFrame,
+  getLoadedObjects,
+  getExpandedObjects,
+  getPause,
+} from "../../selectors";
 import { getScopes } from "../../utils/scopes";
 const ObjectInspector = createFactory(require("../shared/ObjectInspector"));
 import "./Scopes.css";
@@ -13,7 +18,7 @@ function info(text) {
   return dom.div({ className: "pane-info" }, text);
 }
 
-let expandedCache = new Set();
+// let expandedCache = new Set();
 let actorsCache = [];
 
 class Scopes extends Component {
@@ -51,7 +56,12 @@ class Scopes extends Component {
   }
 
   render() {
-    const { pauseInfo, loadObjectProperties, loadedObjects } = this.props;
+    const {
+      pauseInfo,
+      loadObjectProperties,
+      loadedObjects,
+      expandedObjects,
+    } = this.props;
     const { scopes } = this.state;
 
     let scopeInspector = info(L10N.getStr("scopes.notAvailable"));
@@ -60,10 +70,7 @@ class Scopes extends Component {
         roots: scopes,
         getObjectProperties: id => loadedObjects.get(id),
         loadObjectProperties: loadObjectProperties,
-        setExpanded: expanded => {
-          expandedCache = expanded;
-        },
-        getExpanded: () => expandedCache,
+        expanded: expandedObjects,
         setActors: actors => {
           actorsCache = actors;
         },
@@ -95,6 +102,7 @@ export default connect(
     pauseInfo: getPause(state),
     selectedFrame: getSelectedFrame(state),
     loadedObjects: getLoadedObjects(state),
+    expandedObjects: getExpandedObjects(state),
   }),
   dispatch => bindActionCreators(actions, dispatch)
 )(Scopes);
