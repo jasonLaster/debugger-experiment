@@ -1,17 +1,3 @@
-// @flow
-import { DOM as dom, PropTypes, createFactory, Component } from "react";
-const ReactDOM = require("react-dom");
-import ImPropTypes from "react-immutable-proptypes";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import classnames from "classnames";
-import debounce from "lodash/debounce";
-import { getMode } from "../../utils/source";
-
-const Footer = createFactory(require("./Footer").default);
-const SearchBar = createFactory(require("./SearchBar").default);
-import GutterMenu from "./GutterMenu";
-import EditorMenu from "./EditorMenu";
 const Preview = createFactory(require("./Preview").default);
 import { renderConditionalPanel } from "./ConditionalPanel";
 import { debugGlobal } from "devtools-launchpad";
