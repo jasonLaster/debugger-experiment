@@ -12,6 +12,7 @@ const Footer = createFactory(require("./Footer").default);
 const SearchBar = createFactory(require("./SearchBar").default);
 import GutterMenu from "./GutterMenu";
 import EditorMenu from "./EditorMenu";
+const HighlightFunction = createFactory(require("./HighlightFunction").default);
 const Preview = createFactory(require("./Preview").default);
 import { renderConditionalPanel } from "./ConditionalPanel";
 import { debugGlobal } from "devtools-launchpad";
@@ -93,6 +94,7 @@ class Editor extends Component {
         count: 0
       },
       selectedToken: null,
+      highlightedFunction: null,
       selectedExpression: null
     };
 
@@ -600,6 +602,18 @@ class Editor extends Component {
     this.pendingJumpLine = null;
   }
 
+  highlightFunction() {
+    this.setState({
+      highlightedFunction: {
+        displayName: "initialize",
+        location: {
+          start: { line: 32 },
+          end: { line: 36 }
+        }
+      }
+    });
+  }
+
   setText(text) {
     if (!text || !this.editor) {
       return;
@@ -636,6 +650,19 @@ class Editor extends Component {
 
     this.setText(sourceText.get("text"));
     this.editor.setMode(getMode(sourceText.toJS()));
+  }
+
+  renderHighlightFunction() {
+    const { highlightedFunction } = this.state;
+
+    if (!highlightedFunction) {
+      return null;
+    }
+
+    return HighlightFunction({
+      editor: this.editor && this.editor.codeMirror,
+      highlightedFunction
+    });
   }
 
   renderBreakpoints() {
@@ -774,6 +801,7 @@ class Editor extends Component {
       }),
       this.renderBreakpoints(),
       this.renderHitCounts(),
+      this.renderHighlightFunction(),
       Footer({ editor: this.editor, horizontal }),
       this.renderPreview()
     );
