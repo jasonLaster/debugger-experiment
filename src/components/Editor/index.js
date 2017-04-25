@@ -733,7 +733,7 @@ class Editor extends Component {
 
     return Preview({
       value,
-      expression: token,
+      expression: selectedExpression.value || selectedExpression.name,
       popoverTarget: selectedToken,
       onClose: () => {
         selectedToken.classList.remove("selected-token");
