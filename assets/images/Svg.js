@@ -38,7 +38,9 @@ const svg = {
   refresh: require("./refresh.svg")
 };
 
-module.exports = function(name, props) {
+const supportedLibraries = ['webpack'];
+
+module.exports = function(name, props, path='') {
   // eslint-disable-line
   if (!svg[name]) {
     throw new Error("Unknown SVG: " + name);
@@ -50,6 +52,8 @@ module.exports = function(name, props) {
   if (name === "subSettings") {
     className = "";
   }
+
+  name = supportedLibraries.find(lib=>path && path.includes(lib)) || name;
   props = Object.assign({}, props, { className, src: svg[name] });
   return React.createElement(InlineSVG, props);
 };

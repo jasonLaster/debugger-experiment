@@ -155,7 +155,7 @@ class SourcesTree extends Component {
 
   getIcon(item, depth) {
     if (depth === 0) {
-      return Svg("domain");
+      return Svg("domain", null, item.path);
     }
 
     if (!nodeHasChildren(item)) {
