@@ -20,9 +20,9 @@ class Outline extends Component {
     this.state = {};
   }
 
-  componentWillReceiveProps({ sourceText }) {
+  async componentWillReceiveProps({ sourceText }) {
     if (sourceText) {
-      this.setSymbolDeclarations(sourceText);
+      await this.setSymbolDeclarations(sourceText);
     }
   }
 
