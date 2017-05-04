@@ -20,9 +20,11 @@ type PauseState = {
   frames: ?(Frame[]),
   selectedFrameId: ?string,
   loadedObjects: Object,
+  expandedObjects: string[]
   shouldPauseOnExceptions: boolean,
   shouldIgnoreCaughtExceptions: boolean,
-  debuggeeUrl: string
+  debuggeeUrl: string,
+
 };
 
 export const State = makeRecord(
@@ -32,6 +34,7 @@ export const State = makeRecord(
     frames: undefined,
     selectedFrameId: undefined,
     loadedObjects: I.Map(),
+    expandedObjects: I.Set(),
     shouldPauseOnExceptions: prefs.pauseOnExceptions,
     shouldIgnoreCaughtExceptions: prefs.ignoreCaughtExceptions,
     debuggeeUrl: ""
@@ -43,6 +46,11 @@ function update(
   action: Action
 ): Record<PauseState> {
   switch (action.type) {
+    case constants.EXPAND_OBJECT:
+      // i don't know the set api
+      return state.addIn("expandedObjects", action.value);
+    case constants.COLLAPSE_OBJECT:
+      return state.removeIn("expandedObjects", action.value);
     case constants.PAUSED: {
       const { selectedFrameId, frames, loadedObjects, pauseInfo } = action;
       pauseInfo.isInterrupted = pauseInfo.why.type === "interrupted";
@@ -50,7 +58,7 @@ function update(
       // turn this into an object keyed by object id
       let objectMap = {};
       loadedObjects.forEach(obj => {
-        objectMap[obj.value.objectId] = obj;
+        objectMap[obj.objectId] = obj;
       });
 
       return state.merge({
@@ -58,7 +66,8 @@ function update(
         pause: fromJS(pauseInfo),
         selectedFrameId,
         frames,
-        loadedObjects: objectMap
+        loadedObjects: objectMap,
+        expandedObjects: state.expandedObjects.add("scope0")
       });
     }
 
