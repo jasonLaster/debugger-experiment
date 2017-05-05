@@ -363,7 +363,7 @@ class SourceTabs extends PureComponent {
   renderNewButton() {
     const newTabTooltip = L10N.getFormatStr(
       "sourceTabs.newTabButtonTooltip",
-      formatKeyShortcut(L10N.getStr("sources.search.key"))
+      formatKeyShortcut(`CmdOrCtrl+${L10N.getStr("sources.search.key")}`)
     );
     return dom.div(
       {

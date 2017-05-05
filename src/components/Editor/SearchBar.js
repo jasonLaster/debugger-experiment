@@ -48,15 +48,13 @@ import type {
 
 function getShortcuts() {
   const searchAgainKey = L10N.getStr("sourceSearch.search.again.key");
-  const searchAgainPrevKey = L10N.getStr("sourceSearch.search.againPrev.key");
   const fnSearchKey = L10N.getStr("symbolSearch.search.key");
-  const searchKey = L10N.getStr("sourceSearch.search.key");
 
   return {
-    shiftSearchAgainShortcut: searchAgainPrevKey,
-    searchAgainShortcut: searchAgainKey,
-    symbolSearchShortcut: fnSearchKey,
-    searchShortcut: searchKey
+    shiftSearchAgainShortcut: `CmdOrCtrl+Shift+${searchAgainKey}`,
+    searchAgainShortcut: `CmdOrCtrl+${searchAgainKey}`,
+    symbolSearchShortcut: `CmdOrCtrl+Shift+${fnSearchKey}`,
+    searchShortcut: `CmdOrCtrl+${L10N.getStr("sourceSearch.search.key")}`
   };
 }
 

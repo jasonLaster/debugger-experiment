@@ -37,7 +37,7 @@ class WelcomeBox extends Component {
   render() {
     const searchLabel = L10N.getFormatStr(
       "welcome.search",
-      formatKeyShortcut(L10N.getStr("sources.search.key"))
+      formatKeyShortcut(`CmdOrCtrl+${L10N.getStr("sources.search.key")}`)
     );
     return dom.div(
       { className: "welcomebox" },
