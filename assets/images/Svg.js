@@ -5,7 +5,6 @@ const svg = {
   "angle-brackets": require("./angle-brackets.svg"),
   arrow: require("./arrow.svg"),
   backbone: require("./backbone.svg"),
-  webpack: require("./webpack.svg"),
   blackBox: require("./blackBox.svg"),
   breakpoint: require("./breakpoint.svg"),
   "case-match": require("./case-match.svg"),
@@ -39,9 +38,8 @@ const svg = {
   webpack: require("./webpack.svg")
 };
 
-const supportedLibraries = [{key: 'webpack', domain:'webpack://'}];
 
-module.exports = function(name, props, path='') {
+module.exports = function(name, props) {
   // eslint-disable-line
   if (!svg[name]) {
     throw new Error("Unknown SVG: " + name);
@@ -53,9 +51,6 @@ module.exports = function(name, props, path='') {
   if (name === "subSettings") {
     className = "";
   }
-
-  name = supportedLibraries.find(lib=>path && path.includes(lib.domain)) || name;
-  name = name.key || name;
   props = Object.assign({}, props, { className, src: svg[name] });
   return React.createElement(InlineSVG, props);
 };

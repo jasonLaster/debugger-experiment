@@ -40,6 +40,8 @@ type CreateTree = {
   highlightItems?: any
 };
 
+const supportedLibraries = [{ key: "webpack", domain: "webpack://" }];
+
 class SourcesTree extends Component {
   state: CreateTree;
   focusItem: Function;
@@ -156,8 +158,13 @@ class SourcesTree extends Component {
   }
 
   getIcon(item, depth) {
+    let name = supportedLibraries.find(
+      lib => item.path && item.path.includes(lib.domain)
+    );
+    name = (name && name.key) || "domain";
+
     if (depth === 0) {
-      return Svg("domain", null, item.path);
+      return Svg(name, { className: "domain" });
     }
 
     if (!nodeHasChildren(item)) {
