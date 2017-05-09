@@ -29,6 +29,10 @@ function isWebpack(frame) {
   return getFrameUrl(frame).match(/webpack\/bootstrap/i);
 }
 
+function isNodeInternal(frame) {
+  return getFrameUrl(frame).match(/^(internal|_stream_|events|buffer|timers)/);
+}
+
 export function getLibraryFromUrl(frame: Frame) {
   if (isBackbone(frame)) {
     return "Backbone";
@@ -44,6 +48,10 @@ export function getLibraryFromUrl(frame: Frame) {
 
   if (isWebpack(frame)) {
     return "Webpack";
+  }
+
+  if (isNodeInternal(frame)) {
+    return "Node";
   }
 }
 
