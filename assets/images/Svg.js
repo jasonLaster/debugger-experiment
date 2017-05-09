@@ -38,7 +38,7 @@ const svg = {
   refresh: require("./refresh.svg")
 };
 
-const supportedLibraries = ['webpack'];
+const supportedLibraries = [{key: 'webpack', domain:'webpack://'}];
 
 module.exports = function(name, props, path='') {
   // eslint-disable-line
@@ -53,7 +53,8 @@ module.exports = function(name, props, path='') {
     className = "";
   }
 
-  name = supportedLibraries.find(lib=>path && path.includes(lib)) || name;
+  name = supportedLibraries.find(lib=>path && path.includes(lib.domain)) || name;
+  name = name.key || name;
   props = Object.assign({}, props, { className, src: svg[name] });
   return React.createElement(InlineSVG, props);
 };
