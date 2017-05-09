@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import { DOM as dom, PropTypes, createFactory, PureComponent } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ImPropTypes from "react-immutable-proptypes";
@@ -9,13 +9,12 @@ import {
   getLoadedObjects,
   getPause
 } from "../../selectors";
-const CloseButton = React.createFactory(
-  require("../shared/Button/Close").default
-);
-const ObjectInspector = React.createFactory(
-  require("../shared/ObjectInspector").default
-);
-const { DOM: dom, PropTypes } = React;
+
+import _CloseButton from "../shared/Button/Close";
+const CloseButton = createFactory(_CloseButton);
+
+import _ObjectInspector from "../shared/ObjectInspector";
+const ObjectInspector = createFactory(_ObjectInspector);
 
 import "./Expressions.css";
 function getValue(expression) {
@@ -29,7 +28,7 @@ function getValue(expression) {
 
   if (value.exception) {
     return {
-      path: expression.from,
+      path: value.from,
       value: value.exception
     };
   }
@@ -47,7 +46,7 @@ function getValue(expression) {
   };
 }
 
-class Expressions extends React.Component {
+class Expressions extends PureComponent {
   _input: null | any;
 
   state: {
@@ -143,7 +142,11 @@ class Expressions extends React.Component {
       return;
     }
 
-    const { value, path } = getValue(expression);
+    let { value, path } = getValue(expression);
+
+    if (value.class == "Error") {
+      value = { unavailable: true };
+    }
 
     const root = {
       name: expression.input,
@@ -162,8 +165,7 @@ class Expressions extends React.Component {
         autoExpandDepth: 0,
         onDoubleClick: (item, options) =>
           this.editExpression(expression, options),
-        loadObjectProperties,
-        getActors: () => ({})
+        loadObjectProperties
       }),
       CloseButton({ handleClick: e => this.deleteExpression(e, expression) })
     );

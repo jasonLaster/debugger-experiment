@@ -5,11 +5,15 @@ import ImPropTypes from "react-immutable-proptypes";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { formatKeyShortcut } from "../utils/text";
-const Outline = createFactory(require("./Outline").default);
-const SourcesTree = createFactory(require("./SourcesTree").default);
 import actions from "../actions";
 import { getSources } from "../selectors";
 import "./Sources.css";
+
+import _Outline from "./Outline";
+const Outline = createFactory(_Outline);
+
+import _SourcesTree from "./SourcesTree";
+const SourcesTree = createFactory(_SourcesTree);
 
 class Sources extends Component {
   renderShortcut: Function;
@@ -29,7 +33,7 @@ class Sources extends Component {
         },
         L10N.getFormatStr(
           "sources.search",
-          formatKeyShortcut(`CmdOrCtrl+${L10N.getStr("sources.search.key")}`)
+          formatKeyShortcut(L10N.getStr("sources.search.key2"))
         )
       );
     }
