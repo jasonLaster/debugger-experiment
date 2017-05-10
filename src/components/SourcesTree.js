@@ -1,6 +1,8 @@
 // @flow
 
 import { bindActionCreators } from "redux";
+import { isEnabled } from "devtools-config";
+
 import { connect } from "react-redux";
 import { DOM as dom, PropTypes, Component, createFactory } from "react";
 import classnames from "classnames";
@@ -41,6 +43,20 @@ type CreateTree = {
 };
 
 const supportedLibraries = [{ key: "webpack", domain: "webpack://" }];
+
+function getLibrary(item) {
+  if (!isEnabled("collapseFrame")) {
+    return null;
+  }
+
+  let name = supportedLibraries.find(
+    lib => item.path && item.path.includes(lib.domain)
+  );
+
+  if (name) {
+    return name.key;
+  }
+}
 
 class SourcesTree extends Component {
   state: CreateTree;
@@ -158,12 +174,10 @@ class SourcesTree extends Component {
   }
 
   getIcon(item, depth) {
-    let name = supportedLibraries.find(
-      lib => item.path && item.path.includes(lib.domain)
-    );
-    name = (name && name.key) || "domain";
+    const library = getLibrary(item);
 
     if (depth === 0) {
+      const name = library || "domain";
       return Svg(name, { className: "domain" });
     }
 
