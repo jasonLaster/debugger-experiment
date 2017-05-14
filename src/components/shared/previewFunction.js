@@ -11,10 +11,10 @@ import "./previewFunction.css";
 import type { FunctionGrip } from "../../client/firefox/types";
 
 import type { ObjectInspectorItem } from "./ObjectInspector";
-import type { FormattedSymbolDeclaration } from "../../utils/parser/utils";
+import type { SymbolDeclaration } from "../../utils/parser/utils";
 type FunctionType =
   | FunctionGrip
-  | FormattedSymbolDeclaration
+  | SymbolDeclaration
   | { name: string, parameterNames: [] };
 
 function getFunctionName(func: FunctionType) {
