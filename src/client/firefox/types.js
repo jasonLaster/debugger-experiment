@@ -88,16 +88,19 @@ export type SourcePayload = {
   url: URL
 };
 
+type ServerPacket = {
+  type: string,
+  from: ActorId
+};
+
 /**
  * Source Packet sent when there is a "new source" event
  * coming from the debug server
  * @memberof firefox/packets
  * @static
  */
-export type SourcePacket = {
-  from: ActorId,
-  source: SourcePayload,
-  type: string
+export type SourcePacket = ServerPacket & {
+  source: SourcePayload
 };
 
 /**
@@ -116,10 +119,8 @@ export type SourcesPacket = {
  * @memberof firefox
  * @static
  */
-export type PausedPacket = {
+export type PausedPacket = ServerPacket & {
   actor: ActorId,
-  from: ActorId,
-  type: string,
   frame: FramePacket,
   why: {
     actors: ActorId[],
