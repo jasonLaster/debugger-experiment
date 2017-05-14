@@ -53,6 +53,16 @@ type URL = string;
  * @static
  */
 
+type ClientPacket = {
+  type: string,
+  to: ActorId
+};
+
+type ServerPacket = {
+  type: string,
+  from: ActorId
+};
+
 /**
  * Frame Packet
  * @memberof firefox/packets
@@ -86,11 +96,6 @@ export type SourcePayload = {
   isSourceMapped: boolean,
   sourceMapURL?: URL,
   url: URL
-};
-
-type ServerPacket = {
-  type: string,
-  from: ActorId
 };
 
 /**
@@ -278,8 +283,52 @@ export type DebuggerClient = {
  * @static
  */
 // FIXME: need Grip definition
-export type Grip = {
+export type Grip =
+  | number
+  | string
+  | boolean
+  | { type: string }
+  | {
+      actor: string
+    };
+
+export type ObjectGrip = {
+  type: "object",
+  class: string,
   actor: string
+};
+
+export type FunctionGrip = {
+  class: "Function",
+  name: string,
+  parameterNames: string[],
+  displayName: string,
+  userDisplayName: string,
+  url: string,
+  line: number,
+  column: number
+};
+
+type PropertyDescriptor = {
+  enumerable: boolean,
+  configurable: boolean
+};
+
+type DataDescriptor = PropertyDescriptor & {
+  writeable: boolean,
+  value: Grip
+};
+
+type AccessorDescriptor = PropertyDescriptor & {
+  get: Grip,
+  set: Grip
+};
+
+type SafeGetterValueDescriptor = {
+  getterValue: Grip,
+  getterPrototypeLevel: number,
+  enumerable: boolean,
+  writable: boolean
 };
 
 /**
@@ -307,7 +356,13 @@ export type SourceClient = {
  * @static
  */
 export type ObjectClient = {
-  getPrototypeAndProperties: () => any
+  getPrototypeAndProperties: () => Promise<{
+    from: ActorId,
+    ownProperties: Object,
+    prototype: Grip,
+    ownSymbols: any,
+    safeGetterValues?: Object
+  }>
 };
 
 /**

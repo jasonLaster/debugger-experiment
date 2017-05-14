@@ -1,3 +1,5 @@
+// @flow
+
 import { DOM as dom } from "react";
 
 import times from "lodash/times";
@@ -6,18 +8,27 @@ import flatten from "lodash/flatten";
 
 import "./previewFunction.css";
 
-function getFunctionName(func) {
+import type { FunctionGrip } from "../../client/firefox/types";
+
+import type { ObjectInspectorItem } from "./ObjectInspector";
+import type { FormattedSymbolDeclaration } from "../../utils/parser/utils";
+type FunctionType =
+  | FunctionGrip
+  | FormattedSymbolDeclaration
+  | { name: string, parameterNames: [] };
+
+function getFunctionName(func: FunctionType) {
   return (
     func.userDisplayName || func.displayName || func.name || func.value || ""
   );
 }
 
-function renderFunctionName(func) {
+function renderFunctionName(func: FunctionType) {
   const name = getFunctionName(func);
   return dom.span({ className: "function-name" }, name);
 }
 
-function renderParams(func) {
+function renderParams(func: FunctionType) {
   const { parameterNames = [] } = func;
   let params = parameterNames
     .filter(i => i)
@@ -34,7 +45,7 @@ function renderParen(paren) {
   return dom.span({ className: "paren" }, paren);
 }
 
-function previewFunction(func) {
+function previewFunction(func: FunctionType) {
   return dom.span(
     { className: "function-signature" },
     renderFunctionName(func),

@@ -37,7 +37,7 @@ type ObjectInspectorItemContents = {
   value: ObjectInspectorItemContentsValue
 };
 
-type ObjectInspectorItem = {
+export type ObjectInspectorItem = {
   contents: Array<ObjectInspectorItem> & ObjectInspectorItemContents,
   name: string,
   path: string
@@ -135,7 +135,7 @@ class ObjectInspector extends Component {
       objectValue = dom.span({ className: "unavailable" }, "(unavailable)");
     } else if (nodeIsFunction(item)) {
       objectValue = null;
-      label = previewFunction(item);
+      label = previewFunction({ name: label, parameterNames: [] });
     } else if (nodeHasProperties(item) || nodeIsPrimitive(item)) {
       const object = item.contents.value;
       objectValue = Rep({ object, mode: MODE.TINY });

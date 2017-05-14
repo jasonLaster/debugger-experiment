@@ -31,6 +31,7 @@ export async function onConnect(connection: any, actions: Object) {
   // sources.
   const sources = await clientCommands.fetchSources();
   actions.newSources(sources);
+  actions.navigate(tabTarget._form.url);
 
   // If the threadClient is already paused, make sure to show a
   // paused state.

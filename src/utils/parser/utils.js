@@ -36,7 +36,8 @@ export type FormattedSymbolDeclaration = {
   title: string,
   subtitle: string,
   value: string,
-  location: ASTLocation
+  location: ASTLocation,
+  parameterNames?: string[]
 };
 
 export type SymbolDeclarations = {
@@ -113,7 +114,7 @@ function getNodeValue(node) {
   return node.name;
 }
 
-function getFunctionName(path) {
+function getFunctionName(path): string {
   if (path.node.id) {
     return path.node.id.name;
   }
@@ -161,7 +162,7 @@ function formatSymbol(symbol: SymbolDeclaration): FormattedSymbolDeclaration {
   };
 }
 
-function getVariableNames(path) {
+function getVariableNames(path): FormattedSymbolDeclaration[] {
   if (t.isObjectProperty(path) && !isFunction(path.node.value)) {
     return [
       formatSymbol({
