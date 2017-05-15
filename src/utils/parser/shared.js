@@ -25,3 +25,19 @@ export function isVariable(path) {
     (t.isObjectProperty(path) && !isFunction(path.node.value))
   );
 }
+
+export function getMemberExpression(root) {
+  function _getMemberExpression(node, expr) {
+    if (t.isMemberExpression(node)) {
+      expr = [node.property.name].concat(expr);
+      return _getMemberExpression(node.object, expr);
+    }
+
+    if (t.isThisExpression(node)) {
+      return ["this"].concat(expr);
+    }
+    return [node.name].concat(expr);
+  }
+
+  return _getMemberExpression(root, []);
+}
