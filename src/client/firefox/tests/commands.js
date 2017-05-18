@@ -88,5 +88,40 @@ describe("firefox commands", () => {
       const props = await getProperties({});
       expect(props).toEqual(expected);
     });
+
+    it("DOM Event", async () => {
+      const { getProperties } = clientCommands;
+
+      const DOMEvent = {
+        from: "",
+        prototype: {},
+        ownProperties: {},
+        safeGetterValues: {
+          data: {
+            getterValue: {
+              type: "object",
+              actor: "server2.conn135.child1/pausedobj409",
+              class: "Object",
+              preview: {}
+            }
+          },
+          origin: {
+            getterValue: "https://devtools-html.github.io",
+            getterPrototypeLevel: 1,
+            enumerable: true,
+            writable: true
+          }
+        }
+      };
+      const threadClient = makeThreadCLient(DOMEvent);
+
+      setupCommands({ threadClient });
+      const props = await getProperties({});
+
+      expect(props.ownProperties.origin).toEqual(
+        DOMEvent.safeGetterValues.origin
+      );
+      expect(props.ownProperties.data).toEqual(DOMEvent.safeGetterValues.data);
+    });
   });
 });
