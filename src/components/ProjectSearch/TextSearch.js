@@ -5,11 +5,19 @@ import Svg from "../shared/Svg";
 import _ManagedTree from "../shared/ManagedTree";
 const ManagedTree = createFactory(_ManagedTree);
 
+import _SearchInput from "../shared/SearchInput";
+const SearchInput = createFactory(_SearchInput);
+
 import "./TextSearch.css";
 
 export default class TextSearch extends Component {
   constructor(props: Props) {
     super(props);
+    this.state = {
+      inputValue: props.inputValue || "",
+      selectedIndex: 0,
+      focused: false
+    };
   }
 
   renderFile(file, expanded) {
@@ -40,7 +48,7 @@ export default class TextSearch extends Component {
   }
 
   renderResults() {
-    const { results } = this.props;
+    const results = [];
     return ManagedTree({
       getRoots: () => results,
       getChildren: file => {
@@ -56,11 +64,37 @@ export default class TextSearch extends Component {
     });
   }
 
+  renderInput() {
+    const searchResults = [];
+    const summaryMsg = L10N.getFormatStr(
+      "sourceSearch.resultsSummary1",
+      searchResults.length
+    );
+
+    return SearchInput({
+      query: this.state.inputValue,
+      count: searchResults.length,
+      placeholder: "YO YO",
+      size: "big",
+      summaryMsg,
+      onChange: e =>
+        this.setState({
+          inputValue: e.target.value,
+          selectedIndex: 0
+        }),
+      onFocus: () => this.setState({ focused: true }),
+      onBlur: () => this.setState({ focused: false }),
+      onKeyDown: this.onKeyDown,
+      handleClose: this.props.close
+    });
+  }
+
   render() {
     return dom.div(
       {
         className: "project-text-search"
       },
+      this.renderInput(),
       this.renderResults()
     );
   }
