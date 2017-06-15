@@ -8,22 +8,47 @@ const ManagedTree = createFactory(_ManagedTree);
 import _SearchInput from "../shared/SearchInput";
 const SearchInput = createFactory(_SearchInput);
 
+import { searchSource } from "../../utils/project-search";
+
 import "./TextSearch.css";
+
+function search(query, sources) {
+  const validSources = sources.valueSeq().filter(s => s.has("text")).toJS();
+  return validSources.map(source => ({
+    source,
+    filepath: source.url,
+    matches: searchSource(source, query)
+  }));
+}
 
 export default class TextSearch extends Component {
   constructor(props: Props) {
     super(props);
     this.state = {
+      results: [],
       inputValue: props.inputValue || "",
       selectedIndex: 0,
       focused: false
     };
   }
 
+  async inputOnChange(e) {
+    const { sources } = this.props;
+    const inputValue = e.target.value;
+    const results = await search(inputValue, sources);
+
+    this.setState({
+      results,
+      inputValue,
+      selectedIndex: 0
+    });
+  }
+
   renderFile(file, expanded) {
     return dom.div(
       {
-        className: "file-result"
+        className: "file-result",
+        key: file.filepath
       },
       Svg("arrow", {
         className: classnames({
@@ -34,9 +59,9 @@ export default class TextSearch extends Component {
     );
   }
 
-  renderLine(match) {
+  renderMatch(match) {
     return dom.div(
-      { className: "result" },
+      { className: "result", key: `${match.line}/${match.column}` },
       dom.span(
         {
           className: "line-number"
@@ -48,7 +73,7 @@ export default class TextSearch extends Component {
   }
 
   renderResults() {
-    const results = [];
+    const { results } = this.state;
     return ManagedTree({
       getRoots: () => results,
       getChildren: file => {
@@ -60,28 +85,32 @@ export default class TextSearch extends Component {
       getParent: item => null,
       getKey: item => item.filepath || `${item.value}/${item.line}`,
       renderItem: (item, depth, focused, _, expanded) =>
-        item.filepath ? this.renderFile(item, expanded) : this.renderLine(item)
+        item.filepath ? this.renderFile(item, expanded) : this.renderMatch(item)
     });
   }
 
+  resultCount() {
+    const { results } = this.state;
+    return results.reduce(
+      (count, file) => count + (file.matches ? file.matches.length : 0),
+      0
+    );
+  }
+
   renderInput() {
-    const searchResults = [];
+    const resultCount = this.resultCount();
     const summaryMsg = L10N.getFormatStr(
       "sourceSearch.resultsSummary1",
-      searchResults.length
+      resultCount
     );
 
     return SearchInput({
       query: this.state.inputValue,
-      count: searchResults.length,
-      placeholder: "YO YO",
+      count: resultCount,
+      placeholder: "Search Project",
       size: "big",
       summaryMsg,
-      onChange: e =>
-        this.setState({
-          inputValue: e.target.value,
-          selectedIndex: 0
-        }),
+      onChange: e => this.inputOnChange(e),
       onFocus: () => this.setState({ focused: true }),
       onBlur: () => this.setState({ focused: false }),
       onKeyDown: this.onKeyDown,
