@@ -779,7 +779,7 @@ class Editor extends PureComponent {
       return;
     }
 
-    const { result, expression } = selection;
+    const { result, expression, location } = selection;
     const value = result;
     if (
       typeof value == "undefined" ||
@@ -791,6 +791,8 @@ class Editor extends PureComponent {
 
     return Preview({
       value,
+      editor: this.editor,
+      location: location,
       expression: expression,
       popoverTarget: selectedToken,
       onClose: () => this.clearPreviewSelection()
