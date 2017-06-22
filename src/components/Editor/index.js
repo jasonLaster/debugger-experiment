@@ -6,8 +6,8 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { createSelector } from "reselect";
 import classnames from "classnames";
-import debounce from "lodash/debounce";
 import { isEnabled } from "devtools-config";
+import debounce from "lodash/debounce";
 import { getMode } from "../../utils/source";
 import GutterMenu from "./GutterMenu";
 import EditorMenu from "./EditorMenu";
@@ -94,6 +94,7 @@ class Editor extends PureComponent {
   editor: SourceEditor;
   pendingJumpLine: any;
   lastJumpLine: any;
+  debugExpression: any;
   state: EditorState;
 
   constructor() {
@@ -183,6 +184,7 @@ class Editor extends PureComponent {
     // Set code editor wrapper to be focusable
     codeMirrorWrapper.tabIndex = 0;
     codeMirrorWrapper.addEventListener("keydown", e => this.onKeyDown(e));
+    this.onMouseEnter = debounce(this.onMouseEnter, 50);
     codeMirrorWrapper.addEventListener("mouseover", e => this.onMouseEnter(e));
     codeMirrorWrapper.addEventListener("click", e => this.onTokenClick(e));
 
@@ -335,15 +337,24 @@ class Editor extends PureComponent {
     const { linesInScope, selection } = this.props;
     const location = getTokenLocation(this.editor.codeMirror, target);
 
-    console.log(">> pos ", selection && selection.tokenPos, location);
-
     if (
       !this.inSelectedFrameSource() ||
-      !target.parentElement.closest(".CodeMirror-line") ||
       (selection && isEqual(selection.tokenPos, location))
     ) {
       return;
     }
+
+    if (selection && !target.classList.contains("debug-expression")) {
+      this.clearPreviewSelection();
+    }
+
+    if (
+      !target.parentElement ||
+      !target.parentElement.closest(".CodeMirror-line")
+    ) {
+      return;
+    }
+
     const { line } = location;
 
     if (!linesInScope.includes(line)) {
@@ -378,7 +389,7 @@ class Editor extends PureComponent {
 
   clearPreviewSelection() {
     this.props.clearSelection();
-    return this.setState({ selectedToken: null });
+    // return this.setState({ selectedToken: null });
   }
 
   async previewSelectedToken(token, location) {
@@ -402,6 +413,7 @@ class Editor extends PureComponent {
     ) {
       return;
     }
+
     setSelection(tokenText, location, cursorPos);
     this.setState({ selectedToken: token });
   }
@@ -586,6 +598,10 @@ class Editor extends PureComponent {
   clearDebugLine(selectedFrame) {
     if (selectedFrame) {
       const line = selectedFrame.location.line;
+      if (this.debugExpression) {
+        this.debugExpression.clear();
+      }
+
       this.editor.codeMirror.removeLineClass(
         line - 1,
         "line",
@@ -600,8 +616,14 @@ class Editor extends PureComponent {
       selectedLocation &&
       selectedFrame.location.sourceId === selectedLocation.sourceId
     ) {
-      const line = selectedFrame.location.line;
+      const { line, column } = selectedFrame.location;
       this.editor.codeMirror.addLineClass(line - 1, "line", "new-debug-line");
+
+      this.debugExpression = this.editor.codeMirror.markText(
+        { line: line - 1, ch: column },
+        { line: line - 1, ch: null },
+        { className: "debug-expression" }
+      );
     }
   }
 
@@ -771,7 +793,6 @@ class Editor extends PureComponent {
 
   renderPreview() {
     const { selectedSource, selection } = this.props;
-
     if (!this.editor || !selectedSource) {
       return null;
     }
