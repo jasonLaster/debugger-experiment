@@ -13,6 +13,7 @@ import GutterMenu from "./GutterMenu";
 import EditorMenu from "./EditorMenu";
 import { renderConditionalPanel } from "./ConditionalPanel";
 import { debugGlobal } from "devtools-launchpad";
+import isEqual from "lodash/isEqual";
 
 import {
   getFileSearchState,
@@ -116,10 +117,7 @@ class Editor extends PureComponent {
     self.onScroll = this.onScroll.bind(this);
     self.onSearchAgain = this.onSearchAgain.bind(this);
     self.onToggleBreakpoint = this.onToggleBreakpoint.bind(this);
-    self.previewSelectedToken = debounce(
-      this.previewSelectedToken.bind(this),
-      100
-    );
+    self.previewSelectedToken = this.previewSelectedToken.bind(this);
     self.toggleBreakpoint = this.toggleBreakpoint.bind(this);
     // eslint-disable-next-line max-len
     self.toggleBreakpointDisabledStatus = this.toggleBreakpointDisabledStatus.bind(
@@ -185,7 +183,7 @@ class Editor extends PureComponent {
     // Set code editor wrapper to be focusable
     codeMirrorWrapper.tabIndex = 0;
     codeMirrorWrapper.addEventListener("keydown", e => this.onKeyDown(e));
-    codeMirrorWrapper.addEventListener("mouseover", e => this.onMouseOver(e));
+    codeMirrorWrapper.addEventListener("mouseover", e => this.onMouseEnter(e));
     codeMirrorWrapper.addEventListener("click", e => this.onTokenClick(e));
 
     const toggleFoldMarkerVisibility = e => {
@@ -332,17 +330,20 @@ class Editor extends PureComponent {
     this.clearPreviewSelection();
   }
 
-  onMouseOver(e) {
+  onMouseEnter(e) {
     const { target } = e;
-    const { linesInScope } = this.props;
+    const { linesInScope, selection } = this.props;
+    const location = getTokenLocation(this.editor.codeMirror, target);
+
+    console.log(">> pos ", selection && selection.tokenPos, location);
 
     if (
       !this.inSelectedFrameSource() ||
-      !target.parentElement.closest(".CodeMirror-line")
+      !target.parentElement.closest(".CodeMirror-line") ||
+      (selection && isEqual(selection.tokenPos, location))
     ) {
       return;
     }
-    const location = getTokenLocation(this.editor.codeMirror, target);
     const { line } = location;
 
     if (!linesInScope.includes(line)) {
@@ -388,9 +389,11 @@ class Editor extends PureComponent {
       selection
     } = this.props;
     const tokenText = token.innerText.trim();
+    const cursorPos = token.getBoundingClientRect();
 
     if (
       (selection && selection.updating) ||
+      cursorPos.top == 0 ||
       !selectedFrame ||
       !selectedSource ||
       tokenText === "" ||
@@ -399,8 +402,7 @@ class Editor extends PureComponent {
     ) {
       return;
     }
-
-    setSelection(tokenText, location);
+    setSelection(tokenText, location, cursorPos);
     this.setState({ selectedToken: token });
   }
 
@@ -768,18 +770,17 @@ class Editor extends PureComponent {
   }
 
   renderPreview() {
-    const { selectedToken } = this.state;
     const { selectedSource, selection } = this.props;
 
     if (!this.editor || !selectedSource) {
       return null;
     }
 
-    if (!selection || !selectedToken) {
+    if (!selection || selection.updating) {
       return;
     }
 
-    const { result, expression, location } = selection;
+    const { result, expression, location, cursorPos } = selection;
     const value = result;
     if (
       typeof value == "undefined" ||
@@ -794,7 +795,7 @@ class Editor extends PureComponent {
       editor: this.editor,
       location: location,
       expression: expression,
-      popoverTarget: selectedToken,
+      popoverPos: cursorPos,
       onClose: () => this.clearPreviewSelection()
     });
   }

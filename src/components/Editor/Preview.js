@@ -28,7 +28,7 @@ class Preview extends Component {
     loadObjectProperties: Object => void,
     addExpression: (string, ?Object) => void,
     loadedObjects: Object,
-    popoverTarget: Object,
+    popoverPos: Object,
     value: Object,
     expression: string,
     onClose: () => void,
@@ -42,13 +42,11 @@ class Preview extends Component {
       loadObjectProperties,
       loadedObjects,
       value,
-      popoverTarget,
       editor,
       location
     } = this.props;
 
-    popoverTarget.classList.add("selected-token");
-    this.pos = popoverTarget.getBoundingClientRect();
+    console.log("markExpression", location);
     this.marker = markExpression(editor, location);
 
     if (!value || !value.type == "object") {
@@ -61,8 +59,6 @@ class Preview extends Component {
   }
 
   componentWillUnmount() {
-    const { popoverTarget } = this.props;
-    popoverTarget.classList.remove("selected-token");
     if (this.marker) {
       this.marker.clear();
     }
@@ -176,18 +172,13 @@ class Preview extends Component {
   }
 
   render() {
-    const { popoverTarget, onClose, value, expression } = this.props;
+    const { popoverPos, onClose, value, expression } = this.props;
 
     let type = this.getPreviewType(value);
 
-    if (!this.pos) {
-      return null;
-    }
-
     return Popover(
       {
-        target: popoverTarget,
-        targetPosition: this.pos,
+        targetPosition: popoverPos,
         onMouseLeave: onClose,
         type
       },

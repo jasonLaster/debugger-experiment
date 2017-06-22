@@ -11,7 +11,7 @@ export function getTokenLocation(codeMirror: any, tokenEl: HTMLElement) {
   };
 }
 
-export function markExpression(cm: any, location) {
+export function markExpression(cm: any, location: any) {
   const { start, end } = location;
   const { doc } = cm.editor;
 

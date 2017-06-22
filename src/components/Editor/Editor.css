@@ -160,13 +160,17 @@ html[dir="rtl"] .editor-mount {
   color: var(--theme-content-color3);
 }
 
-.new-debug-line .CodeMirror-line {
-  background-color: var(--debug-line-background) !important;
-  outline: var(--debug-line-border) solid 1px;
+.debug-expression {
+  background-color: var(--debug-expression-background);
 }
 
-.new-debug-line .CodeMirror-linenumber {
+.selected-token {
+  background-color: var(--theme-highlight-yellow);
+}
+
+.new-debug-line .CodeMirror-line {
   background-color: transparent !important;
+  outline: var(--debug-line-border) solid 1px;
 }
 
 /* Don't display the highlight color since the debug line
