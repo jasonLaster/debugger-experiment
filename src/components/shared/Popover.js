@@ -70,7 +70,6 @@ class Popover extends Component {
   getTooltipCoords() {
     const tooltip = ReactDOM.findDOMNode(this);
     const tooltipRect = tooltip.getBoundingClientRect();
-    // const targetRect = this.props.target.getBoundingClientRect();
     const targetRect = this.props.targetPosition;
 
     const editor = document.querySelector(".editor-wrapper");

@@ -46,7 +46,6 @@ class Preview extends Component {
       location
     } = this.props;
 
-    console.log("markExpression", location);
     this.marker = markExpression(editor, location);
 
     if (!value || !value.type == "object") {

@@ -85,8 +85,7 @@ const cssVars = {
 };
 
 type EditorState = {
-  highlightedLineRange: ?Object,
-  selectedToken: ?HTMLElement
+  highlightedLineRange: ?Object
 };
 
 class Editor extends PureComponent {
@@ -106,8 +105,7 @@ class Editor extends PureComponent {
     this.lastJumpLine = null;
 
     this.state = {
-      highlightedLineRange: null,
-      selectedToken: null
+      highlightedLineRange: null
     };
 
     const self: any = this;
@@ -120,6 +118,8 @@ class Editor extends PureComponent {
     self.onToggleBreakpoint = this.onToggleBreakpoint.bind(this);
     self.previewSelectedToken = this.previewSelectedToken.bind(this);
     self.toggleBreakpoint = this.toggleBreakpoint.bind(this);
+    self.onMouseOver = debounce(this.onMouseOver, 50);
+
     // eslint-disable-next-line max-len
     self.toggleBreakpointDisabledStatus = this.toggleBreakpointDisabledStatus.bind(
       this
@@ -184,8 +184,7 @@ class Editor extends PureComponent {
     // Set code editor wrapper to be focusable
     codeMirrorWrapper.tabIndex = 0;
     codeMirrorWrapper.addEventListener("keydown", e => this.onKeyDown(e));
-    this.onMouseEnter = debounce(this.onMouseEnter, 50);
-    codeMirrorWrapper.addEventListener("mouseover", e => this.onMouseEnter(e));
+    codeMirrorWrapper.addEventListener("mouseover", e => this.onMouseOver(e));
     codeMirrorWrapper.addEventListener("click", e => this.onTokenClick(e));
 
     const toggleFoldMarkerVisibility = e => {
@@ -332,7 +331,7 @@ class Editor extends PureComponent {
     this.clearPreviewSelection();
   }
 
-  onMouseEnter(e) {
+  onMouseOver(e) {
     const { target } = e;
     const { linesInScope, selection } = this.props;
     const location = getTokenLocation(this.editor.codeMirror, target);
@@ -389,7 +388,6 @@ class Editor extends PureComponent {
 
   clearPreviewSelection() {
     this.props.clearSelection();
-    // return this.setState({ selectedToken: null });
   }
 
   async previewSelectedToken(token, location) {
@@ -415,7 +413,6 @@ class Editor extends PureComponent {
     }
 
     setSelection(tokenText, location, cursorPos);
-    this.setState({ selectedToken: token });
   }
 
   openMenu(event, codeMirror) {
