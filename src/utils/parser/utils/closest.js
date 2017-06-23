@@ -25,11 +25,12 @@ function getClosestMemberExpression(source, token, location: Location) {
   traverseAst(source, {
     enter(path: NodePath) {
       const { node } = path;
-      if (
-        t.isMemberExpression(node) &&
-        node.property.name === token &&
-        nodeContainsPosition(node, location)
-      ) {
+      if (!nodeContainsPosition(node, location)) {
+        return path.skip();
+        // return;
+      }
+
+      if (t.isMemberExpression(node) && node.property.name === token) {
         const memberExpression = getMemberExpression(node);
         expression = {
           expression: memberExpression,
