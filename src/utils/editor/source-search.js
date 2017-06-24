@@ -137,7 +137,14 @@ function getMatchIndex(count: number, currentIndex: number, rev: boolean) {
  * @memberof utils/source-search
  * @static
  */
-function doSearch(ctx, rev, query, keepSelection, modifiers: SearchModifiers) {
+function doSearch(
+  ctx,
+  rev,
+  query,
+  keepSelection,
+  findNext,
+  modifiers: SearchModifiers
+) {
   let { cm } = ctx;
   const matchIndex = -1;
 
@@ -152,7 +159,9 @@ function doSearch(ctx, rev, query, keepSelection, modifiers: SearchModifiers) {
 
     updateOverlay(cm, state, query, modifiers);
     updateCursor(cm, state, keepSelection);
-    searchNext(ctx, rev, query, newQuery, modifiers);
+    if (findNext) {
+      searchNext(ctx, rev, query, newQuery, modifiers);
+    }
 
     // NOTE: We would like to find the correct match index based on where the
     // match is in the document.
@@ -255,10 +264,11 @@ function find(
   ctx: any,
   query: string,
   keepSelection: boolean,
+  shouldFindNext: boolean,
   modifiers: SearchModifiers
 ) {
   clearSearch(ctx.cm, query, modifiers);
-  return doSearch(ctx, false, query, keepSelection, modifiers);
+  return doSearch(ctx, false, query, keepSelection, shouldFindNext, modifiers);
 }
 
 /**
@@ -271,9 +281,10 @@ function findNext(
   ctx: any,
   query: string,
   keepSelection: boolean,
+  shouldFindNext: boolean,
   modifiers: SearchModifiers
 ) {
-  return doSearch(ctx, false, query, keepSelection, modifiers);
+  return doSearch(ctx, false, query, keepSelection, shouldFindNext, modifiers);
 }
 
 /**
@@ -286,9 +297,10 @@ function findPrev(
   ctx: any,
   query: string,
   keepSelection: boolean,
+  shouldFindNext: boolean,
   modifiers: SearchModifiers
 ) {
-  return doSearch(ctx, true, query, keepSelection, modifiers);
+  return doSearch(ctx, true, query, keepSelection, shouldFindNext, modifiers);
 }
 
 function clearIndex(ctx: any, query: string, modifiers: SearchModifiers) {

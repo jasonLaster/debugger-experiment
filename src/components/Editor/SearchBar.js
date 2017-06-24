@@ -16,7 +16,8 @@ import {
   getSymbolSearchState,
   getSymbolSearchType,
   getSelectedSource,
-  getSymbols
+  getSymbols,
+  getSelectedLocation
 } from "../../selectors";
 
 import {
@@ -114,6 +115,7 @@ class SearchBar extends Component {
     selectedSymbolType: SymbolSearchType,
     toggleSymbolSearch: boolean => void,
     setSelectedSymbolType: SymbolSearchType => void,
+    selectedLocation: any,
     query: string,
     setFileSearchQuery: string => void,
     updateSearchResults: ({ count: number, index?: number }) => void,
@@ -414,6 +416,7 @@ class SearchBar extends Component {
       selectedSource,
       modifiers,
       editor: ed,
+      selectedLocation,
       searchResults: { index }
     } = this.props;
 
@@ -433,7 +436,8 @@ class SearchBar extends Component {
       clearIndex(ctx, query, modifiers.toJS());
     }
 
-    const newIndex = find(ctx, query, true, modifiers.toJS());
+    const shouldFindNext = !selectedLocation.line;
+    const newIndex = find(ctx, query, true, shouldFindNext, modifiers.toJS());
     this.props.updateSearchResults({
       count: newCount,
       index: newIndex
@@ -490,7 +494,7 @@ class SearchBar extends Component {
 
     if (modifiers) {
       const findFnc = rev ? findPrev : findNext;
-      const newIndex = findFnc(ctx, query, true, modifiers.toJS());
+      const newIndex = findFnc(ctx, query, true, true, modifiers.toJS());
       updateSearchResults({
         index: newIndex,
         count
@@ -814,7 +818,8 @@ export default connect(
       symbolSearchResults: getSymbolSearchResults(state),
       searchResults: getSearchResults(state),
       symbols: _getFormattedSymbols(state),
-      selectedSymbolType: getSymbolSearchType(state)
+      selectedSymbolType: getSymbolSearchType(state),
+      selectedLocation: getSelectedLocation(state)
     };
   },
   dispatch => bindActionCreators(actions, dispatch)
