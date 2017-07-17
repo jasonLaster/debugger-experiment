@@ -2,6 +2,7 @@
 
 const { isDevelopment } = require("devtools-config");
 const { Services, PrefsHelper } = require("devtools-modules");
+import * as selectors from "../selectors";
 
 const prefsSchemaVersion = "1.0.1";
 
@@ -51,4 +52,14 @@ if (prefs.debuggerPrefsSchemaVersion !== prefsSchemaVersion) {
   prefs.debuggerPrefsSchemaVersion = prefsSchemaVersion;
 }
 
-module.exports = { prefs };
+export function updatePrefs(state) {
+  prefs.each(prefName => {
+    const selector = selectors[`get${capitalize(prefName)}`];
+    const prefValue = selector(state);
+    if (prefs[prefName] !== prefValue) {
+      prefs[prefName] = prefValue;
+    }
+  });
+}
+
+module.exports = { prefs, updatePrefs };

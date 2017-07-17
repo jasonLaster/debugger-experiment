@@ -98,18 +98,6 @@ function update(
     case "TOGGLE_FILE_SEARCH_MODIFIER": {
       const actionVal = !state.getIn(["fileSearchModifiers", action.modifier]);
 
-      if (action.modifier == "caseSensitive") {
-        prefs.fileSearchCaseSensitive = actionVal;
-      }
-
-      if (action.modifier == "wholeWord") {
-        prefs.fileSearchWholeWord = actionVal;
-      }
-
-      if (action.modifier == "regexMatch") {
-        prefs.fileSearchRegexMatch = actionVal;
-      }
-
       return state.setIn(["fileSearchModifiers", action.modifier], actionVal);
     }
 
@@ -123,11 +111,9 @@ function update(
 
     case "TOGGLE_PANE": {
       if (action.position == "start") {
-        prefs.startPanelCollapsed = action.paneCollapsed;
         return state.set("startPanelCollapsed", action.paneCollapsed);
       }
 
-      prefs.endPanelCollapsed = action.paneCollapsed;
       return state.set("endPanelCollapsed", action.paneCollapsed);
     }
 

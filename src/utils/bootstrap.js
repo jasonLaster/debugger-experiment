@@ -14,6 +14,7 @@ import { startParserWorker, stopParserWorker } from "../utils/parser";
 import configureStore from "./create-store";
 import reducers from "../reducers";
 import selectors from "../selectors";
+import { updatePrefs } from "./prefs";
 import App from "../components/App";
 
 export function bootstrapStore(client, services) {
@@ -30,6 +31,8 @@ export function bootstrapStore(client, services) {
     require("../actions").default,
     store.dispatch
   );
+
+  store.subscribe(() => updatePrefs(store.getState()));
 
   return { store, actions, selectors };
 }
