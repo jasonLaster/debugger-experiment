@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sources-tree addToTree correctly parses file sources correctly 1`] = `
+" - root
+  - file://
+    - a
+      - b.js
+"
+`;
+
+exports[`sources-tree addToTree correctly parses webpack sources correctly 1`] = `
+" - root
+  - webpack://
+    - a
+      - b.js
+"
+`;
+
+exports[`sources-tree addToTree files without an extension 1`] = `
+Object {
+  "focusedItem": null,
+  "parentMap": WeakMap {},
+  "sourceTree": Object {
+    "contents": Array [
+      Object {
+        "contents": Array [
+          Object {
+            "contents": Immutable.Map {
+              id: "server1.conn13.child1/37",
+              url: "https://unpkg.com/codemirror",
+},
+            "name": "(index)",
+            "path": "https://unpkg.com/codemirror",
+          },
+          Object {
+            "contents": Array [
+              Object {
+                "contents": Immutable.Map {
+                  id: "server1.conn13.child1/39",
+                  url: "https://unpkg.com/codemirror/mode/xml/xml.js",
+},
+                "name": "xml.js",
+                "path": "https://unpkg.com/codemirror/mode/xml/xml.js",
+              },
+            ],
+            "name": "codemirror/mode/xml",
+            "path": "/unpkg.com/codemirror/mode/xml",
+          },
+        ],
+        "name": "unpkg.com",
+        "path": "/unpkg.com",
+      },
+    ],
+    "name": "root",
+    "path": "",
+  },
+  "uncollapsedTree": Object {
+    "contents": Array [
+      Object {
+        "contents": Array [
+          Object {
+            "contents": Immutable.Map {
+              id: "server1.conn13.child1/37",
+              url: "https://unpkg.com/codemirror",
+},
+            "name": "(index)",
+            "path": "https://unpkg.com/codemirror",
+          },
+          Object {
+            "contents": Array [
+              Object {
+                "contents": Array [
+                  Object {
+                    "contents": Array [
+                      Object {
+                        "contents": Immutable.Map {
+                          id: "server1.conn13.child1/39",
+                          url: "https://unpkg.com/codemirror/mode/xml/xml.js",
+},
+                        "name": "xml.js",
+                        "path": "https://unpkg.com/codemirror/mode/xml/xml.js",
+                      },
+                    ],
+                    "name": "xml",
+                    "path": "/unpkg.com/codemirror/mode/xml",
+                  },
+                ],
+                "name": "mode",
+                "path": "/unpkg.com/codemirror/mode",
+              },
+            ],
+            "name": "codemirror",
+            "path": "/unpkg.com/codemirror",
+          },
+        ],
+        "name": "unpkg.com",
+        "path": "/unpkg.com",
+      },
+    ],
+    "name": "root",
+    "path": "",
+  },
+}
+`;
+
+exports[`sources-tree addToTree files without an extension 2 1`] = `
+Object {
+  "focusedItem": null,
+  "parentMap": WeakMap {},
+  "sourceTree": Object {
+    "contents": Array [
+      Object {
+        "contents": Array [
+          Object {
+            "contents": Immutable.Map {
+              id: "server1.conn13.child1/37",
+              url: "https://unpkg.com/codemirror@5.1",
+},
+            "name": "codemirror@5.1",
+            "path": "https://unpkg.com/codemirror@5.1",
+          },
+        ],
+        "name": "unpkg.com",
+        "path": "/unpkg.com",
+      },
+    ],
+    "name": "root",
+    "path": "",
+  },
+  "uncollapsedTree": Object {
+    "contents": Array [
+      Object {
+        "contents": Array [
+          Object {
+            "contents": Immutable.Map {
+              id: "server1.conn13.child1/37",
+              url: "https://unpkg.com/codemirror@5.1",
+},
+            "name": "codemirror@5.1",
+            "path": "https://unpkg.com/codemirror@5.1",
+          },
+        ],
+        "name": "unpkg.com",
+        "path": "/unpkg.com",
+      },
+    ],
+    "name": "root",
+    "path": "",
+  },
+}
+`;
+
+exports[`sources-tree addToTree gets a source's ancestor directories 1`] = `
+" - root
+  - a
+    - b.js
+    - c.js
+  - b
+    - c.js
+"
+`;
+
+exports[`sources-tree addToTree handles '?' in target url 1`] = `
+" - root
+  - a
+    - b.js
+  - b
+    - b.js
+"
+`;
+
+exports[`sources-tree alphabetically sorts children 1`] = `
+" - root
+  - example.com
+    - foo
+      - a_source3.js
+      - b_source2.js
+    - source1.js
+"
+`;
+
+exports[`sources-tree can collapse a single source 1`] = `
+" - root
+  - example.com
+    - a/b
+      - c.js
+"
+`;
+
+exports[`sources-tree correctly merges in a collapsed source with a deeper level 1`] = `
+" - root
+  - example.com
+    - a/b
+      - c/d
+        - e.js
+      - c.js
+"
+`;
+
+exports[`sources-tree correctly merges in a collapsed source with the same level 1`] = `
+" - root
+  - example.com
+    - a/b
+      - c/d
+        - e.js
+      - c.js
+"
+`;
+
+exports[`sources-tree does not attempt to add two of the same directory 1`] = `
+" - root
+  - davidwalsh.name
+    - (index)
+    - wp-content/prism.js
+      - (index)
+"
+`;
+
+exports[`sources-tree excludes javascript: URLs from the tree 1`] = `
+" - root
+  - example.com
+    - source1.js
+"
+`;
+
+exports[`sources-tree identifies directories correctly 1`] = `
+" - root
+  - example.com
+    - b
+      - c
+        - d.js
+    - a.js
+"
+`;
+
+exports[`sources-tree puts root debugee url at the top of the sort 1`] = `
+" - root
+  - example.com
+    - b.js
+  - api.example.com
+    - a.js
+  - demo.com
+    - c.js
+"
+`;
+
+exports[`sources-tree puts root debugee url at the top of the sort 2`] = `
+" - root
+  - demo.com
+    - c.js
+  - api.example.com
+    - a.js
+  - example.com
+    - b.js
+"
+`;
+
+exports[`sources-tree sorts folders first 1`] = `
+" - root
+  - example.com
+    - (index)
+    - b.js
+      - b_source.js
+    - b2
+    - d
+      - d_source.js
+    - a.js
+    - c.js
+"
+`;

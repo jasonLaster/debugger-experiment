@@ -25,7 +25,13 @@ type TmpSource = { get: (key: string) => string, toJS: Function };
  * @memberof utils/sources-tree
  * @static
  */
-type Node = { name: any, path: any, contents?: any };
+type Node = {
+  name: string,
+  path: string,
+  contents: Node | SourceRecord | List<SourceRecord> | null
+};
+
+type UrlType = { path: string, group: string, filename: string };
 
 /**
  * @memberof utils/sources-tree
@@ -39,7 +45,7 @@ function nodeHasChildren(item: Node): boolean {
  * @memberof utils/sources-tree
  * @static
  */
-function createNode(name: any, path: any, contents?: any): Node {
+function createNode(name: string, path: string, contents?: Node): Node {
   return {
     name,
     path,
@@ -89,7 +95,7 @@ function getFilenameFromPath(pathname?: string) {
  * @memberof utils/sources-tree
  * @static
  */
-function getURL(sourceUrl: string): { path: string, group: string } {
+function getURL(sourceUrl: string): UrlType {
   const url = sourceUrl;
   let def = { path: "", group: "", filename: "" };
   if (!url) {
@@ -152,14 +158,14 @@ function getURL(sourceUrl: string): { path: string, group: string } {
  * @memberof utils/sources-tree
  * @static
  */
-function isDirectory(url: Object) {
+function isDirectory(url: UrlType) {
   const parts = url.path.split("/").filter(p => p !== "");
-
+  const isRoot = parts.length === 0;
+  const endsWithSlash = url.path.slice(-1) === "/";
   // Assume that all urls point to files except when they end with '/'
   // Or directory node has children
-  return (
-    parts.length === 0 || url.path.slice(-1) === "/" || nodeHasChildren(url)
-  );
+
+  return isRoot || endsWithSlash;
 }
 
 /**
@@ -181,44 +187,52 @@ function addToTree(tree: any, source: TmpSource, debuggeeUrl: string) {
   url.path = decodeURIComponent(url.path);
 
   const parts = url.path.split("/").filter(p => p !== "");
-  const isDir = isDirectory(url);
   parts.unshift(url.group);
 
   let path = "";
   let subtree = tree;
 
-  for (let i = 0; i < parts.length; i++) {
+  for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
     const isLastPart = i === parts.length - 1;
+    console.log({ part });
 
-    // Currently we assume that we are descending into a node with
-    // children. This will fail if a path has a directory named the
-    // same as another file, like `foo/bar.js/file.js`.
-    //
     // TODO: Be smarter about this, which we'll probably do when we
     // are smarter about folders and collapsing empty ones.
-    assert(nodeHasChildren(subtree), `${subtree.name} should have children`);
-    const children = subtree.contents;
+    if (nodeHasChildren(subtree)) {
+      console.log(`node has children`);
+      const child = subtree.contents.find(c => c.name === part);
+      console.log({ part, child });
+      // console.log({ children, child })
+      if (child) {
+        // A node with the same name already exists, simply traverse
+        // into it.
+        subtree = child;
+      } else {
+        // No node with this name exists, so insert a new one in the
+        // place that is alphabetically sorted.
+        const node = createNode(part, `${path}/${part}`, []);
+        let where = determineFileSortOrder(
+          subtree.contents,
+          part,
+          isLastPart,
+          i === 0 ? debuggeeUrl : ""
+        );
 
-    let index = determineFileSortOrder(
-      children,
-      part,
-      isLastPart,
-      i === 0 ? debuggeeUrl : ""
-    );
-
-    const child = children.find(c => c.name === part);
-    if (child) {
-      // A node with the same name already exists, simply traverse
-      // into it.
-      subtree = child;
+        subtree.contents.splice(where, 0, node);
+        subtree = subtree.contents[where];
+      }
     } else {
-      // No node with this name exists, so insert a new one in the
-      // place that is alphabetically sorted.
-      const node = createNode(part, `${path}/${part}`, []);
-      const where = index === -1 ? children.length : index;
-      children.splice(where, 0, node);
-      subtree = children[where];
+      console.log("replace file w/ directory");
+
+      const source = subtree.contents;
+      const url = getURL(source.get("url"));
+      const name = getFilenameFromPath(url.path);
+
+      const newDir = createNode(part, `${path}/${part}`, []);
+      const newSource = createNode(name, `${path}/${part}`, source);
+      subtree.contents = [newDir, newSource];
+      subtree = subtree.contents[0];
     }
 
     // Keep track of the children so we can tag each node with them.
@@ -227,10 +241,14 @@ function addToTree(tree: any, source: TmpSource, debuggeeUrl: string) {
 
   // Overwrite the contents of the final node to store the source
   // there.
-  if (!isDir) {
+  // const hasIndex = subtree.contents.find(c => c.name === "(index)");
+  const isFile = !isDirectory(url);
+  if (isFile && !nodeHasChildren(subtree)) {
     subtree.contents = source;
-  } else if (!subtree.contents.find(c => c.name === "(index)")) {
-    subtree.contents.unshift(createNode("(index)", source.get("url"), source));
+  } else {
+    const name = getFilenameFromPath(url.path);
+    console.log("add file", name, source.get("url"));
+    subtree.contents.unshift(createNode(name, source.get("url"), source));
   }
 }
 
@@ -261,7 +279,7 @@ function determineFileSortOrder(
 ) {
   const partIsDir = !isLastPart || pathPart.indexOf(".") === -1;
 
-  return nodes.findIndex(node => {
+  const index = nodes.findIndex(node => {
     const nodeIsDir = nodeHasChildren(node);
 
     // The index will always be the first thing, so this pathPart will be
@@ -296,6 +314,8 @@ function determineFileSortOrder(
     // placed after the directories.
     return partIsDir;
   });
+
+  return index === -1 ? nodes.length : index;
 }
 
 /**
@@ -335,8 +355,10 @@ function collapseTree(node: any, depth: number = 0) {
 function createTree(sources: any, debuggeeUrl: string) {
   const uncollapsedTree = createNode("root", "", []);
   for (let source of sources.valueSeq()) {
+    // console.log(uncollapsedTree)
     addToTree(uncollapsedTree, source, debuggeeUrl);
   }
+
   const sourceTree = collapseTree(uncollapsedTree);
 
   return {

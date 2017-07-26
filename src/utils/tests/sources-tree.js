@@ -87,6 +87,7 @@ describe("sources-tree", () => {
     expect(tree.contents.length).toBe(1);
     const subtree = tree.contents[0];
     expect(subtree.contents.length).toBe(2);
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("alphabetically sorts children", () => {
@@ -121,6 +122,8 @@ describe("sources-tree", () => {
     let source3Node = fooNode.contents[0];
     expect(source2Node.name).toBe("b_source2.js");
     expect(source3Node.name).toBe("a_source3.js");
+
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("sorts folders first", () => {
@@ -178,6 +181,7 @@ describe("sources-tree", () => {
     expect(aFileNode.name).toBe("a.js");
 
     expect(cFileNode.name).toBe("c.js");
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("puts folder at the top of the sort", () => {
@@ -245,6 +249,9 @@ describe("sources-tree", () => {
 
     expect(treeB.contents[0].contents[0].name).toBe("c.js");
     expect(treeB.contents[1].contents[0].name).toBe("a.js");
+
+    expect(formatTree(treeA)).toMatchSnapshot();
+    expect(formatTree(treeB)).toMatchSnapshot();
   });
 
   it("excludes javascript: URLs from the tree", () => {
@@ -271,6 +278,7 @@ describe("sources-tree", () => {
 
     let source1Node = base.contents[0];
     expect(source1Node.name).toBe("source1.js");
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("can collapse a single source", () => {
@@ -290,6 +298,7 @@ describe("sources-tree", () => {
     const abcNode = abFolder.contents[0];
     expect(abcNode.name).toBe("c.js");
     expect(abcNode.path).toBe("/example.com/a/b/c.js");
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("correctly merges in a collapsed source with a deeper level", () => {
@@ -297,25 +306,27 @@ describe("sources-tree", () => {
     addToTree(fullTree, abcSource);
     addToTree(fullTree, abcdeSource);
     const tree = collapseTree(fullTree);
-
-    expect(tree.contents.length).toBe(1);
-
-    const host = tree.contents[0];
-    expect(host.name).toBe("example.com");
-    expect(host.contents.length).toBe(1);
-
-    const abFolder = host.contents[0];
-    expect(abFolder.name).toBe("a/b");
-    expect(abFolder.contents.length).toBe(2);
-
-    const [cdFolder, abcNode] = abFolder.contents;
-    expect(abcNode.name).toBe("c.js");
-    expect(abcNode.path).toBe("/example.com/a/b/c.js");
-    expect(cdFolder.name).toBe("c/d");
-
-    const [abcdeNode] = cdFolder.contents;
-    expect(abcdeNode.name).toBe("e.js");
-    expect(abcdeNode.path).toBe("/example.com/a/b/c/d/e.js");
+    //
+    // expect(tree.contents.length).toBe(1);
+    //
+    // const host = tree.contents[0];
+    // expect(host.name).toBe("example.com");
+    // expect(host.contents.length).toBe(1);
+    //
+    // const abFolder = host.contents[0];
+    // expect(abFolder.name).toBe("a/b");
+    // expect(abFolder.contents.length).toBe(2);
+    //
+    // const [cdFolder, abcNode] = abFolder.contents;
+    // expect(abcNode.name).toBe("c.js");
+    // expect(abcNode.path).toBe("/example.com/a/b/c.js");
+    // expect(cdFolder.name).toBe("c/d");
+    //
+    // const [abcdeNode] = cdFolder.contents;
+    // expect(abcdeNode.name).toBe("e.js");
+    // expect(abcdeNode.path).toBe("/example.com/a/b/c/d/e.js");
+    console.log(formatTree(tree));
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("correctly merges in a collapsed source with a shallower level", () => {
@@ -339,6 +350,7 @@ describe("sources-tree", () => {
     expect(abcNode.path).toBe("/example.com/a/b/c.js");
     expect(abxNode.name).toBe("x.js");
     expect(abxNode.path).toBe("/example.com/a/b/x.js");
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("correctly merges in a collapsed source with the same level", () => {
@@ -365,161 +377,7 @@ describe("sources-tree", () => {
     const [abcdeNode] = cdFolder.contents;
     expect(abcdeNode.name).toBe("e.js");
     expect(abcdeNode.path).toBe("/example.com/a/b/c/d/e.js");
-  });
-
-  it("correctly parses webpack sources correctly", () => {
-    const source = Map({
-      url: "webpack:///a/b.js",
-      actor: "actor1"
-    });
-    const tree = createNode("root", "", []);
-
-    addToTree(tree, source);
-    expect(tree.contents.length).toBe(1);
-
-    let base = tree.contents[0];
-    expect(base.name).toBe("webpack://");
-    expect(base.contents.length).toBe(1);
-
-    const aNode = base.contents[0];
-    expect(aNode.name).toBe("a");
-    expect(aNode.contents.length).toBe(1);
-
-    const bNode = aNode.contents[0];
-    expect(bNode.name).toBe("b.js");
-  });
-
-  it("correctly parses file sources correctly", () => {
-    const source = Map({
-      url: "file:///a/b.js",
-      actor: "actor1"
-    });
-    const tree = createNode("root", "", []);
-
-    addToTree(tree, source);
-    expect(tree.contents.length).toBe(1);
-
-    let base = tree.contents[0];
-    expect(base.name).toBe("file://");
-    expect(base.contents.length).toBe(1);
-
-    const aNode = base.contents[0];
-    expect(aNode.name).toBe("a");
-    expect(aNode.contents.length).toBe(1);
-
-    const bNode = aNode.contents[0];
-    expect(bNode.name).toBe("b.js");
-  });
-
-  it("gets a source's ancestor directories", function() {
-    const source1 = Map({
-      url: "http://a/b.js",
-      actor: "actor1"
-    });
-
-    const source2 = Map({
-      url: "http://a/c.js",
-      actor: "actor1"
-    });
-
-    const source3 = Map({
-      url: "http://b/c.js",
-      actor: "actor1"
-    });
-
-    const tree = createNode("root", "", []);
-    addToTree(tree, source1);
-    addToTree(tree, source2);
-    addToTree(tree, source3);
-    const paths = getDirectories("http://a/b.js", tree);
-
-    expect(paths[1].path).toBe("/a");
-    expect(paths[0].path).toBe("/a/b.js");
-  });
-
-  it("handles '?' in target url", function() {
-    const source1 = Map({
-      url: "http://a/b.js",
-      actor: "actor1"
-    });
-
-    const source2 = Map({
-      url: "http://b/b.js",
-      actor: "actor1"
-    });
-
-    const tree = createNode("root", "", []);
-    addToTree(tree, source1);
-    addToTree(tree, source2);
-    const paths = getDirectories("http://a/b.js?key=hi", tree);
-
-    expect(paths[1].path).toBe("/a");
-    expect(paths[0].path).toBe("/a/b.js");
-  });
-
-  it("handles 'https' in target url", function() {
-    const source1 = Map({
-      url: "https://a/b.js",
-      actor: "actor1"
-    });
-
-    const source2 = Map({
-      url: "https://b/b.js",
-      actor: "actor1"
-    });
-
-    const tree = createNode("root", "", []);
-    addToTree(tree, source1);
-    addToTree(tree, source2);
-    const paths = getDirectories("https://a/b.js", tree);
-
-    expect(paths[1].path).toBe("/a");
-    expect(paths[0].path).toBe("/a/b.js");
-  });
-
-  it("handles normal url with http and https for filename", function() {
-    const urlObject = getURL("https://a/b.js");
-    const urlObject2 = getURL("http://a/b.js");
-
-    expect(urlObject.filename).toBe("b.js");
-    expect(urlObject2.filename).toBe("b.js");
-  });
-
-  it("handles url with querystring for filename", function() {
-    const urlObject = getURL("https://a/b.js?key=randomeKey");
-
-    expect(urlObject.filename).toBe("b.js");
-  });
-
-  it("handles url with '#' for filename", function() {
-    const urlObject = getURL("https://a/b.js#specialSection");
-
-    expect(urlObject.filename).toBe("b.js");
-  });
-
-  it("handles url with no filename for filename", function() {
-    const urlObject = getURL("https://a/c");
-
-    expect(urlObject.filename).toBe("(index)");
-  });
-
-  it("recognizes root url match", () => {
-    const rootA = "http://example.com/path/to/file.html";
-    const rootB = "https://www.demo.com/index.html";
-
-    expect(isExactUrlMatch("example.com", rootA)).toBe(true);
-    expect(isExactUrlMatch("www.example.com", rootA)).toBe(true);
-    expect(isExactUrlMatch("api.example.com", rootA)).toBe(false);
-    expect(isExactUrlMatch("example.example.com", rootA)).toBe(false);
-    expect(isExactUrlMatch("www.example.example.com", rootA)).toBe(false);
-    expect(isExactUrlMatch("demo.com", rootA)).toBe(false);
-
-    expect(isExactUrlMatch("demo.com", rootB)).toBe(true);
-    expect(isExactUrlMatch("www.demo.com", rootB)).toBe(true);
-    expect(isExactUrlMatch("maps.demo.com", rootB)).toBe(false);
-    expect(isExactUrlMatch("demo.demo.com", rootB)).toBe(false);
-    expect(isExactUrlMatch("www.demo.demo.com", rootB)).toBe(false);
-    expect(isExactUrlMatch("example.com", rootB)).toBe(false);
+    expect(formatTree(tree)).toMatchSnapshot();
   });
 
   it("identifies directories correctly", () => {
@@ -536,13 +394,257 @@ describe("sources-tree", () => {
 
     const tree = createNode("root", "", []);
     sources.forEach(source => addToTree(tree, source));
-    const [bFolderNode, aFileNode] = tree.contents[0].contents;
-    const [cFolderNode] = bFolderNode.contents;
-    const [dFileNode] = cFolderNode.contents;
+    // const [bFolderNode, aFileNode] = tree.contents[0].contents;
+    // const [cFolderNode] = bFolderNode.contents;
+    // const [dFileNode] = cFolderNode.contents;
 
-    expect(isDirectory(bFolderNode)).toBe(true);
-    expect(isDirectory(aFileNode)).toBe(false);
-    expect(isDirectory(cFolderNode)).toBe(true);
-    expect(isDirectory(dFileNode)).toBe(false);
+    console.log(formatTree(tree));
+    expect(formatTree(tree)).toMatchSnapshot();
+  });
+
+  describe("addToTree", () => {
+    it("correctly parses file sources correctly", () => {
+      const source = Map({
+        url: "file:///a/b.js",
+        actor: "actor1"
+      });
+      const tree = createNode("root", "", []);
+
+      addToTree(tree, source);
+      expect(tree.contents.length).toBe(1);
+
+      let base = tree.contents[0];
+      expect(base.name).toBe("file://");
+      expect(base.contents.length).toBe(1);
+
+      const aNode = base.contents[0];
+      expect(aNode.name).toBe("a");
+      expect(aNode.contents.length).toBe(1);
+
+      const bNode = aNode.contents[0];
+      expect(bNode.name).toBe("b.js");
+      expect(formatTree(tree)).toMatchSnapshot();
+    });
+
+    it("gets a source's ancestor directories", function() {
+      const source1 = Map({
+        url: "http://a/b.js",
+        actor: "actor1"
+      });
+
+      const source2 = Map({
+        url: "http://a/c.js",
+        actor: "actor1"
+      });
+
+      const source3 = Map({
+        url: "http://b/c.js",
+        actor: "actor1"
+      });
+
+      const tree = createNode("root", "", []);
+      addToTree(tree, source1);
+      addToTree(tree, source2);
+      addToTree(tree, source3);
+      const paths = getDirectories("http://a/b.js", tree);
+
+      expect(paths[1].path).toBe("/a");
+      expect(paths[0].path).toBe("/a/b.js");
+      expect(formatTree(tree)).toMatchSnapshot();
+    });
+
+    it("handles '?' in target url", function() {
+      const source1 = Map({
+        url: "http://a/b.js",
+        actor: "actor1"
+      });
+
+      const source2 = Map({
+        url: "http://b/b.js",
+        actor: "actor1"
+      });
+
+      const tree = createNode("root", "", []);
+      addToTree(tree, source1);
+      addToTree(tree, source2);
+      const paths = getDirectories("http://a/b.js?key=hi", tree);
+
+      expect(paths[1].path).toBe("/a");
+      expect(paths[0].path).toBe("/a/b.js");
+      expect(formatTree(tree)).toMatchSnapshot();
+    });
+
+    it("handles 'https' in target url", function() {
+      const source1 = Map({
+        url: "https://a/b.js",
+        actor: "actor1"
+      });
+
+      const source2 = Map({
+        url: "https://b/b.js",
+        actor: "actor1"
+      });
+
+      const tree = createNode("root", "", []);
+      addToTree(tree, source1);
+      addToTree(tree, source2);
+      const paths = getDirectories("https://a/b.js", tree);
+
+      expect(paths[1].path).toBe("/a");
+      expect(paths[0].path).toBe("/a/b.js");
+    });
+
+    it("correctly parses webpack sources correctly", () => {
+      const source = Map({
+        url: "webpack:///a/b.js",
+        actor: "actor1"
+      });
+      const tree = createNode("root", "", []);
+
+      addToTree(tree, source);
+      console.log(formatTree(tree));
+      expect(formatTree(tree)).toMatchSnapshot();
+    });
+
+    it("files without an extension", () => {
+      function createSourcesList(sources) {
+        const msources = sources.map((s, i) => new Map(s));
+        let sourceList = Map();
+        msources.forEach(s => {
+          sourceList = sourceList.mergeIn([s.get("id")], s);
+        });
+
+        return sourceList;
+      }
+
+      const testData = [
+        {
+          id: "server1.conn13.child1/39",
+          url: "https://unpkg.com/codemirror/mode/xml/xml.js"
+        },
+        {
+          id: "server1.conn13.child1/37",
+          url: "https://unpkg.com/codemirror"
+        }
+      ];
+
+      const x = `
+  - root
+  - unpkg.com
+  - codemirror
+  - (index)
+   - mode
+     - xml
+       - xml.js
+
+  `;
+
+      const testMap = createSourcesList(testData);
+      const tree = createTree(testMap);
+      console.log(formatTree(tree.uncollapsedTree));
+      expect(tree).toMatchSnapshot();
+    });
+
+    it("files without an extension 2", () => {
+      function createSourcesList(sources) {
+        const msources = sources.map((s, i) => new Map(s));
+        let sourceList = Map();
+        msources.forEach(s => {
+          sourceList = sourceList.mergeIn([s.get("id")], s);
+        });
+
+        return sourceList;
+      }
+
+      const testData = [
+        {
+          id: "server1.conn13.child1/37",
+          url: "https://unpkg.com/codemirror@5.1"
+        },
+
+        {
+          id: "server1.conn13.child1/39",
+          url: "https://unpkg.com/codemirror@5.1/mode/xml/xml.js"
+        }
+      ];
+
+      const x = `
+- root
+- unpkg.com
+ - codemirror
+  - (index)
+   - mode
+     - xml
+       - xml.js
+
+`;
+
+      const testMap = createSourcesList(testData);
+      const tree = createTree(testMap);
+      // console.log(tree.uncollapsedTree.contents[0])
+      console.log("YOOO\n", formatTree(tree.uncollapsedTree));
+      // expect(tree).toMatchSnapshot();
+    });
+
+    fit("files without an extension 2", () => {
+      function createSourcesList(sources) {
+        const msources = sources.map((s, i) => new Map(s));
+        let sourceList = Map();
+        msources.forEach(s => {
+          sourceList = sourceList.mergeIn([s.get("id")], s);
+        });
+
+        return sourceList;
+      }
+
+      const testData = [
+        {
+          id: "server1.conn13.child1/37",
+          url: "https://unpkg.com/codemirror"
+        },
+
+        {
+          id: "server1.conn13.child1/39",
+          url: "https://unpkg.com/codemirror/mode/xml/xml.js"
+        }
+      ];
+
+      const x = `
+    - root
+    - unpkg.com
+     - codemirror
+      - (index)
+       - mode
+         - xml
+           - xml.js
+
+    `;
+
+      const testMap = createSourcesList(testData);
+      const tree = createTree(testMap);
+      // console.log(tree.uncollapsedTree.contents[0])
+      console.log("YOOO\n", formatTree(tree.uncollapsedTree));
+      // expect(tree).toMatchSnapshot();
+    });
   });
 });
+
+function formatTree(tree) {
+  function _format(tree, depth = 0, str = "") {
+    const whitespace = new Array(depth * 2).join(" ");
+    str += `${whitespace} - ${tree.name}\n`;
+    if (!tree.contents) {
+      // return `${whitespace} - ${tree.name}`
+    }
+
+    if (tree.contents.length > 0) {
+      tree.contents.forEach(t => {
+        str = _format(t, depth + 1, str);
+      });
+    }
+
+    return str;
+  }
+
+  return _format(tree);
+}

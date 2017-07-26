@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sources-tree regress 1`] = `
+Object {
+  "contents": Array [
+    Object {
+      "contents": Array [
+        Object {
+          "contents": Array [
+            Object {
+              "contents": Immutable.Map {
+                id: "server1.conn13.child1/37",
+                url: "https://unpkg.com/codemirror@5.15.2",
+},
+              "name": "(index)",
+              "path": "https://unpkg.com/codemirror@5.15.2",
+            },
+            Object {
+              "contents": Array [
+                Object {
+                  "contents": Array [
+                    Object {
+                      "contents": Array [
+                        Object {
+                          "contents": Immutable.Map {
+                            id: "server1.conn13.child1/39",
+                            url: "https://unpkg.com/codemirror@5.15.2/mode/xml/xml.js",
+},
+                          "name": "(index)",
+                          "path": "https://unpkg.com/codemirror@5.15.2/mode/xml/xml.js",
+                        },
+                      ],
+                      "name": "xml.js",
+                      "path": "/unpkg.com/codemirror@5.15.2/mode/xml/xml.js",
+                    },
+                  ],
+                  "name": "xml",
+                  "path": "/unpkg.com/codemirror@5.15.2/mode/xml",
+                },
+              ],
+              "name": "mode",
+              "path": "/unpkg.com/codemirror@5.15.2/mode",
+            },
+          ],
+          "name": "codemirror@5.15.2",
+          "path": "/unpkg.com/codemirror@5.15.2",
+        },
+      ],
+      "name": "unpkg.com",
+      "path": "/unpkg.com",
+    },
+  ],
+  "name": "root",
+  "path": "",
+}
+`;
