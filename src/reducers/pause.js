@@ -22,6 +22,7 @@ type PauseState = {
 
 export const State = (): PauseState => ({
   pause: undefined,
+  currentAction: undefined,
   isWaitingOnBreak: false,
   frames: undefined,
   selectedFrameId: undefined,
@@ -54,6 +55,7 @@ function update(state: PauseState = State(), action: Action): PauseState {
 
       return Object.assign({}, state, {
         isWaitingOnBreak: false,
+        currentAction: undefined,
         pause: pauseInfo,
         selectedFrameId,
         frames,
@@ -124,6 +126,12 @@ function update(state: PauseState = State(), action: Action): PauseState {
       }
       break;
 
+    case "COMMAND":
+      return {
+        ...state,
+        currentAction: action.value.type
+      };
+
     case "CONNECT":
       return Object.assign({}, State(), { debuggeeUrl: action.url });
 
@@ -164,6 +172,10 @@ export const getLoadedObjects = createSelector(
   getPauseState,
   pauseWrapper => pauseWrapper.loadedObjects
 );
+
+export function currentlyStepping(state: OuterState) {
+  return ["stepIn", "stepOver", "stepOut"].includes(state.pause.currentAction);
+}
 
 export function getLoadedObject(state: OuterState, objectId: string) {
   return getLoadedObjects(state)[objectId];

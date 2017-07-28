@@ -61,6 +61,7 @@ function restoreExpressions() {
   if (exprs.length == 0) {
     return;
   }
+
   return exprs;
 }
 
