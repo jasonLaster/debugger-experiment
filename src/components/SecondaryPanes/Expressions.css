@@ -6,7 +6,7 @@
   background-color: var(--base00);
   font-size: 12px;
   padding: 0px 20px;
-  color: var(--theme-body-color);
+  color: var(--special03);
 }
 
 .input-expression::placeholder {
@@ -35,7 +35,7 @@
   border: 1px;
   padding: 0.25em 1em 0.25em 0.5em;
   width: 100%;
-  color: var(--theme-body-color);
+  color: var(--special02);
   background-color: var(--base00);
   display: block;
   position: relative;

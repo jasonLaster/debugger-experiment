@@ -22,7 +22,7 @@
 
 .managed-tree .tree .node.focused {
   color: white;
-  background-color: var(--theme-selection-background);
+  background-color: var(--state00);
   padding-bottom: 2px;
 }
 

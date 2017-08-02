@@ -8,9 +8,9 @@
   --number-color: var(--theme-highlight-green);
   --string-color: var(--theme-highlight-orange);
   --null-color: var(--theme-comment);
-  --object-color: var(--theme-body-color);
+  --object-color: var(--special02);
   --caption-color: var(--theme-highlight-blue);
-  --location-color: var(--theme-content-color1);
+  --location-color: var(--special03);
   --source-link-color: var(--theme-highlight-blue);
   --node-color: var(--theme-highlight-bluegrey);
   --reference-color: var(--theme-highlight-purple);

@@ -21,7 +21,7 @@
 }
 
 .theme-dark .bracket-arrow.up::before {
-  border-bottom-color: var(--theme-body-color);
+  border-bottom-color: var(--special02);
 }
 
 .bracket-arrow.up::after {
@@ -36,7 +36,7 @@
 }
 
 .theme-dark .bracket-arrow.down::before {
-  border-top-color: var(--theme-body-color);
+  border-top-color: var(--special02);
 }
 
 .bracket-arrow.down::after {

@@ -4,7 +4,7 @@
 }
 
 .autocomplete .no-result-msg {
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
   font-size: 24px;
   padding: 4px;
   word-break: break-all;

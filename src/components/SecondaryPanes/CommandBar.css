@@ -37,7 +37,7 @@ html[dir="rtl"] .command-bar {
 }
 
 :root.theme-dark .command-bar > button {
-  color: var(--theme-body-color);
+  color: var(--special02);
 }
 
 .command-bar > button {

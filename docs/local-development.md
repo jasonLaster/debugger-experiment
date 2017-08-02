@@ -43,7 +43,7 @@ It is possible to add a theme specific selector. For example, this selector upda
 
 ```css
 .theme-dark .command-bar > span {
-  fill: var(--theme-body-color);
+  fill: var(--special02);
 }
 ```
 

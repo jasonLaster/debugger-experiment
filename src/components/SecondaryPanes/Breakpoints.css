@@ -9,7 +9,7 @@
 
 .breakpoints-list .breakpoint {
   font-size: 12px;
-  color: var(--theme-content-color1);
+  color: var(--special03);
   padding: 0.5em 1em 0.5em 0.5em;
   line-height: 1em;
   position: relative;
@@ -77,7 +77,7 @@ html .breakpoints-list .breakpoint.paused {
 }
 
 :root.theme-dark .breakpoint-snippet {
-  color: var(--theme-body-color);
+  color: var(--special02);
   opacity: 0.6;
 }
 

@@ -11,17 +11,17 @@
 .variable-or-property .token-undefined,
 .variable-or-property .token-null,
 .CodeMirror-Tern-completion-unknown:before {
-  color: var(--base08);
+  color: var(--base03);
 }
 
 .theme-gutter {
-  background-color: var(--base03);
-  color: var(--base08);
-  border-color: var(--base07);
+  background-color: var(--state01);
+  color: var(--special03);
+  border-color: var(--base03);
 }
 
 .theme-separator {
-  border-color: var(--theme-splitter-color);
+  border-color: var(--base03);
 }
 
 .theme-fg-color1,
@@ -29,7 +29,7 @@
 .variable-or-property .token-number,
 .variable-or-property[return] > .title > .name,
 .variable-or-property[scope] > .title > .name {
-  color: var(--theme-highlight-red);
+  color: var(--special01);
 }
 
 .CodeMirror-Tern-completion-number:before {
@@ -42,7 +42,7 @@
 .cm-s-mozilla .cm-property,
 .cm-s-mozilla .cm-qualifier,
 .variables-view-variable > .title > .name {
-  color: var(--theme-highlight-purple);
+  color: var(--special04);
 }
 
 .CodeMirror-Tern-completion-object:before {
@@ -64,7 +64,7 @@
 .cm-s-mozilla .cm-header,
 .cm-s-mozilla .cm-bracket,
 .variables-view-property > .title > .name {
-  color: var(--theme-highlight-green);
+  color: var(--special05);
 }
 
 .CodeMirror-Tern-completion-array:before {
@@ -117,7 +117,7 @@
 .devtools-sidebar-alltabs,
 .cm-s-mozilla .CodeMirror-dialog {
   /* General toolbar styling */
-  color: var(--theme-body-color-alt);
+  color: var(--special02-alt);
   background-color: var(--theme-toolbar-background);
   border-color: var(--theme-splitter-color);
 }
@@ -148,7 +148,7 @@
 .cm-s-mozilla .cm-variable-3,
 .cm-s-mozilla .cm-operator,
 .cm-s-mozilla .cm-special {
-  color: var(--theme-content-color1);
+  color: var(--special03);
 }
 
 .cm-s-mozilla .CodeMirror-lines .CodeMirror-cursor {
@@ -196,7 +196,7 @@
 
 .cm-s-mozilla .CodeMirror-linenumber {
   /* line number text */
-  color: var(--theme-content-color3);
+  color: var(--special03);
 }
 
 .cm-s-markup-view pre {
@@ -339,5 +339,5 @@
 .CodeMirror-Tern-tooltip {
   box-shadow: 0 0 4px rgba(255, 255, 255, .3);
   background-color: #0f171f;
-  color: var(--theme-body-color);
+  color: var(--special02);
 }

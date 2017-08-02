@@ -52,7 +52,7 @@
 }
 
 .accordion .header-buttons button {
-  color: var(--theme-body-color);
+  color: var(--special02);
   border: none;
   background: none;
   outline: 0;

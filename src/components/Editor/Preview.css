@@ -57,7 +57,7 @@
 }
 
 .theme-dark .popover .preview {
-  border-color: var(--theme-body-color);
+  border-color: var(--special02);
 }
 
 .theme-dark .popover .preview .arrow svg {
@@ -84,7 +84,7 @@
 }
 
 .theme-dark .tooltip .preview {
-  border-color: var(--theme-body-color);
+  border-color: var(--special02);
 }
 
 .tooltip .gap {

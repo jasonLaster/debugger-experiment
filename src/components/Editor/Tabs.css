@@ -51,7 +51,7 @@
 }
 
 .source-tab.active {
-  color: var(--theme-body-color);
+  color: var(--special05);
   background-color: var(--base00);
   border-color: var(--theme-splitter-color);
   border-bottom-color: transparent;
@@ -59,7 +59,7 @@
 
 .source-tab.active path,
 .source-tab:hover path {
-  fill: var(--theme-body-color);
+  fill: var(--special05);
 }
 
 .source-tab .prettyPrint {
@@ -91,7 +91,7 @@
 }
 
 .theme-dark .source-tab .blackBox circle {
-  fill: var(--theme-body-color);
+  fill: var(--special02);
 }
 
 .source-tab .filename {

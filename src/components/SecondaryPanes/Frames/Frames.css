@@ -43,7 +43,7 @@
 }
 
 :root.theme-dark .frames .location {
-  color: var(--theme-body-color);
+  color: var(--special02);
   opacity: 0.6;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .frames ul li.selected {
-  background-color: var(--theme-selection-background);
+  background-color: var(--state00);
   color: white;
 }
 

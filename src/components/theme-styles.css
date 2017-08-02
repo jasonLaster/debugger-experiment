@@ -5,18 +5,18 @@
 */
 
 .theme-dark {
-  background: var(--theme-body-background);
-  color: var(--theme-body-color);
+  background: var(--base00);
+  color: var(--special02);
 }
 
 .theme-dark .theme-sidebar {
-  background: var(--theme-sidebar-background);
-  color: var(--theme-content-color1);
+  background: var(--base00);
+  color: var(--special03);
 }
 
 .theme-dark ::-moz-selection {
-  background-color: var(--theme-selection-background);
-  color: var(--theme-selection-color);
+  background-color: var(--state00);
+  color: var(--state00);
 }
 
 .theme-dark .theme-bg-darker {
@@ -25,8 +25,8 @@
 
 .theme-dark .theme-selected,
 .theme-dark .CodeMirror-hint-active {
-  background-color: var(--theme-selection-background);
-  color: var(--theme-selection-color);
+  background-color: var(--state00);
+  color: var(--state00);
 }
 
 .theme-dark .theme-bg-contrast,

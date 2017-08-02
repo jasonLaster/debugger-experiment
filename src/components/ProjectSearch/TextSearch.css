@@ -23,7 +23,7 @@
 }
 
 .project-text-search .result .query-match {
-  background-color: var(--theme-selection-background);
+  background-color: var(--state00);
   color: white;
   padding: 1px 4px;
   margin: 0 2px 0 2px;

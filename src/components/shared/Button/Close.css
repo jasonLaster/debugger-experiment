@@ -24,7 +24,7 @@
 }
 
 .close-btn:hover .close {
-  background: var(--theme-selection-background);
+  background: var(--state00);
 }
 
 .close-btn:hover .close path {

@@ -21,7 +21,7 @@
 }
 
 .pane {
-  color: var(--theme-body-color);
+  color: var(--special02);
 }
 
 .pane .pane-info {

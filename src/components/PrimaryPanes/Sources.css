@@ -118,7 +118,7 @@
 }
 
 .source-footer .tab.active {
-  color: var(--theme-body-color);
+  color: var(--special02);
   background-color: var(--base00);
   border-color: var(--theme-splitter-color);
   border-top-color: transparent;
@@ -126,5 +126,5 @@
 
 .source-footer .tab.active path,
 .source-footer .tab:hover path {
-  fill: var(--theme-body-color);
+  fill: var(--special02);
 }

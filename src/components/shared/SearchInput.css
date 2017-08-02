@@ -30,13 +30,13 @@
   border: none;
   line-height: 30px;
   background-color: var(--base01);
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
   width: calc(100% - 38px);
   flex: 1;
 }
 
 .theme-dark .search-field input {
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
 }
 
 .search-field i.magnifying-glass,
@@ -57,7 +57,7 @@
 }
 
 .search-field input::placeholder {
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
 }
 
 .search-field input:focus {
@@ -75,7 +75,7 @@
 .search-field .summary {
   line-height: 27px;
   padding-right: 10px;
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
 }
 
 .search-field .search-nav-buttons {

@@ -74,7 +74,7 @@
 }
 
 .search-bottom-bar .search-modifiers button.active svg {
-  fill: var(--theme-selection-background);
+  fill: var(--state00);
 }
 
 .theme-dark .search-bottom-bar .search-modifiers button.active svg {
@@ -88,7 +88,7 @@
 }
 
 .search-bottom-bar .search-type-toggles .search-toggle-title {
-  color: var(--theme-body-color-inactive);
+  color: var(--special02-inactive);
   font-size: 11px;
   font-weight: normal;
   margin: 0;
@@ -113,7 +113,7 @@
 }
 
 .search-bottom-bar .search-type-toggles .search-type-btn.active {
-  color: var(--theme-selection-background);
+  color: var(--state00);
 }
 
 .theme-dark .search-bottom-bar .search-type-toggles .search-type-btn.active {

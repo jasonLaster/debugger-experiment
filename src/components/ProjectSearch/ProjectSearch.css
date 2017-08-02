@@ -43,6 +43,6 @@
 }
 
 .toggle-search .active {
-  color: var(--theme-selection-background);
+  color: var(--state00);
   cursor: default;
 }

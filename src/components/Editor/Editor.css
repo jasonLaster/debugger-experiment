@@ -78,7 +78,7 @@ html[dir="rtl"] .editor-mount {
 }
 
 .editor.new-breakpoint svg {
-  fill: var(--theme-selection-background);
+  fill: var(--state00);
   width: 60px;
   height: 14px;
   position: absolute;
@@ -113,7 +113,7 @@ html[dir="rtl"] .editor-mount {
 }
 
 .editor.column-breakpoint svg {
-  fill: var(--theme-selection-background);
+  fill: var(--state00);
   vertical-align: middle;
   width: 17px;
   height: 14px;
