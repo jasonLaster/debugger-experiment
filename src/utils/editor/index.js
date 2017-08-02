@@ -136,6 +136,10 @@ function lineAtHeight(editor, sourceId, event) {
   return toSourceLine(sourceId, editorLine);
 }
 
+function isEmptyLine(cm, line) {
+  return String(cm.lineInfo(line).wrapClass).includes("empty-line");
+}
+
 module.exports = Object.assign(
   {},
   expressionUtils,
@@ -154,6 +158,7 @@ module.exports = Object.assign(
     shouldShowFooter,
     traverseResults,
     markText,
-    lineAtHeight
+    lineAtHeight,
+    isEmptyLine
   }
 );

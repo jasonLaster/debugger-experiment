@@ -51,6 +51,9 @@ const HitMarker = createFactory(_HitMarker);
 import _CallSites from "./CallSites";
 const CallSites = createFactory(_CallSites);
 
+import _EmptyLines from "./EmptyLines";
+const EmptyLines = createFactory(_EmptyLines);
+
 import {
   showSourceText,
   updateDocument,
@@ -67,7 +70,8 @@ import {
   toEditorLine,
   toEditorPosition,
   toEditorRange,
-  resetLineNumberFormat
+  resetLineNumberFormat,
+  isEmptyLine
 } from "../../utils/editor";
 
 import { isFirefox } from "devtools-config";
@@ -390,6 +394,10 @@ class Editor extends PureComponent {
       return;
     }
 
+    if (isEmptyLine(cm, line)) {
+      return;
+    }
+
     if (this.isCbPanelOpen()) {
       return this.closeConditionalPanel();
     }
@@ -418,6 +426,11 @@ class Editor extends PureComponent {
 
     const sourceId = selectedSource ? selectedSource.get("id") : "";
     const line = lineAtHeight(this.state.editor, sourceId, event);
+
+    if (isEmptyLine(this.state.editor.codeMirror, line - 1)) {
+      return;
+    }
+
     const breakpoint = breakpoints.find(bp => bp.location.line === line);
 
     GutterMenu({
@@ -701,6 +714,14 @@ class Editor extends PureComponent {
     return Footer({ editor: this.state.editor, horizontal });
   }
 
+  renderEmptyLines() {
+    if (!this.state.editor) {
+      return null;
+    }
+
+    return EmptyLines({ editor: this.state.editor });
+  }
+
   renderBreakpoints() {
     if (!this.state.editor) {
       return null;
@@ -730,7 +751,8 @@ class Editor extends PureComponent {
       this.renderFooter(),
       this.renderPreview(),
       this.renderCallSites(),
-      this.renderBreakpoints()
+      this.renderBreakpoints(),
+      this.renderEmptyLines()
     );
   }
 }

@@ -6,7 +6,12 @@ import ReactDOM from "react-dom";
 import classnames from "classnames";
 import Svg from "../shared/Svg";
 
-import { getDocument, showSourceText, toEditorLine } from "../../utils/editor";
+import {
+  getDocument,
+  showSourceText,
+  toEditorLine,
+  isEmptyLine
+} from "../../utils/editor";
 
 const breakpointSvg = document.createElement("div");
 ReactDOM.render(Svg("breakpoint"), breakpointSvg);
@@ -47,6 +52,10 @@ class Breakpoint extends Component {
 
     const sourceId = selectedSource.get("id");
     const line = toEditorLine(sourceId, breakpoint.location.line);
+
+    if (isEmptyLine(editor.codeMirror, line)) {
+      return;
+    }
 
     showSourceText(editor, selectedSource.toJS());
 
