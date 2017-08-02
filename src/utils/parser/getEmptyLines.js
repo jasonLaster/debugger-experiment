@@ -3,12 +3,12 @@ import { getAst } from "./utils/ast";
 
 const commentTokens = ["CommentBlock", "CommentLine"];
 
-export default function getEmptyLines(source: Source) {
-  if (!source) {
+export default function getEmptyLines(sourceToJS) {
+  if (!sourceToJS) {
     return null;
   }
 
-  const ast = getAst(source.toJS());
+  const ast = getAst(sourceToJS);
   if (!ast || !ast.comments) {
     return [];
   }

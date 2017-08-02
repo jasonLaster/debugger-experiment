@@ -6,7 +6,7 @@ import { Component } from "react";
 import actions from "../../actions";
 import { getSelectedSource } from "../../selectors";
 
-import getEmptyLines from "../../utils/parser/getEmptyLines";
+import { getEmptyLines } from "../../utils/parser";
 
 import "./EmptyLines.css";
 
@@ -28,13 +28,13 @@ class EmptyLines extends Component {
     this.disableEmptyLines();
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     const { selectedSource, editor } = this.props;
-    if(!selectedSource) {
+    if (!selectedSource) {
       return;
     }
 
-    const emptyLines = getEmptyLines(selectedSource);
+    const emptyLines = await getEmptyLines(selectedSource.toJS());
     if (!emptyLines) {
       return;
     }
@@ -44,10 +44,14 @@ class EmptyLines extends Component {
     );
   }
 
-  disableEmptyLines() {
+  async disableEmptyLines() {
     const { selectedSource, editor } = this.props;
 
-    const emptyLines = getEmptyLines(selectedSource);
+    if (!selectedSource) {
+      return;
+    }
+
+    const emptyLines = await getEmptyLines(selectedSource.toJS());
     if (!emptyLines) {
       return;
     }

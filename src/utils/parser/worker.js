@@ -2,6 +2,7 @@ import { getClosestExpression } from "./utils/closest";
 import { getVariablesInScope } from "./scopes";
 import getSymbols, { clearSymbols } from "./getSymbols";
 import getOutOfScopeLocations from "./getOutOfScopeLocations";
+import getEmptyLines from "./getEmptyLines";
 
 import { workerUtils } from "devtools-utils";
 const { workerHandler } = workerUtils;
@@ -11,5 +12,6 @@ self.onmessage = workerHandler({
   getOutOfScopeLocations,
   getSymbols,
   clearSymbols,
-  getVariablesInScope
+  getVariablesInScope,
+  getEmptyLines
 });
