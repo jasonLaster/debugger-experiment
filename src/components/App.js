@@ -50,6 +50,17 @@ type Props = {
   endPanelCollapsed: boolean
 };
 
+window.updateTheme = function(theme) {
+  const root = document.body.parentNode;
+  const appRoot = document.querySelector(".launchpad-root");
+
+  root.className = "";
+  appRoot.className = "launchpad-root";
+
+  root.classList.add(`theme-${theme}`);
+  appRoot.classList.add(`theme-${theme}`);
+};
+
 class App extends Component {
   state: {
     horizontal: boolean,
