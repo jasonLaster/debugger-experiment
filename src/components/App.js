@@ -14,6 +14,7 @@ const shortcuts = new KeyShortcuts({ window });
 const verticalLayoutBreakpoint = window.matchMedia("(min-width: 800px)");
 
 import "./variables.css";
+import "./themes.css";
 import "./App.css";
 import "./shared/menu.css";
 import "./shared/reps.css";

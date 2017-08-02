@@ -30,7 +30,7 @@
 }
 
 .result-list li:hover {
-  background: var(--theme-tab-toolbar-background);
+  background: var(--base00);
   cursor: pointer;
 }
 

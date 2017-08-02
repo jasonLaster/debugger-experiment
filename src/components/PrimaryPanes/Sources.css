@@ -26,7 +26,7 @@
 }
 
 .theme-dark .sources-header {
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--base00);
 }
 
 .sources-header {
@@ -61,7 +61,7 @@
 }
 
 .theme-dark .source-list .tree .node.focused {
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--base00);
 }
 
 .no-sources-message {

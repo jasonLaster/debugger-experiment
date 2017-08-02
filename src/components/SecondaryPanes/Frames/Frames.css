@@ -21,7 +21,7 @@
 }
 
 .frames ul li:nth-of-type(2n) {
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--base00);
 }
 
 .theme-dark .frames ul li:nth-of-type(2n) {
@@ -61,7 +61,7 @@
 
 .theme-dark .frames ul li:hover,
 .theme-dark .frames ul li:focus {
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--base00);
 }
 
 .frames ul li.selected {
@@ -90,7 +90,7 @@
   padding: 8px 0px;
   margin: 7px 10px 7px 7px;
   border: 1px solid var(--theme-splitter-color);
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--base00);
 }
 
 .show-more:hover {
