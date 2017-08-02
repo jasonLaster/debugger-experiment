@@ -1,0 +1,14 @@
+:root {
+  --theme-comment: var(--state01);
+  --theme-body-background: var(--base01);
+  --theme-splitter-color: var(--special04);
+}
+
+.debugger .CodeMirror {
+  background-color: var(--base01);
+}
+
+.debugger {
+  background-color: var(--base00);
+  color: var(--special03);
+}

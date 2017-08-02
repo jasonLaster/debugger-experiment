@@ -2543,6 +2543,10 @@ devtools-sprintf-js@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/devtools-sprintf-js/-/devtools-sprintf-js-1.0.3.tgz#c2aa3c39d4047525e60410325c86770620281b87"
 
+devtools-themes@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/devtools-themes/-/devtools-themes-0.0.1.tgz#3cae4d332edfd5fbe4e2d056b8e964b9e550869c"
+
 devtools-utils@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/devtools-utils/-/devtools-utils-0.0.4.tgz#206a0463b98392675c06ca0b947b4087c6f535ad"

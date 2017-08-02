@@ -8,6 +8,10 @@ import { getSelectedSource, getPaneCollapse } from "../selectors";
 import type { SourceRecord } from "../reducers/sources";
 import { isVisible } from "../utils/ui";
 
+import "../utils/new-themes";
+import "./themes.css";
+import "devtools-themes/themes.css";
+
 import { KeyShortcuts } from "devtools-modules";
 const shortcuts = new KeyShortcuts({ window });
 

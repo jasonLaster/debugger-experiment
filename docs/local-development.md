@@ -413,20 +413,12 @@ We use [remark](https://github.com/wooorm/remark-lint) to help lint our markdown
 
 ### Colors
 
-The Debugger has a [styleguide][mdn-colors] that we use to keep the colors consistent across tools and themes.
+The debugger uses [devtools-themes] theme-system. Themes are defined in terms of base [variables][devtools-themes-variales].
+The system is defined [here][devtools-themes-here].
 
-The common colors are represented as [css variables] in a [devtools variables][devtools-css-variables] file. This lets define the colors
-for each theme: [light][light-theme], [dark][dark-theme], [firebug][firebug-theme].
-
-#### Making a color change
-
-Most color changes can be made by finding a different [css variable][devtools-css-variables].
-For instance, `--theme-splitter-color` is often good for border colors. The advantage to using an existing variable is that you know it'll look good in all the themes.
-
-When you need to update a variable, you should check to make sure it looks good in the other places it is being used.
-Often, it is more practicle to create a new variable.
-
-It's helpful to share the changes as a themes [table][pr-table] when you're done.
+[devtools-themes]:https://github.com/jasonLaster/devtools-themes
+[devtools-themes-variables]:https://github.com/jasonLaster/devtools-themes/blob/master/themes.js#L22-L45
+[devtools-themes-here]:https://github.com/jasonLaster/devtools-themes/blob/master/types.js#L1
 
 #### Checking Contrast
 
