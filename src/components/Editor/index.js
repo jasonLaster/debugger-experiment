@@ -51,6 +51,9 @@ const HitMarker = createFactory(_HitMarker);
 import _CallSites from "./CallSites";
 const CallSites = createFactory(_CallSites);
 
+import _DebugLine from "./DebugLine";
+const DebugLine = createFactory(_DebugLine);
+
 import {
   showSourceText,
   updateDocument,
@@ -82,7 +85,6 @@ const cssVars = {
   footerHeight: "var(--editor-footer-height)"
 };
 
-let debugExpression;
 class Editor extends PureComponent {
   cbPanel: any;
   editor: SourceEditor;
@@ -484,40 +486,6 @@ class Editor extends PureComponent {
     return !!this.cbPanel;
   }
 
-  clearDebugLine(selectedFrame) {
-    if (this.state.editor && selectedFrame) {
-      const { sourceId, line } = selectedFrame.location;
-      if (debugExpression) {
-        debugExpression.clear();
-      }
-
-      let editorLine = toEditorLine(sourceId, line);
-      this.state.editor.codeMirror.removeLineClass(
-        editorLine,
-        "line",
-        "new-debug-line"
-      );
-    }
-  }
-
-  setDebugLine(selectedFrame, selectedLocation) {
-    if (
-      this.state.editor &&
-      selectedFrame &&
-      selectedLocation &&
-      selectedFrame.location.sourceId === selectedLocation.sourceId
-    ) {
-      const { location, sourceId } = selectedFrame;
-      const { line, column } = toEditorPosition(sourceId, location);
-
-      this.state.editor.codeMirror.addLineClass(line, "line", "new-debug-line");
-      debugExpression = markText(this.state.editor, "debug-expression", {
-        start: { line, column },
-        end: { line, column: null }
-      });
-    }
-  }
-
   // If the location has changed and a specific line is requested,
   // move to that line and flash it.
   highlightLine() {
@@ -707,6 +675,17 @@ class Editor extends PureComponent {
     }
 
     return Breakpoints({ editor: this.state.editor });
+  }
+
+  renderDebugLine() {
+    const { selectedFrame, selectedSource, sourceText } = this.props;
+
+    if (sourceText && !sourceText.get("loading") && selectedFrame) {
+      return DebugLine({
+        sourceId: selectedSource.get("id"),
+        selectedFrame: this.props.selectedFrame
+      });
+    }
   }
 
   render() {
