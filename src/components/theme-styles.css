@@ -1,0 +1,51 @@
+/*
+1. copied https://github.com/devtools-html/devtools-core/blob/master/packages/devtools-launchpad/src/lib/themes/dark-theme.css#L19
+2. removed dark-theme class
+3. kept the non-codemirror stuff
+*/
+
+.theme-dark {
+  background: var(--theme-body-background);
+  color: var(--theme-body-color);
+}
+
+.theme-dark .theme-sidebar {
+  background: var(--theme-sidebar-background);
+  color: var(--theme-content-color1);
+}
+
+.theme-dark ::-moz-selection {
+  background-color: var(--theme-selection-background);
+  color: var(--theme-selection-color);
+}
+
+.theme-dark .theme-bg-darker {
+  background-color: var(--theme-selection-background-semitransparent);
+}
+
+.theme-dark .theme-selected,
+.theme-dark .CodeMirror-hint-active {
+  background-color: var(--theme-selection-background);
+  color: var(--theme-selection-color);
+}
+
+.theme-dark .theme-bg-contrast,
+.theme-dark .variable-or-property:not([overridden])[changed] {
+  background: var(--theme-contrast-background);
+}
+
+.theme-dark .theme-link,
+.theme-dark .cm-s-mozilla .cm-link,
+.theme-dark .cm-s-mozilla .cm-keyword {
+  color: var(--theme-highlight-green);
+}
+
+/*
+ * FIXME: http://bugzil.la/575675 CSS links without :visited set cause assertion
+ * failures in debug builds.
+ */
+.theme-dark .theme-link:visited,
+.theme-dark .cm-s-mozilla .cm-link:visited,
+.theme-dark .CodeMirror-Tern-type {
+  color: var(--theme-highlight-blue);
+}

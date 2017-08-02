@@ -106,7 +106,7 @@
   --theme-codemirror-gutter-background: #f4f4f4;
 }
 
-:root.theme-dark {
+:root .theme-dark {
   --base00: #393f4c;
   --theme-base01: #393f4c;
   --theme-contrast-background: #ffb35b;
@@ -173,7 +173,7 @@
   --theme-codemirror-gutter-background: #262b37;
 }
 
-:root.theme-firebug {
+:root .theme-firebug {
   --base00: #fcfcfc;
   --theme-base01: #fcfcfc;
   --theme-contrast-background: #e6b064;
