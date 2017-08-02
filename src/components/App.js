@@ -94,6 +94,7 @@ class App extends Component {
 
   componentDidMount() {
     verticalLayoutBreakpoint.addListener(this.onLayoutChange);
+    setTimeout(() => window.updateTheme("dracula"), 100);
   }
 
   componentWillUnmount() {

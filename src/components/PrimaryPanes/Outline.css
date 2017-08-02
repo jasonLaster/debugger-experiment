@@ -12,5 +12,5 @@
 }
 
 .outline-list__element:hover {
-  background: var(--theme-toolbar-background-hover);
+  background: var(--base02);
 }

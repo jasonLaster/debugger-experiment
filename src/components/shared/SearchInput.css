@@ -1,7 +1,7 @@
 .search-field {
   width: calc(100% - 1px);
   height: 27px;
-  background-color: var(--theme-toolbar-background);
+  background-color: var(--base01);
   border-bottom: 1px solid var(--theme-splitter-color);
   padding-right: 10px;
   display: flex;
@@ -29,7 +29,7 @@
 .search-field input {
   border: none;
   line-height: 30px;
-  background-color: var(--theme-toolbar-background);
+  background-color: var(--base01);
   color: var(--theme-body-color-inactive);
   width: calc(100% - 38px);
   flex: 1;
@@ -95,7 +95,7 @@
 
 .search-field .search-nav-buttons .nav-btn:hover {
   cursor: pointer;
-  background: var(--theme-toolbar-background-hover);
+  background: var(--base02);
 }
 
 .search-field .search-nav-buttons .nav-btn:active path {

@@ -3,7 +3,7 @@
   margin: 0px;
   border: 1px;
   cursor: pointer;
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
   font-size: 12px;
   padding: 0px 20px;
   color: var(--theme-body-color);
@@ -36,7 +36,7 @@
   padding: 0.25em 1em 0.25em 0.5em;
   width: 100%;
   color: var(--theme-body-color);
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
   display: block;
   position: relative;
 }

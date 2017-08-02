@@ -37,7 +37,7 @@ html[dir="rtl"] .breakpoints-list .breakpoint.is-conditional {
 }
 
 html .breakpoints-list .breakpoint.paused {
-  background-color: var(--theme-toolbar-background-alt);
+  background-color: var(--base02);
   border-color: var(--breakpoint-active-color);
 }
 

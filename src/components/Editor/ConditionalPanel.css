@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--theme-toolbar-background);
+  background: var(--base01);
   border-top: 1px solid var(--theme-splitter-color);
   border-bottom: 1px solid var(--theme-splitter-color);
 }
@@ -23,7 +23,7 @@
   margin: 5px 10px;
   width: calc(100% - 4em);
   border: none;
-  background: var(--theme-toolbar-background);
+  background: var(--base01);
   font-size: 14px;
   color: var(--theme-conditional-breakpoint-color);
   line-height: 30px;

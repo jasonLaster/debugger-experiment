@@ -23,7 +23,7 @@
   justify-content: space-between;
   width: calc(100% - 1px);
   height: var(--editor-second-searchbar-height);
-  background-color: var(--theme-toolbar-background);
+  background-color: var(--base01);
   border-bottom: 1px solid var(--theme-splitter-color);
   padding: 0 13px;
 }
@@ -66,7 +66,7 @@
 }
 
 .search-bottom-bar .search-modifiers button:hover {
-  background: var(--theme-toolbar-background-hover);
+  background: var(--base02);
 }
 
 .search-bottom-bar .search-modifiers button:active {

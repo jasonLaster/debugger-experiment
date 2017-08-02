@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   z-index: 200;
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
   overflow-y: auto;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .toggle-search {
-  background-color: var(--theme-toolbar-background);
+  background-color: var(--base01);
   border-bottom: 1px solid var(--theme-splitter-color);
   color: var(--theme-comment-alt);
   display: flex;

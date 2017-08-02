@@ -1,5 +1,5 @@
 .source-footer {
-  background: var(--theme-toolbar-background);
+  background: var(--base01);
   border-top: 1px solid var(--theme-splitter-color);
   position: absolute;
   display: flex;

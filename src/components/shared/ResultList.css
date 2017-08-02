@@ -44,7 +44,7 @@
 }
 
 .theme-dark  .result-list.small li.selected {
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
 }
 
 .result-list li .title {
@@ -78,5 +78,5 @@
 }
 
 .theme-dark .result-list {
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
 }

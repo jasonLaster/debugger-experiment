@@ -45,14 +45,14 @@
 }
 
 .source-tab:hover {
-  background-color: var(--theme-toolbar-background-alt);
+  background-color: var(--base02);
   border-color: var(--theme-splitter-color);
   cursor: pointer;
 }
 
 .source-tab.active {
   color: var(--theme-body-color);
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
   border-color: var(--theme-splitter-color);
   border-bottom-color: transparent;
 }

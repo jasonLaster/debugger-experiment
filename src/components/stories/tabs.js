@@ -70,7 +70,7 @@ function TabsFactory(options, { dir = "ltr", theme = "light" } = {}) {
       ),
       dom.div({
         className: "editor-wrapper",
-        style: { background: "var(--theme-body-background)" }
+        style: { background: "var(--base00)" }
       })
     )
   );

@@ -130,7 +130,7 @@ html[dir="rtl"] .editor-mount {
 
 .editor-wrapper .editor-mount {
   width: 100%;
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
 }
 
 .CodeMirror-linenumber {

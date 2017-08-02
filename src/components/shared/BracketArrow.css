@@ -25,7 +25,7 @@
 }
 
 .bracket-arrow.up::after {
-  border-bottom-color: var(--theme-body-background);
+  border-bottom-color: var(--base00);
   top: 0px;
 }
 
@@ -41,6 +41,6 @@
 
 .bracket-arrow.down::after {
   border-bottom-color: transparent;
-  border-top-color: var(--theme-body-background);
+  border-top-color: var(--base00);
   top: -1px;
 }

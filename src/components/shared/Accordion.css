@@ -1,10 +1,10 @@
 .accordion {
-  background-color: var(--theme-body-background);
+  background-color: var(--base00);
   width: 100%;
 }
 
 .accordion ._header {
-  background-color: var(--theme-toolbar-background);
+  background-color: var(--base01);
   border-bottom: 1px solid var(--theme-splitter-color);
   cursor: pointer;
   font-size: 12px;
@@ -25,7 +25,7 @@
 }
 
 .accordion ._header:hover {
-  background-color: var(--theme-toolbar-background-hover);
+  background-color: var(--base02);
 }
 
 .accordion ._header button svg,
