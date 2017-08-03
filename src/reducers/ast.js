@@ -16,6 +16,7 @@ import type { Action } from "../actions/types";
 import type { Record } from "../utils/makeRecord";
 
 export type SymbolsMap = Map<string, SymbolDeclarations>;
+export type EmptyLinesMap = Map<string, EmptyLinesType>;
 
 export type Selection =
   | {| updating: true |}
@@ -31,6 +32,7 @@ export type Selection =
 
 export type ASTState = {
   symbols: SymbolsMap,
+  emptyLines: EmptyLinesMap,
   outOfScopeLocations: ?Array<AstLocation>,
   selection: Selection
 };
@@ -39,6 +41,7 @@ export function initialState() {
   return makeRecord(
     ({
       symbols: I.Map(),
+      emptyLines: [],
       outOfScopeLocations: null,
       selection: null
     }: ASTState)
@@ -52,7 +55,18 @@ function update(
   switch (action.type) {
     case "SET_SYMBOLS": {
       const { source, symbols } = action;
+
+      console.warn('symbols', source.id, symbols);
+
       return state.setIn(["symbols", source.id], symbols);
+    }
+
+    case "SET_EMPTY_LINES": {
+      const { source, emptyLines } = action;
+
+      console.warn('emptylines', source.id, emptyLines);
+
+      return state.setIn(["emptyLines", source.id], emptyLines);
     }
 
     case "OUT_OF_SCOPE_LOCATIONS": {
@@ -122,6 +136,14 @@ export function hasSymbols(state: OuterState, source: Source): boolean {
   }
 
   return !!state.ast.getIn(["symbols", source.id]);
+}
+
+export function getEmptyLines(state: OuterState, source: Source) {
+  if (!source) {
+    return false;
+  }
+
+  return state.ast.getIn(["emptyLines", source.id]);
 }
 
 export function getOutOfScopeLocations(state: OuterState) {
