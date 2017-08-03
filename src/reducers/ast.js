@@ -41,7 +41,7 @@ export function initialState() {
   return makeRecord(
     ({
       symbols: I.Map(),
-      emptyLines: [],
+      emptyLines: I.Map(),
       outOfScopeLocations: null,
       selection: null
     }: ASTState)
