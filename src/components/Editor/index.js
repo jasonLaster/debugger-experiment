@@ -715,7 +715,7 @@ class Editor extends PureComponent {
   }
 
   renderEmptyLines() {
-    if (!this.state.editor) {
+    if (!this.state.editor || !this.props.selectedSource) {
       return null;
     }
 

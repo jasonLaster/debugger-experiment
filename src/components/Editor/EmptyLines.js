@@ -4,9 +4,7 @@ import { bindActionCreators } from "redux";
 import { Component } from "react";
 
 import actions from "../../actions";
-import { getSelectedSource } from "../../selectors";
-
-import { getEmptyLines } from "../../utils/parser";
+import { getSelectedSource, getEmptyLines } from "../../selectors";
 
 import "./EmptyLines.css";
 
@@ -29,36 +27,29 @@ class EmptyLines extends Component {
   }
 
   async componentWillUnmount() {
-    const { selectedSource, editor } = this.props;
-    if (!selectedSource) {
-      return;
-    }
+    const { emptyLines, editor } = this.props;
 
-    const emptyLines = await getEmptyLines(selectedSource.toJS());
     if (!emptyLines) {
       return;
     }
-
-    emptyLines.forEach(line =>
-      editor.codeMirror.addLineClass(line, "line", "empty-line")
-    );
+    editor.codeMirror.operation(() => {
+      emptyLines.forEach(line =>
+        editor.codeMirror.addLineClass(line, "line", "empty-line")
+      );
+    });
   }
 
   async disableEmptyLines() {
-    const { selectedSource, editor } = this.props;
+    const { emptyLines, editor } = this.props;
 
-    if (!selectedSource) {
-      return;
-    }
-
-    const emptyLines = await getEmptyLines(selectedSource.toJS());
     if (!emptyLines) {
       return;
     }
-
-    emptyLines.forEach(line =>
-      editor.codeMirror.addLineClass(line, "line", "empty-line")
-    );
+    editor.codeMirror.operation(() => {
+      emptyLines.forEach(line =>
+        editor.codeMirror.addLineClass(line, "line", "empty-line")
+      );
+    });
   }
 
   render() {
@@ -72,7 +63,8 @@ export default connect(
   state => {
     const selectedSource = getSelectedSource(state);
     return {
-      selectedSource
+      selectedSource,
+      emptyLines: getEmptyLines(state, selectedSource.toJS())
     };
   },
   dispatch => bindActionCreators(actions, dispatch)
