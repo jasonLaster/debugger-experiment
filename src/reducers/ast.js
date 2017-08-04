@@ -55,17 +55,11 @@ function update(
   switch (action.type) {
     case "SET_SYMBOLS": {
       const { source, symbols } = action;
-
-      console.warn("symbols", source.id, symbols);
-
       return state.setIn(["symbols", source.id], symbols);
     }
 
     case "SET_EMPTY_LINES": {
       const { source, emptyLines } = action;
-
-      console.warn("emptylines", source.id, emptyLines);
-
       return state.setIn(["emptyLines", source.id], emptyLines);
     }
 
