@@ -5,11 +5,13 @@ import { Component } from "react";
 
 import actions from "../../actions";
 import { getSelectedSource, getEmptyLines } from "../../selectors";
+import type { SourceRecord } from "../../reducers/types";
 
 import "./EmptyLines.css";
 
 type props = {
   selectedSource: SourceRecord,
+  emptyLines: number[],
   editor: Object
 };
 
@@ -26,12 +28,13 @@ class EmptyLines extends Component {
     this.disableEmptyLines();
   }
 
-  async componentWillUnmount() {
+  componentWillUnmount() {
     const { emptyLines, editor } = this.props;
 
     if (!emptyLines) {
       return;
     }
+
     editor.codeMirror.operation(() => {
       emptyLines.forEach(line =>
         editor.codeMirror.addLineClass(line, "line", "empty-line")

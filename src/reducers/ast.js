@@ -16,7 +16,7 @@ import type { Action } from "../actions/types";
 import type { Record } from "../utils/makeRecord";
 
 export type SymbolsMap = Map<string, SymbolDeclarations>;
-export type EmptyLinesMap = Map<string, EmptyLinesType>;
+export type EmptyLinesMap = Map<string, number[]>;
 
 export type Selection =
   | {| updating: true |}
