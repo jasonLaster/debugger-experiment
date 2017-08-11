@@ -38,7 +38,7 @@ Gabriel started working on a source outline view, which will show a sources func
 
 #### Preview
 
-Have you ever noticed that you could hover over random variables while paused and see a popup preview?  [Ryan][@ryanjduffy] added a fantastic feature to preview to first check if a variable was in the paused scope before showing the preview popup.
+Have you ever noticed that you could hover over random variables while paused and see a popup preview? [Ryan][@ryanjduffy] added a fantastic feature to preview to first check if a variable was in the paused scope before showing the preview popup.
 
 [Prevent previewing tokens out of scope of the selected frame][pr-33] - [@ryanjduffy]
 
