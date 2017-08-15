@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component, DOM as dom, PropTypes } from "react";
 import classnames from "classnames";
 
@@ -11,11 +13,39 @@ import "./TextSearch.css";
 
 import { getRelativePath } from "../../utils/sources-tree";
 
+import type { Match } from "../../utils/search/project-search";
+import type { Item } from "../shared/ManagedTree";
+
+type Result = {
+  filepath: string,
+  matches: Match[]
+};
+
+type Results = Result[];
+
+type Props = {
+  results: Results,
+  query: string,
+  closeActiveSearch: () => void,
+  searchSources: () => void,
+  selectSource: () => void,
+  searchBottomBar: any
+};
+
+type State = {
+  inputValue: string,
+  focused: boolean
+};
+
 export default class TextSearch extends Component {
+  props: Props;
+  state: State;
+
   constructor(props: Props) {
     super(props);
     this.state = {
-      inputValue: this.props.query || ""
+      inputValue: this.props.query || "",
+      focused: false
     };
 
     this.focused = null;
@@ -31,7 +61,7 @@ export default class TextSearch extends Component {
     this.props.closeActiveSearch();
   }
 
-  async onKeyDown(e) {
+  async onKeyDown(e: Element) {
     if (e.key !== "Enter") {
       return;
     }
@@ -68,7 +98,31 @@ export default class TextSearch extends Component {
     this.props.selectSource(matchItem.sourceId, { line: matchItem.line });
   }
 
-  renderFile(file, focused, expanded, setExpanded) {
+  getResults() {
+    const { results } = this.props;
+    return results
+      .filter(result => result.filepath && result.matches.length > 0)
+      .map(result => ({
+        name: result.filepath,
+        path: result.filepath,
+        contents: result.matches
+      }));
+  }
+
+  resultCount() {
+    const results = this.getResults();
+    return results.reduce(
+      (count, file) => count + (file.contents ? file.contents.length : 0),
+      0
+    );
+  }
+
+  renderFile(
+    file: Item,
+    focused: boolean,
+    expanded: boolean,
+    setExpanded: () => void
+  ) {
     if (focused) {
       this.focused = { setExpanded, file, expanded };
     }
@@ -81,7 +135,7 @@ export default class TextSearch extends Component {
 
     const svgFile = Svg("file");
 
-    const matches = ` (${file.matches.length} match${file.matches.length > 1
+    const matches = ` (${file.contents.length} match${file.contents.length > 1
       ? "es"
       : ""})`;
 
@@ -103,7 +157,7 @@ export default class TextSearch extends Component {
     );
   }
 
-  renderMatch(match, focused) {
+  renderMatch(match: Item, focused: boolean) {
     if (focused) {
       this.focused = { match };
     }
@@ -120,7 +174,7 @@ export default class TextSearch extends Component {
     );
   }
 
-  renderMatchValue(value) {
+  renderMatchValue(value: string) {
     const { inputValue } = this.state;
     let match;
     const len = inputValue.length;
@@ -164,9 +218,8 @@ export default class TextSearch extends Component {
   }
 
   renderResults() {
-    const { results } = this.props;
-    results = results.filter(result => result.matches.length > 0);
-    function getFilePath(item) {
+    const results = this.getResults();
+    function getFilePath(item: Match) {
       return item.filepath
         ? `${item.sourceId}`
         : `${item.sourceId}-${item.line}-${item.column}`;
@@ -181,7 +234,7 @@ export default class TextSearch extends Component {
     return (
       <ManagedTree
         getRoots={() => results}
-        getChildren={file => file.matches || []}
+        getChildren={file => file.contents}
         itemHeight={20}
         autoExpand={1}
         autoExpandDepth={1}
@@ -189,15 +242,8 @@ export default class TextSearch extends Component {
         getParent={item => null}
         getPath={getFilePath}
         renderItem={renderItem}
+        autoExpandAll={false}
       />
-    );
-  }
-
-  resultCount() {
-    const { results } = this.props;
-    return results.reduce(
-      (count, file) => count + (file.matches ? file.matches.length : 0),
-      0
     );
   }
 
@@ -238,16 +284,6 @@ export default class TextSearch extends Component {
     );
   }
 }
-
-TextSearch.propTypes = {
-  sources: PropTypes.object,
-  results: PropTypes.array,
-  query: PropTypes.string,
-  closeActiveSearch: PropTypes.func,
-  searchSources: PropTypes.func,
-  selectSource: PropTypes.func,
-  searchBottomBar: PropTypes.object
-};
 
 TextSearch.contextTypes = {
   shortcuts: PropTypes.object

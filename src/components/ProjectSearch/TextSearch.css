@@ -9,6 +9,8 @@
   display: flex;
   cursor: default;
   margin-bottom: 1px;
+  /* this creates a row that is 19px high */
+  /* we should probably unify it so that is ~20px */
   padding: 4px 0 4px 30px;
   font-size: 10px;
 }
@@ -52,6 +54,8 @@
   font-weight: bold;
   line-height: 20px;
   cursor: default;
+
+  /* this creates a row that is 26px high */
   margin: 2px 20px 2px 0;
   padding: 3px 0 3px 5px;
   font-size: 12px;

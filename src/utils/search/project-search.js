@@ -1,5 +1,17 @@
+// @flow
+import type { Source } from "debugger-html";
+
+export type Match = {
+  sourceId: string,
+  line: number,
+  column: number,
+  match: string,
+  value: string,
+  text: string
+};
+
 // Maybe reuse file search's functions?
-export function findSourceMatches(source, queryText) {
+export function findSourceMatches(source: Source, queryText: string): Match[] {
   const { text, loading } = source;
   if (loading || !text || queryText == "") {
     return [];

@@ -1,0 +1,619 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextSearch basic 1`] = `
+ShallowWrapper {
+  "complexSelector": ComplexSelector {
+    "buildPredicate": [Function],
+    "childrenOfNode": [Function],
+    "findWhereUnwrapped": [Function],
+  },
+  "length": 1,
+  "node": <div
+    className="project-text-search"
+>
+    <div
+        className="header"
+    >
+        <SearchInput
+            count={0}
+            handleClose={[Function]}
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            placeholder="Find in files…"
+            query=""
+            showErrorEmoji={true}
+            size="big"
+            summaryMsg="0 results"
+        />
+        <div />
+    </div>
+    <ManagedTree
+        autoExpand={1}
+        autoExpandAll={false}
+        autoExpandDepth={1}
+        focused={undefined}
+        getChildren={[Function]}
+        getParent={[Function]}
+        getPath={[Function]}
+        getRoots={[Function]}
+        itemHeight={20}
+        renderItem={[Function]}
+    />
+</div>,
+  "nodes": Array [
+    <div
+      className="project-text-search"
+>
+      <div
+            className="header"
+      >
+            <SearchInput
+                  count={0}
+                  handleClose={[Function]}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  onKeyDown={[Function]}
+                  placeholder="Find in files…"
+                  query=""
+                  showErrorEmoji={true}
+                  size="big"
+                  summaryMsg="0 results"
+            />
+            <div />
+      </div>
+      <ManagedTree
+            autoExpand={1}
+            autoExpandAll={false}
+            autoExpandDepth={1}
+            focused={undefined}
+            getChildren={[Function]}
+            getParent={[Function]}
+            getPath={[Function]}
+            getRoots={[Function]}
+            itemHeight={20}
+            renderItem={[Function]}
+      />
+</div>,
+  ],
+  "options": Object {},
+  "renderer": ReactShallowRenderer {
+    "_instance": ShallowComponentWrapper {
+      "_calledComponentWillUnmount": false,
+      "_compositeType": 0,
+      "_context": Object {},
+      "_currentElement": <TextSearch
+        closeActiveSearch={[Function]}
+        query={null}
+        results={Array []}
+        searchBottomBar={<div />}
+        searchSources={[Function]}
+        selectSource={[Function]}
+/>,
+      "_debugID": 1,
+      "_hostContainerInfo": null,
+      "_hostParent": null,
+      "_instance": TextSearch {
+        "_reactInternalInstance": [Circular],
+        "close": [Function],
+        "context": Object {
+          "shortcuts": undefined,
+        },
+        "focused": null,
+        "inputOnChange": [Function],
+        "onEnterPress": [Function],
+        "onKeyDown": [Function],
+        "props": Object {
+          "closeActiveSearch": [Function],
+          "query": null,
+          "results": Array [],
+          "searchBottomBar": <div />,
+          "searchSources": [Function],
+          "selectSource": [Function],
+        },
+        "refs": Object {},
+        "selectMatchItem": [Function],
+        "state": Object {
+          "focused": false,
+          "inputValue": "",
+        },
+        "updater": Object {
+          "enqueueCallback": [Function],
+          "enqueueCallbackInternal": [Function],
+          "enqueueElementInternal": [Function],
+          "enqueueForceUpdate": [Function],
+          "enqueueReplaceState": [Function],
+          "enqueueSetState": [Function],
+          "isMounted": [Function],
+          "validateCallback": [Function],
+        },
+      },
+      "_mountOrder": 1,
+      "_pendingCallbacks": null,
+      "_pendingElement": null,
+      "_pendingForceUpdate": false,
+      "_pendingReplaceState": false,
+      "_pendingStateQueue": null,
+      "_renderedComponent": Object {
+        "_currentElement": <div
+          className="project-text-search"
+>
+          <div
+                    className="header"
+          >
+                    <SearchInput
+                              count={0}
+                              handleClose={[Function]}
+                              onBlur={[Function]}
+                              onChange={[Function]}
+                              onFocus={[Function]}
+                              onKeyDown={[Function]}
+                              placeholder="Find in files…"
+                              query=""
+                              showErrorEmoji={true}
+                              size="big"
+                              summaryMsg="0 results"
+                    />
+                    <div />
+          </div>
+          <ManagedTree
+                    autoExpand={1}
+                    autoExpandAll={false}
+                    autoExpandDepth={1}
+                    focused={undefined}
+                    getChildren={[Function]}
+                    getParent={[Function]}
+                    getPath={[Function]}
+                    getRoots={[Function]}
+                    itemHeight={20}
+                    renderItem={[Function]}
+          />
+</div>,
+        "_debugID": 2,
+        "_renderedOutput": <div
+          className="project-text-search"
+>
+          <div
+                    className="header"
+          >
+                    <SearchInput
+                              count={0}
+                              handleClose={[Function]}
+                              onBlur={[Function]}
+                              onChange={[Function]}
+                              onFocus={[Function]}
+                              onKeyDown={[Function]}
+                              placeholder="Find in files…"
+                              query=""
+                              showErrorEmoji={true}
+                              size="big"
+                              summaryMsg="0 results"
+                    />
+                    <div />
+          </div>
+          <ManagedTree
+                    autoExpand={1}
+                    autoExpandAll={false}
+                    autoExpandDepth={1}
+                    focused={undefined}
+                    getChildren={[Function]}
+                    getParent={[Function]}
+                    getPath={[Function]}
+                    getRoots={[Function]}
+                    itemHeight={20}
+                    renderItem={[Function]}
+          />
+</div>,
+      },
+      "_renderedNodeType": 0,
+      "_rootNodeID": 0,
+      "_topLevelWrapper": null,
+      "_updateBatchNumber": null,
+      "_warnedAboutRefsInRender": false,
+    },
+    "getRenderOutput": [Function],
+    "render": [Function],
+  },
+  "root": [Circular],
+  "unrendered": <TextSearch
+    closeActiveSearch={[Function]}
+    query={null}
+    results={Array []}
+    searchBottomBar={<div />}
+    searchSources={[Function]}
+    selectSource={[Function]}
+/>,
+}
+`;
+
+exports[`TextSearch results + query 1`] = `
+ShallowWrapper {
+  "complexSelector": ComplexSelector {
+    "buildPredicate": [Function],
+    "childrenOfNode": [Function],
+    "findWhereUnwrapped": [Function],
+  },
+  "length": 1,
+  "node": <div
+    className="project-text-search"
+>
+    <div
+        className="header"
+    >
+        <SearchInput
+            count={2}
+            handleClose={[Function]}
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            placeholder="Find in files…"
+            query="foo"
+            showErrorEmoji={true}
+            size="big"
+            summaryMsg="2 results"
+        />
+        <div />
+    </div>
+    <ManagedTree
+        autoExpand={1}
+        autoExpandAll={false}
+        autoExpandDepth={1}
+        focused={
+            Object {
+                "contents": Array [
+                  Object {
+                    "column": 12,
+                    "line": 12,
+                    "match": "foo",
+                    "sourceId": "foo",
+                    "text": "bar foo foo",
+                    "value": "bar foo foo",
+                  },
+                  Object {
+                    "column": 23,
+                    "line": 13,
+                    "match": "foo",
+                    "sourceId": "foo",
+                    "text": "bar foo foo",
+                    "value": "bar foo foo",
+                  },
+                ],
+                "name": "bar.js",
+                "path": "bar.js",
+              }
+        }
+        getChildren={[Function]}
+        getParent={[Function]}
+        getPath={[Function]}
+        getRoots={[Function]}
+        itemHeight={20}
+        renderItem={[Function]}
+    />
+</div>,
+  "nodes": Array [
+    <div
+      className="project-text-search"
+>
+      <div
+            className="header"
+      >
+            <SearchInput
+                  count={2}
+                  handleClose={[Function]}
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  onKeyDown={[Function]}
+                  placeholder="Find in files…"
+                  query="foo"
+                  showErrorEmoji={true}
+                  size="big"
+                  summaryMsg="2 results"
+            />
+            <div />
+      </div>
+      <ManagedTree
+            autoExpand={1}
+            autoExpandAll={false}
+            autoExpandDepth={1}
+            focused={
+                  Object {
+                        "contents": Array [
+                          Object {
+                            "column": 12,
+                            "line": 12,
+                            "match": "foo",
+                            "sourceId": "foo",
+                            "text": "bar foo foo",
+                            "value": "bar foo foo",
+                          },
+                          Object {
+                            "column": 23,
+                            "line": 13,
+                            "match": "foo",
+                            "sourceId": "foo",
+                            "text": "bar foo foo",
+                            "value": "bar foo foo",
+                          },
+                        ],
+                        "name": "bar.js",
+                        "path": "bar.js",
+                      }
+            }
+            getChildren={[Function]}
+            getParent={[Function]}
+            getPath={[Function]}
+            getRoots={[Function]}
+            itemHeight={20}
+            renderItem={[Function]}
+      />
+</div>,
+  ],
+  "options": Object {},
+  "renderer": ReactShallowRenderer {
+    "_instance": ShallowComponentWrapper {
+      "_calledComponentWillUnmount": false,
+      "_compositeType": 0,
+      "_context": Object {},
+      "_currentElement": <TextSearch
+        closeActiveSearch={[Function]}
+        query="foo"
+        results={
+                Array [
+                        Object {
+                          "filepath": "bar.js",
+                          "matches": Array [
+                            Object {
+                              "column": 12,
+                              "line": 12,
+                              "match": "foo",
+                              "sourceId": "foo",
+                              "text": "bar foo foo",
+                              "value": "bar foo foo",
+                            },
+                            Object {
+                              "column": 23,
+                              "line": 13,
+                              "match": "foo",
+                              "sourceId": "foo",
+                              "text": "bar foo foo",
+                              "value": "bar foo foo",
+                            },
+                          ],
+                        },
+                      ]
+        }
+        searchBottomBar={<div />}
+        searchSources={[Function]}
+        selectSource={[Function]}
+/>,
+      "_debugID": 3,
+      "_hostContainerInfo": null,
+      "_hostParent": null,
+      "_instance": TextSearch {
+        "_reactInternalInstance": [Circular],
+        "close": [Function],
+        "context": Object {
+          "shortcuts": undefined,
+        },
+        "focused": null,
+        "inputOnChange": [Function],
+        "onEnterPress": [Function],
+        "onKeyDown": [Function],
+        "props": Object {
+          "closeActiveSearch": [Function],
+          "query": "foo",
+          "results": Array [
+            Object {
+              "filepath": "bar.js",
+              "matches": Array [
+                Object {
+                  "column": 12,
+                  "line": 12,
+                  "match": "foo",
+                  "sourceId": "foo",
+                  "text": "bar foo foo",
+                  "value": "bar foo foo",
+                },
+                Object {
+                  "column": 23,
+                  "line": 13,
+                  "match": "foo",
+                  "sourceId": "foo",
+                  "text": "bar foo foo",
+                  "value": "bar foo foo",
+                },
+              ],
+            },
+          ],
+          "searchBottomBar": <div />,
+          "searchSources": [Function],
+          "selectSource": [Function],
+        },
+        "refs": Object {},
+        "selectMatchItem": [Function],
+        "state": Object {
+          "focused": false,
+          "inputValue": "foo",
+        },
+        "updater": Object {
+          "enqueueCallback": [Function],
+          "enqueueCallbackInternal": [Function],
+          "enqueueElementInternal": [Function],
+          "enqueueForceUpdate": [Function],
+          "enqueueReplaceState": [Function],
+          "enqueueSetState": [Function],
+          "isMounted": [Function],
+          "validateCallback": [Function],
+        },
+      },
+      "_mountOrder": 2,
+      "_pendingCallbacks": null,
+      "_pendingElement": null,
+      "_pendingForceUpdate": false,
+      "_pendingReplaceState": false,
+      "_pendingStateQueue": null,
+      "_renderedComponent": Object {
+        "_currentElement": <div
+          className="project-text-search"
+>
+          <div
+                    className="header"
+          >
+                    <SearchInput
+                              count={2}
+                              handleClose={[Function]}
+                              onBlur={[Function]}
+                              onChange={[Function]}
+                              onFocus={[Function]}
+                              onKeyDown={[Function]}
+                              placeholder="Find in files…"
+                              query="foo"
+                              showErrorEmoji={true}
+                              size="big"
+                              summaryMsg="2 results"
+                    />
+                    <div />
+          </div>
+          <ManagedTree
+                    autoExpand={1}
+                    autoExpandAll={false}
+                    autoExpandDepth={1}
+                    focused={
+                              Object {
+                                        "contents": Array [
+                                          Object {
+                                            "column": 12,
+                                            "line": 12,
+                                            "match": "foo",
+                                            "sourceId": "foo",
+                                            "text": "bar foo foo",
+                                            "value": "bar foo foo",
+                                          },
+                                          Object {
+                                            "column": 23,
+                                            "line": 13,
+                                            "match": "foo",
+                                            "sourceId": "foo",
+                                            "text": "bar foo foo",
+                                            "value": "bar foo foo",
+                                          },
+                                        ],
+                                        "name": "bar.js",
+                                        "path": "bar.js",
+                                      }
+                    }
+                    getChildren={[Function]}
+                    getParent={[Function]}
+                    getPath={[Function]}
+                    getRoots={[Function]}
+                    itemHeight={20}
+                    renderItem={[Function]}
+          />
+</div>,
+        "_debugID": 4,
+        "_renderedOutput": <div
+          className="project-text-search"
+>
+          <div
+                    className="header"
+          >
+                    <SearchInput
+                              count={2}
+                              handleClose={[Function]}
+                              onBlur={[Function]}
+                              onChange={[Function]}
+                              onFocus={[Function]}
+                              onKeyDown={[Function]}
+                              placeholder="Find in files…"
+                              query="foo"
+                              showErrorEmoji={true}
+                              size="big"
+                              summaryMsg="2 results"
+                    />
+                    <div />
+          </div>
+          <ManagedTree
+                    autoExpand={1}
+                    autoExpandAll={false}
+                    autoExpandDepth={1}
+                    focused={
+                              Object {
+                                        "contents": Array [
+                                          Object {
+                                            "column": 12,
+                                            "line": 12,
+                                            "match": "foo",
+                                            "sourceId": "foo",
+                                            "text": "bar foo foo",
+                                            "value": "bar foo foo",
+                                          },
+                                          Object {
+                                            "column": 23,
+                                            "line": 13,
+                                            "match": "foo",
+                                            "sourceId": "foo",
+                                            "text": "bar foo foo",
+                                            "value": "bar foo foo",
+                                          },
+                                        ],
+                                        "name": "bar.js",
+                                        "path": "bar.js",
+                                      }
+                    }
+                    getChildren={[Function]}
+                    getParent={[Function]}
+                    getPath={[Function]}
+                    getRoots={[Function]}
+                    itemHeight={20}
+                    renderItem={[Function]}
+          />
+</div>,
+      },
+      "_renderedNodeType": 0,
+      "_rootNodeID": 0,
+      "_topLevelWrapper": null,
+      "_updateBatchNumber": null,
+      "_warnedAboutRefsInRender": false,
+    },
+    "getRenderOutput": [Function],
+    "render": [Function],
+  },
+  "root": [Circular],
+  "unrendered": <TextSearch
+    closeActiveSearch={[Function]}
+    query="foo"
+    results={
+        Array [
+            Object {
+              "filepath": "bar.js",
+              "matches": Array [
+                Object {
+                  "column": 12,
+                  "line": 12,
+                  "match": "foo",
+                  "sourceId": "foo",
+                  "text": "bar foo foo",
+                  "value": "bar foo foo",
+                },
+                Object {
+                  "column": 23,
+                  "line": 13,
+                  "match": "foo",
+                  "sourceId": "foo",
+                  "text": "bar foo foo",
+                  "value": "bar foo foo",
+                },
+              ],
+            },
+          ]
+    }
+    searchBottomBar={<div />}
+    searchSources={[Function]}
+    selectSource={[Function]}
+/>,
+}
+`;

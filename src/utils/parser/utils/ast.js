@@ -29,10 +29,6 @@ function parse(text: ?string, opts?: Object) {
   try {
     ast = _parse(text, opts);
   } catch (error) {
-    if (isDevelopment()) {
-      console.warn("parse failed", text);
-    }
-
     ast = {};
   }
 
