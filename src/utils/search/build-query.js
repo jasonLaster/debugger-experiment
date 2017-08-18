@@ -1,5 +1,5 @@
 // @flow
-import escapeRegExp from "lodash/escapeRegExp";
+import { escapeRegExp } from "lodash";
 
 import type { SearchModifiers } from "../../types";
 

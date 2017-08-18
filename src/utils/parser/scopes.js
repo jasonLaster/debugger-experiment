@@ -1,7 +1,7 @@
 // @flow
 
-import toPairs from "lodash/toPairs";
-import uniq from "lodash/uniq";
+import { toPairs } from "lodash";
+import { uniq } from "lodash";
 
 import type { Scope } from "./types";
 

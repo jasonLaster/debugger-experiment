@@ -3,7 +3,7 @@
 import parseScriptTags from "parse-script-tags";
 import * as babylon from "babylon";
 import traverse from "babel-traverse";
-import isEmpty from "lodash/isEmpty";
+import { isEmpty } from "lodash";
 
 import type { Source } from "debugger-html";
 
