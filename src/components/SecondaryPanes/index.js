@@ -172,6 +172,13 @@ class SecondaryPanes extends Component {
       });
     }
 
+    if (isEnabled("workers")) {
+      items.push({
+        header: L10N.getStr("eventListenersHeader"),
+        component: Workers
+      });
+    }
+
     if (this.props.horizontal) {
       items.unshift(this.getWatchItem());
     }
