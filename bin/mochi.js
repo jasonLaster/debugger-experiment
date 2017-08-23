@@ -330,8 +330,8 @@ if (process.mainModule.filename.includes("bin/mochi.js")) {
     const text = fs.readFileSync(_path, { encoding: "utf8" });
     console.log(readOutput(text).join("\n"));
   } else {
-    args = updateArgs(args);
-    run(args);
+    const updatedArgs = updateArgs(args);
+    run(updatedArgs);
   }
 }
 
