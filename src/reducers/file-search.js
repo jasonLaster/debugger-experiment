@@ -30,48 +30,55 @@ export type SearchResults = {
 };
 
 export type UIState = {
-  searchResults: SearchResults,
   active: boolean,
   query: string,
+  searchResults: SearchResults,
   modifiers: Modifiers
 };
 
-export const State = makeRecord(
-  ({
-    active: false,
-    query: "",
-    searchResults: {
-      matches: [],
-      matchIndex: -1,
-      index: -1,
-      count: 0
-    },
-    modifiers: makeRecord({
-      caseSensitive: prefs.fileSearchCaseSensitive,
-      wholeWord: prefs.fileSearchWholeWord,
-      regexMatch: prefs.fileSearchRegexMatch
-    })()
-  }: UIState)
-);
+function initialState() {
+  const searchResults = {
+    matches: [],
+    matchIndex: -1,
+    index: -1,
+    count: 0
+  };
+  const modifiers = makeRecord({
+    caseSensitive: prefs.fileSearchCaseSensitive,
+    wholeWord: prefs.fileSearchWholeWord,
+    regexMatch: prefs.fileSearchRegexMatch
+  })();
+
+  return makeRecord(
+    ({
+      active: false,
+      query: "",
+      searchResults,
+      modifiers
+    }: UIState)
+  )();
+}
 
 function update(
-  state: Record<UIState> = State(),
+  state: Record<UIState> = initialState(),
   action: Action
 ): Record<UIState> {
   switch (action.type) {
-    case "TOGGLE": {
+    case "TOGGLE_FILE_SEARCH": {
       return state.set("active", action.value);
     }
 
-    case "SET_QUERY": {
+    case "SET_FILE_SEARCH_QUERY": {
       return state.set("query", action.query);
     }
 
-    case "SET_SEARCH_RESULTS": {
+    case "SET_FILE_SEARCH_RESULTS": {
+      console.log("YOOOO");
+      return state;
       return state.set("searchResults", action.results);
     }
 
-    case "TOGGLE_MODIFIER": {
+    case "TOGGLE_FILE_SEARCH_MODIFIER": {
       const actionVal = !state.getIn(["modifiers", action.modifier]);
 
       if (action.modifier == "caseSensitive") {
@@ -112,6 +119,7 @@ export function getFileSearchModifiers(state: OuterState): Modifiers {
 }
 
 export function getSearchResults(state: OuterState) {
+  console.log(state.fileSearch);
   return state.fileSearch.get("searchResults");
 }
 

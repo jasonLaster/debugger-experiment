@@ -23,11 +23,7 @@ import { debounce } from "lodash";
 
 import { SourceEditor } from "devtools-source-editor";
 import type { SourceRecord } from "../../reducers/sources";
-import type {
-  ActiveSearchType,
-  FileSearchModifiers,
-  SearchResults
-} from "../../reducers/ui";
+import type { ActiveSearchType, FileSearchModifiers } from "../../reducers/ui";
 import type { SelectSourceOptions } from "../../actions/sources";
 import SearchInput from "../shared/SearchInput";
 

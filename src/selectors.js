@@ -9,6 +9,7 @@ import * as ui from "./reducers/ui";
 import * as ast from "./reducers/ast";
 import * as coverage from "./reducers/coverage";
 import * as projectTextSearch from "./reducers/project-text-search";
+import * as fileSearch from "./reducers/file-search";
 import * as sourceSearch from "./reducers/source-search";
 
 import getBreakpointAtLocation from "./selectors/breakpointAtLocation";
@@ -32,6 +33,7 @@ module.exports = Object.assign(
   ast,
   coverage,
   projectTextSearch,
+  fileSearch,
   sourceSearch,
   {
     getBreakpointAtLocation,

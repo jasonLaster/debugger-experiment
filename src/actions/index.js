@@ -10,6 +10,7 @@ import * as ui from "./ui";
 import * as ast from "./ast";
 import * as coverage from "./coverage";
 import * as projectTextSearch from "./project-text-search";
+import * as fileSearch from "./file-search";
 import * as sourceSearch from "./source-search";
 import * as loadSourceText from "./sources/loadSourceText";
 
@@ -25,6 +26,7 @@ export default Object.assign(
   ast,
   coverage,
   projectTextSearch,
+  fileSearch,
   sourceSearch,
   loadSourceText
 );

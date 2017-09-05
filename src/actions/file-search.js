@@ -23,7 +23,7 @@ export function doSearch(query: string, editor: Editor) {
 
 export function setFileSearchQuery(query: string) {
   return {
-    type: "UPDATE_FILE_SEARCH_QUERY",
+    type: "SET_FILE_SEARCH_QUERY",
     query
   };
 }
@@ -37,16 +37,16 @@ export function updateSearchResults(
   line: number,
   matches: Match[]
 ) {
-  const matchIndex = matches.findIndex(
-    elm => elm.line === line && elm.ch === characterIndex
-  );
+  // const matchIndex = matches.findIndex(
+  //   elm => elm.line === line && elm.ch === characterIndex
+  // );
 
   return {
-    type: "UPDATE_SEARCH_RESULTS",
-    matches,
-    matchIndex,
-    count: matches.length,
-    index: characterIndex
+    type: "SET_FILE_SEARCH_RESULTS"
+    // matches,
+    // matchIndex,
+    // count: matches.length,
+    // index: characterIndex
   };
 }
 
