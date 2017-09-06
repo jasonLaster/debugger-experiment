@@ -5,4 +5,8 @@ describe("getEmptyLines", () => {
   it("allSymbols", () => {
     expect(getEmptyLines(getSource("allSymbols"))).toMatchSnapshot();
   });
+
+  it("empty-reg", () => {
+    expect(getEmptyLines(getSource("empty-reg"))).toMatchSnapshot();
+  });
 });
