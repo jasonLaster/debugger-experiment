@@ -42,9 +42,10 @@ function updateLineNumberFormat(editor: Object, sourceId: string) {
 }
 
 function updateDocument(editor: Object, sourceId: string) {
-  if (!sourceId) {
+  if (!sourceId || !editor) {
     return;
   }
+
   const doc = getDocument(sourceId) || editor.createDocument();
   editor.replaceDocument(doc);
 
@@ -68,7 +69,7 @@ function setEditorText(editor: Object, source: Source) {
  * document with the correct mode and text.
  */
 function showSourceText(editor: Object, source: Source) {
-  if (!source) {
+  if (!source || !editor) {
     return;
   }
 

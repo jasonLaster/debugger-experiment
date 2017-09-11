@@ -503,6 +503,10 @@ class Editor extends PureComponent {
   }
 
   showMessage(msg) {
+    if (!this.state.editor) {
+      return;
+    }
+
     this.state.editor.replaceDocument(this.state.editor.createDocument());
     this.state.editor.setText(msg);
     this.state.editor.setMode({ name: "text" });
