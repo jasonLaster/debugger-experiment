@@ -1,6 +1,10 @@
 // @flow
 
+<<<<<<< HEAD
 import type { Expression } from "debugger-html";
+=======
+import * as babylon from "babylon";
+>>>>>>> validate expressions
 
 // replace quotes and slashes that could interfere with the evaluation.
 export function sanitizeInput(input: string) {

@@ -1,12 +1,17 @@
 // @flow
 
 import { PROMISE } from "../utils/redux/middleware/promise";
+<<<<<<< HEAD
 import {
   getExpression,
   getExpressions,
   getSelectedFrameId
 } from "../selectors";
 import { wrapExpression } from "../utils/expressions";
+=======
+import { getExpression, getExpressions, getSelectedFrame } from "../selectors";
+import { wrapExpression, isInvalidExpression } from "../utils/expressions";
+>>>>>>> validate expressions
 import type { Expression } from "../types";
 import type { ThunkArgs } from "./types";
 
