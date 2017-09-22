@@ -4,7 +4,7 @@ import { parseExpression } from "./utils/ast";
 
 export function hasSyntaxError(input: string) {
   try {
-    parseExpression(input, { sourceType: "script" });
+    parseExpression(input);
     return false;
   } catch (e) {
     return `${e.name} : ${input} is an invalid.`;

@@ -42,8 +42,11 @@ function htmlParser({ source, line }) {
   });
 }
 
-export function parseExpression(expression, opts) {
-  return babylon.parseExpression(expression, opts);
+export function parseExpression(expression: string, opts?: Object) {
+  return babylon.parseExpression(
+    expression,
+    Object.assign({}, opts, { sourceType: "script" })
+  );
 }
 
 export function getAst(source: Source) {
