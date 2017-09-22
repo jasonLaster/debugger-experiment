@@ -1,10 +1,10 @@
 // @flow
 
-import * as babylon from "babylon";
+import { parseExpression } from "./utils/ast";
 
 export function validateSyntax(input: string) {
   try {
-    babylon.parseExpression(input);
+    parseExpression(input, { sourceType: "script" });
     return input;
   } catch (e) {
     return `${e.name} : ${input} is an invalid.`;
