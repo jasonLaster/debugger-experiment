@@ -2,10 +2,10 @@
 
 import { parseExpression } from "./utils/ast";
 
-export function validateSyntax(input: string) {
+export function hasSyntaxError(input: string) {
   try {
     parseExpression(input, { sourceType: "script" });
-    return input;
+    return false;
   } catch (e) {
     return `${e.name} : ${input} is an invalid.`;
   }

@@ -20,7 +20,7 @@ export const getEmptyLines = dispatcher.task("getEmptyLines");
 export const hasSource = dispatcher.task("hasSource");
 export const setSource = dispatcher.task("setSource");
 export const clearSources = dispatcher.task("clearSources");
-export const validateSyntax = dispatcher.task("validateSyntax");
+export const hasSyntaxError = dispatcher.task("hasSyntaxError");
 
 export type { SymbolDeclaration, SymbolDeclarations } from "./getSymbols";
 export type { AstLocation } from "./types";

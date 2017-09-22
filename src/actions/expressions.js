@@ -103,7 +103,7 @@ function evaluateExpression(expression: Expression) {
         status: "done",
         value: {
           input: expression.input,
-          result: output,
+          result: error,
           timestamp: Date.now()
         }
       });

@@ -1,11 +1,11 @@
-import { validateSyntax } from "../validate";
+import { hasSyntaxError } from "../validate";
 
-describe("validate syntax", () => {
-  it("should return the  valid expression", () => {
-    expect(validateSyntax("foo")).toEqual("foo");
+describe("has syntax error", () => {
+  it("should return false", () => {
+    expect(hasSyntaxError("foo")).toEqual(false);
   });
 
   it("should return the error object for the invalid expression", () => {
-    expect(validateSyntax("foo)(")).toMatchSnapshot();
+    expect(hasSyntaxError("foo)(")).toMatchSnapshot();
   });
 });

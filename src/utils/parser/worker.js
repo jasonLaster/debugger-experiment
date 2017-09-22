@@ -7,7 +7,7 @@ import { hasSource, setSource, clearSources } from "./sources";
 import getOutOfScopeLocations from "./getOutOfScopeLocations";
 import { getNextStep } from "./steps";
 import getEmptyLines from "./getEmptyLines";
-import { validateSyntax } from "./validate";
+import { hasSyntaxError } from "./validate";
 
 import { workerUtils } from "devtools-utils";
 const { workerHandler } = workerUtils;
@@ -26,5 +26,5 @@ self.onmessage = workerHandler({
   getVariablesInScope,
   getNextStep,
   getEmptyLines,
-  validateSyntax
+  hasSyntaxError
 });
