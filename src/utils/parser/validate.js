@@ -7,6 +7,6 @@ export function hasSyntaxError(input: string) {
     parseExpression(input);
     return false;
   } catch (e) {
-    return `${e.name} : ${input} is an invalid.`;
+    return `${e.name} : ${e.message}`;
   }
 }

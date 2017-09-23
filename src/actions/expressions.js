@@ -94,25 +94,17 @@ function evaluateExpression(expression: Expression) {
       return;
     }
 
+    const error = await parser.hasSyntaxError(expression.input);
     const frameId = getSelectedFrameId(getState());
-    const output = await parser.validateSyntax(expression.input);
-    if (output !== expression.input) {
-      return dispatch({
-        type: "EVALUATE_EXPRESSION",
-        input: expression.input,
-        status: "done",
-        value: {
-          input: expression.input,
-          result: error,
-          timestamp: Date.now()
-        }
-      });
-    }
-    const input = wrapExpression(expression.input);
+    const value = error
+      ? { input: expression.input, result: error }
+      : await client.evaluate(wrapExpression(expression.input), { frameId });
+
     return dispatch({
       type: "EVALUATE_EXPRESSION",
       input: expression.input,
-      [PROMISE]: client.evaluate(input, { frameId })
+      status: "done",
+      value
     });
   };
 }
