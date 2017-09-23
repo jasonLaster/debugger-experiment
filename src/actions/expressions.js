@@ -1,6 +1,5 @@
 // @flow
 
-import { PROMISE } from "../utils/redux/middleware/promise";
 import {
   getExpression,
   getExpressions,
