@@ -54,8 +54,13 @@ describe("Parser.getSymbols", () => {
     expect(symbols).toMatchSnapshot();
   });
 
-  it("component", () => {
+  it("components", () => {
     const symbols = formatSymbols(getSource("component"));
+    expect(symbols).toMatchSnapshot();
+  });
+
+  it("react component", () => {
+    const symbols = formatSymbols(getSource("frameworks/component"));
     expect(symbols).toMatchSnapshot();
   });
 });
