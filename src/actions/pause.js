@@ -96,7 +96,7 @@ export function paused(pauseInfo: Pause) {
     if (hiddenBreakpointLocation) {
       dispatch(removeBreakpoint(hiddenBreakpointLocation));
     }
-    dispatch(evaluateExpressions(frame.id));
+    dispatch(evaluateExpressions());
     dispatch(
       selectSource(frame.location.sourceId, { line: frame.location.line })
     );
