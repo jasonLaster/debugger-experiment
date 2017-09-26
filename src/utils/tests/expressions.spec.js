@@ -27,16 +27,6 @@ describe("expressions", () => {
     });
   });
 
-  describe("is invalid expression", () => {
-    it("checks that the  expression is valid", () => {
-      expect(isInvalidExpression("foo")).toBe(false);
-    });
-
-    it("checks that the  expression is invalid", () => {
-      expect(isInvalidExpression("foo)(")).toMatchSnapshot();
-    });
-  });
-
   describe("getValue", () => {
     it("Reference Errors should be shown as (unavailable)", () => {
       expect(
