@@ -44,7 +44,6 @@ function update(
         value: action.value,
         updating: false
       });
-      break;
     case "DELETE_EXPRESSION":
       return deleteExpression(state, action.input);
   }
