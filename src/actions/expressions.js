@@ -102,7 +102,6 @@ function evaluateExpression(expression: Expression) {
     return dispatch({
       type: "EVALUATE_EXPRESSION",
       input: expression.input,
-      status: "done",
       value
     });
   };
