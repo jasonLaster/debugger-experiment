@@ -1,7 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`expressions is invalid expression checks that the  expression is invalid 1`] = `[SyntaxError: Unexpected token (1:3)]`;
-
 exports[`expressions wrap exxpression should wrap an expression 1`] = `
 "eval(\`
     try {
