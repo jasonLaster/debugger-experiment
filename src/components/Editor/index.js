@@ -155,11 +155,7 @@ class Editor extends PureComponent {
         this.onGutterContextMenu(event)
       );
 
-<<<<<<< HEAD
       codeMirror.on("contextmenu", (cm, event) => this.openMenu(event, editor));
-=======
-      codeMirror.on("contextmenu", (cm, event) => this.openMenu(event, cm));
->>>>>>> flow fix
     } else {
       codeMirrorWrapper.addEventListener("contextmenu", event =>
         this.openMenu(event, editor)
@@ -427,9 +423,13 @@ class Editor extends PureComponent {
     const { selectedLocation, jumpToMappedLocation } = this.props;
 
     if (e.metaKey && e.altKey) {
-      const sourceLocation = getSourceLocationFromMouseEvent(this.state.editor, selectedLocation, e);
+      const sourceLocation = getSourceLocationFromMouseEvent(
+        this.state.editor,
+        selectedLocation,
+        e
+      );
       jumpToMappedLocation(sourceLocation);
-   }
+    }
   }
 
   toggleConditionalPanel(line) {
