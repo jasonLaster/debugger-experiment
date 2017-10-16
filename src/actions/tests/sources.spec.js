@@ -56,7 +56,7 @@ describe("sources", () => {
     expect(source.get("id")).toEqual("foo1");
 
     const locations = getOutOfScopeLocations(getState());
-    expect(locations.length).toEqual(1);
+    expect(locations.length).toEqual(0);
   });
 
   it("should automatically select a pending source", async () => {
