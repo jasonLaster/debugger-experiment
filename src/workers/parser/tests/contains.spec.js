@@ -17,90 +17,91 @@ function getTestLoc() {
   };
 }
 
+function startPos(lineOffset, columnOffset) {
+  const { start } = getTestLoc();
+  return {
+    line: start.line + lineOffset,
+    column: start.column + columnOffset
+  };
+}
+
+function endPos(lineOffset, columnOffset) {
+  const { end } = getTestLoc();
+  return {
+    line: end.line + lineOffset,
+    column: end.column + columnOffset
+  };
+}
+
+function startLine(lineOffset = 0) {
+  const { start } = getTestLoc();
+  return {
+    line: start.line + lineOffset
+  };
+}
+
+function endLine(lineOffset = 0) {
+  const { end } = getTestLoc();
+  return {
+    line: end.line + lineOffset
+  };
+}
+
+function testContains(pos, bool) {
+  const loc = getTestLoc();
+  expect(containsPosition(loc, pos)).toEqual(bool);
+}
+
 describe("containsPosition", () => {
   describe("location and postion both with the column criteria", () => {
-    it("should contain position within the location range", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.start.line + 1,
-        column: loc.start.column + 1
-      };
-      expect(containsPosition(loc, pos)).toEqual(true);
-    });
+    it(
+      "should contain position within the location range",
+      testContains(startPos(1, 1), true)
+    );
 
-    it("should not contain position out of the start line", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.start.line - 1,
-        column: loc.start.column
-      };
-      expect(containsPosition(loc, pos)).toEqual(false);
-    });
+    it(
+      "should not contain position out of the start line",
+      testContains(startPos(-1, 0), false)
+    );
 
-    it("should not contain position out of the start column", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.start.line,
-        column: loc.start.column - 1
-      };
-      expect(containsPosition(loc, pos)).toEqual(false);
-    });
+    it(
+      "should not contain position out of the start column",
+      testContains(startPos(0, -1), false)
+    );
 
-    it("should not contain position out of the end line", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.end.line + 1,
-        column: loc.end.column
-      };
-      expect(containsPosition(loc, pos)).toEqual(false);
-    });
+    it(
+      `should contain position on the same start line and
+        within the start column`,
+      testContains(startPos(0, 1), true)
+    );
 
-    it("should not contain position out of the end column", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.end.line,
-        column: loc.end.column + 1
-      };
-      expect(containsPosition(loc, pos)).toEqual(false);
-    });
+    it(
+      "should not contain position out of the end line",
+      testContains(endPos(1, 0), false)
+    );
 
-    it(`should contain position on the same start line and
-        within the start column`, () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.start.line,
-        column: loc.start.column + 1
-      };
-      expect(containsPosition(loc, pos)).toEqual(true);
-    });
+    it(
+      "should not contain position out of the end column",
+      testContains(endPos(0, 1), false)
+    );
 
-    it(`should contain position on the same end line and
-        within the end column`, () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.end.line,
-        column: loc.end.column - 1
-      };
-      expect(containsPosition(loc, pos)).toEqual(true);
-    });
+    it(
+      `should contain position on the same end line and
+        within the end column`,
+      testContains(endPos(0, -1), true)
+    );
   });
 
   describe("position without the column criterion", () => {
-    it("should contain position on the same start line", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.start.line
-      };
-      expect(containsPosition(loc, pos)).toEqual(true);
-    });
+    it(
+      "should contain position on the same start line",
+      testContains(startLine(0), true)
+    );
 
-    it("should contain position on the same end line", () => {
-      const loc = getTestLoc();
-      const pos = {
-        line: loc.end.line
-      };
-      expect(containsPosition(loc, pos)).toEqual(true);
-    });
+    it(
+      "should contain position on the same end line",
+      testContains(endLine(0), true)
+    );
   });
 
   describe("location without the column criterion", () => {
@@ -129,18 +130,14 @@ describe("containsPosition", () => {
     it("should contain position on the same start line", () => {
       const loc = getTestLoc();
       loc.start.column = undefined;
-      const pos = {
-        line: loc.start.line
-      };
+      const pos = startLine();
       expect(containsPosition(loc, pos)).toEqual(true);
     });
 
     it("should contain position on the same end line", () => {
       const loc = getTestLoc();
       loc.end.column = undefined;
-      const pos = {
-        line: loc.end.line
-      };
+      const pos = endLine();
       expect(containsPosition(loc, pos)).toEqual(true);
     });
   });
@@ -151,14 +148,8 @@ describe("containsLocation", () => {
     it("should contian location within the range", () => {
       const locA = getTestLoc();
       const locB = {
-        start: {
-          line: locA.start.line + 1,
-          column: locA.start.column + 1
-        },
-        end: {
-          line: locA.end.line - 1,
-          column: locA.end.column - 1
-        }
+        start: startPos(1, 1),
+        end: endPos(-1, -1)
       };
       expect(containsLocation(locA, locB)).toEqual(true);
     });
@@ -191,34 +182,22 @@ describe("containsLocation", () => {
       expect(containsLocation(locA, locB)).toEqual(false);
     });
 
-    it(`should contain location on the same start line and 
+    it(`should contain location on the same start line and
         within the start column`, () => {
       const locA = getTestLoc();
       const locB = {
-        start: {
-          line: locA.start.line,
-          column: locA.start.column + 1
-        },
-        end: {
-          line: locA.end.line - 1,
-          column: locA.end.column - 1
-        }
+        start: startPos(0, 1),
+        end: endPos(-1, -1)
       };
       expect(containsLocation(locA, locB)).toEqual(true);
     });
 
-    it(`should contain location on the same end line and 
+    it(`should contain location on the same end line and
         within the end column`, () => {
       const locA = getTestLoc();
       const locB = {
-        start: {
-          line: locA.start.line + 1,
-          column: locA.start.column + 1
-        },
-        end: {
-          line: locA.end.line,
-          column: locA.end.column - 1
-        }
+        start: startPos(1, 1),
+        end: endPos(0, -1)
       };
       expect(containsLocation(locA, locB)).toEqual(true);
     });
@@ -279,140 +258,92 @@ describe("nodeContainsPosition", () => {
   describe("node and position both with the column criteria", () => {
     it("should contian position within the range", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line + 1,
-        column: loc.start.column + 1
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startPos(1, 1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
 
     it("should not contian position out of the start line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line - 1,
-        column: loc.start.column
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(false);
+      const pos = startPos(-1, 0);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(false);
     });
 
     it("should not contian position out of the start column", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line,
-        column: loc.start.column - 1
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(false);
+      const pos = startPos(0, -1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(false);
     });
 
     it("should not contian position out of the end line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line + 1,
-        column: loc.end.column
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(false);
+      const pos = endPos(1, 0);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(false);
     });
 
     it("should not contian position out of the end column", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line,
-        column: loc.end.column + 1
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(false);
+      const pos = endPos(0, 1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(false);
     });
 
-    it(`should contain position on the same start line and 
+    it(`should contain position on the same start line and
         within the start column`, () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line,
-        column: loc.start.column + 1
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startPos(0, 1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
 
-    it(`should contain position on the same end line and 
+    it(`should contain position on the same end line and
         within the end column`, () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line,
-        column: loc.end.column - 1
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = endPos(0, -1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
   });
 
   describe("node without the column criterion", () => {
     it("should contain position on the same start line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line,
-        column: loc.start.column - 1
-      };
       loc.start.column = undefined;
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startPos(0, -1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
 
     it("should contain position on the same end line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line,
-        column: loc.end.column + 1
-      };
       loc.end.column = undefined;
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startPos(0, 1);
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
   });
 
   describe("position without the column criterion", () => {
     it("should contain position on the same start line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startLine();
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
 
     it("should contain position on the same end line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line
-      };
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = endLine();
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
   });
 
   describe("node and position both without the column criteria", () => {
     it("should contain position on the same start line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.start.line
-      };
       loc.start.column = undefined;
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = startLine();
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
 
     it("should contain position on the same end line", () => {
       const loc = getTestLoc();
-      const node = { loc };
-      const pos = {
-        line: loc.end.line
-      };
       loc.end.column = undefined;
-      expect(nodeContainsPosition(node, pos)).toEqual(true);
+      const pos = endLine();
+      expect(nodeContainsPosition({ loc }, pos)).toEqual(true);
     });
   });
 });
