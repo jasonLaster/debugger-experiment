@@ -49,9 +49,10 @@ function generateCorrectingThreadClient(offset = 0) {
   return {
     getBreakpointByLocation: jest.fn(),
     setBreakpoint: (location, condition) => {
-      const actualLocation = Object.assign({}, location, {
+      const actualLocation = {
+        ...location,
         line: location.line + offset
-      });
+      };
 
       return Promise.resolve({
         id: makeLocationId(location),
@@ -71,7 +72,7 @@ function generateCorrectingThreadClient(offset = 0) {
 export function simulateCorrectThreadClient(offset, location) {
   const correctedThreadClient = generateCorrectingThreadClient(offset);
   const offsetLine = { line: location.line + offset };
-  const correctedLocation = Object.assign({}, location, offsetLine);
+  const correctedLocation = { ...location, offsetLine };
   return { correctedThreadClient, correctedLocation };
 }
 

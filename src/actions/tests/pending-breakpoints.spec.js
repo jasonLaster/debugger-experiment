@@ -223,11 +223,11 @@ describe("initializing with disabled pending breakpoints in prefs", () => {
   });
 
   it("syncs breakpoints with pending breakpoints", async () => {
-    const expectedLocation = Object.assign(
-      {},
-      mockedPendingBreakpoint.location,
-      { sourceId: "bar.js" }
-    );
+    const location = mockedPendingBreakpoint.location;
+    const expectedLocation = {
+      ...location,
+      sourceId: "bar.js"
+    };
 
     const expectedId = makeLocationId(expectedLocation);
     const { getState, dispatch } = createStore(simpleMockThreadClient);
