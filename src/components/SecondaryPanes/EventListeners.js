@@ -102,12 +102,15 @@ class EventListeners extends Component<Props> {
 export default connect(
   state => {
     const listeners = getEventListeners(state).map(l =>
-      Object.assign({}, l, {
-        breakpoint: getBreakpoint(state, {
-          sourceId: l.sourceId,
-          line: l.line
-        })
-      })
+      {
+        ...l,
+        breakpoint: getBreakpoint(
+          state, {
+            sourceId: l.sourceId,
+            line: l.line
+          }
+        )
+      };
     );
 
     return { listeners };
