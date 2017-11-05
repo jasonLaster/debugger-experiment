@@ -12,6 +12,7 @@ export function createTree(
   projectRoot: string
 ) {
   const uncollapsedTree = createNode("root", "", []);
+  console.log(`create tree`, { debuggeeUrl, projectRoot });
   for (const source of sources.valueSeq()) {
     addToTree(uncollapsedTree, source, debuggeeUrl, projectRoot);
   }

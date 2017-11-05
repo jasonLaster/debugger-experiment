@@ -248,8 +248,7 @@ class Editor extends PureComponent<Props, State> {
     }
   }
 
-  onToggleBreakpoint = (key, e) => {
-    e.preventDefault();
+  getCurrentLine() {
     const { codeMirror } = this.state.editor;
     const { selectedSource } = this.props;
     const line = getCursorLine(codeMirror);

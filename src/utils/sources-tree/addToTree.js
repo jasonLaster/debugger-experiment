@@ -132,6 +132,17 @@ function addSourceToNode(node: Node, url: Object, source: SourceRecord) {
   return contents;
 }
 
+function inProjectRoot(url: URL, projectRoot: string, debuggeeUrl) {
+  if (!projectRoot || projectRoot == "") {
+    return true;
+  }
+
+  const delim = url.path.startsWith("/") ? "" : "/";
+  const urlPath = `/${url.group}${delim}${url.path}`;
+
+  return urlPath.includes(projectRoot);
+}
+
 /**
  * @memberof utils/sources-tree
  * @static
@@ -145,7 +156,15 @@ export function addToTree(
   const url = getURL(source.get("url"), debuggeeUrl);
   const debuggeeHost = getDomain(debuggeeUrl);
 
-  if (isInvalidUrl(url, source)) {
+  if (
+    isInvalidUrl(url, source) ||
+    !inProjectRoot(url, projectRoot, debuggeeUrl)
+  ) {
+    console.log(`skipping source`, {
+      path: `/${url.group}${url.path}`,
+      projectRoot
+    });
+
     return;
   }
 
