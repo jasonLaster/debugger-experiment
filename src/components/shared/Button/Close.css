@@ -7,6 +7,9 @@
 }
 
 .close-btn .close {
+  mask: url(/images/close.svg) no-repeat;
+  mask-size: 100%;
+  background-color: var(--theme-comment-alt);
   width: 14px;
   height: 14px;
   transition: all 0.15s ease-in-out;
@@ -18,8 +21,8 @@
   justify-content: center;
 }
 
-.close-btn .close svg {
-  width: 8px;
+.close-btn img.close {
+  width: 10px;
 }
 
 .close-btn:hover {
