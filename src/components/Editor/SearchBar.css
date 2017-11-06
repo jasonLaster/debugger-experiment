@@ -16,6 +16,10 @@
   padding: 6px;
 }
 
+.search-field .close-btn img.close {
+  margin-top: 3px;
+}
+
 .search-bottom-bar * {
   -moz-user-select: none;
   user-select: none;
