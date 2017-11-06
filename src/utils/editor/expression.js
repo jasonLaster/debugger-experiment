@@ -1,60 +1,61 @@
 // @flow
 
-import { getExpression } from "../parser";
-import type { Expression, Frame, SourceText } from "../../types";
-import type { Record } from "../makeRecord";
+import { isEqual } from "lodash";
 
 export function getTokenLocation(codeMirror: any, tokenEl: HTMLElement) {
-  const lineOffset = 1;
-  const { left, top } = tokenEl.getBoundingClientRect();
-  const { line, ch } = codeMirror.coordsChar({ left, top });
+  const { left, top, width, height } = tokenEl.getBoundingClientRect();
+  const { line, ch } = codeMirror.coordsChar({
+    left: left + width / 2,
+    top: top + height / 2
+  });
 
   return {
-    line: line + lineOffset,
-    column: ch,
+    line: line + 1,
+    column: ch
   };
 }
 
-export async function getExpressionFromToken(
-  cm: any,
-  token: HTMLElement,
-  sourceText: Record<SourceText>
+export function updatePreview(
+  target: HTMLElement,
+  editor: any,
+  { linesInScope, preview, setPreview, clearPreview }: any
 ) {
-  const loc = getTokenLocation(cm, token);
-  return await getExpression(sourceText.toJS(), token.textContent || "", loc);
-}
+  const location = getTokenLocation(editor.codeMirror, target);
+  const tokenText = target.innerText ? target.innerText.trim() : "";
+  const cursorPos = target.getBoundingClientRect();
 
-export function getThisFromFrame(selectedFrame: Frame) {
-  if ("this" in selectedFrame) {
-    return { value: selectedFrame.this };
+  if (preview) {
+    // We are mousing over the same token as before
+    if (isEqual(preview.tokenPos, location)) {
+      return;
+    }
+
+    // We are mousing over a new token that is not in the preview
+    if (!target.classList.contains("debug-expression")) {
+      clearPreview();
+    }
   }
 
-  return null;
-}
+  const invalidToken =
+    tokenText === "" || tokenText.match(/[(){}\|&%,.;=<>\+-/\*\s]/);
 
-// TODO Better define the value for `variables` map once we do it in
-// debugger-html
-type PreviewExpressionArgs = {
-  expression: Expression,
-  selectedFrame: Frame,
-  tokenText: string,
-  variables: Map<string | null, Object>,
-};
+  const invalidTarget =
+    (target.parentElement &&
+      !target.parentElement.closest(".CodeMirror-line")) ||
+    cursorPos.top == 0;
 
-export function previewExpression(
-  { expression, selectedFrame, variables, tokenText }: PreviewExpressionArgs
-) {
-  if (!tokenText) {
-    return null;
+  const isUpdating = preview && preview.updating;
+
+  const inScope = linesInScope && linesInScope.includes(location.line);
+
+  const invaildType =
+    target.className === "cm-string" ||
+    target.className === "cm-number" ||
+    target.className === "cm-atom";
+
+  if (invalidTarget || !inScope || isUpdating || invalidToken || invaildType) {
+    return;
   }
 
-  if (tokenText === "this") {
-    return getThisFromFrame(selectedFrame);
-  }
-
-  if (variables.has(tokenText)) {
-    return variables.get(tokenText);
-  }
-
-  return expression || null;
+  setPreview(tokenText, location, cursorPos);
 }

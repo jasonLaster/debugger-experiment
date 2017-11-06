@@ -1,3 +1,18 @@
+* {
+  box-sizing: border-box;
+}
+
+button {
+  background: transparent;
+  outline: none;
+  border: none;
+}
+
+button:hover,
+button:focus {
+  background-color: var(--theme-toolbar-background-hover);
+}
+
 .debugger {
   display: flex;
   flex: 1;
@@ -17,10 +32,6 @@
   width: 100%;
 }
 
-.subsettings:hover {
-  cursor: pointer;
-}
-
 .search-container {
   position: absolute;
   top: 0;
@@ -36,4 +47,12 @@
   width: 16px;
   margin-top: 25px;
   margin-right: 20px;
+}
+
+/* Utils */
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

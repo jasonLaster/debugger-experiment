@@ -1,53 +1,97 @@
-import toPairs from "lodash/toPairs";
+// @flow
+
+import { toPairs } from "lodash";
+import { get } from "lodash";
+import { simplifyDisplayName } from "./frame";
+import type { Frame, Pause, Scope, BindingContents } from "debugger-html";
+
+export type NamedValue = {
+  name: string,
+  generatedName?: string,
+  path: string,
+  contents: BindingContents | NamedValue[]
+};
+
+// VarAndBindingsPair actually is [name: string, contents: ScopeBindings]
+type VarAndBindingsPair = Array<any>;
+type VarAndBindingsPairs = Array<VarAndBindingsPair>;
 
 // Create the tree nodes representing all the variables and arguments
 // for the bindings from a scope.
 function getBindingVariables(bindings, parentName) {
-  const args = bindings.arguments.map(arg => toPairs(arg)[0]);
-  const variables = toPairs(bindings.variables);
+  const args: VarAndBindingsPairs = bindings.arguments.map(
+    arg => toPairs(arg)[0]
+  );
+  const variables: VarAndBindingsPairs = toPairs(bindings.variables);
 
-  return args.concat(variables).map(binding => ({
-    name: binding[0],
-    path: `${parentName}/${binding[0]}`,
-    contents: binding[1],
-  }));
+  return args.concat(variables).map(binding => {
+    const name = (binding[0]: string);
+    const contents = (binding[1]: BindingContents);
+    return {
+      name,
+      path: `${parentName}/${name}`,
+      contents
+    };
+  });
 }
 
-// Support dehydrating immutable objects, while ignoring
-// primitive values like strings, numbers...
-function dehydrateValue(value) {
-  if (typeof value == "object" && !!value && value.toJS) {
-    value = value.toJS();
-  }
-
-  return value;
+function getSourceBindingVariables(
+  bindings,
+  sourceBindings: {
+    [originalName: string]: string
+  },
+  parentName: string
+) {
+  const result = getBindingVariables(bindings, parentName);
+  const index: any = Object.create(null);
+  result.forEach(entry => {
+    index[entry.name] = { used: false, entry };
+  });
+  // Find and replace variables that is present in sourceBindings.
+  const bound = Object.keys(sourceBindings).map(name => {
+    const generatedName = sourceBindings[name];
+    const foundMap = index[generatedName];
+    let contents;
+    if (foundMap) {
+      foundMap.used = true;
+      contents = foundMap.entry.contents;
+    } else {
+      contents = { value: { type: "undefined" } };
+    }
+    return {
+      name,
+      generatedName,
+      path: `${parentName}/${generatedName}`,
+      contents
+    };
+  });
+  // Use rest of them (not found in the sourceBindings) as is.
+  const unused = result.filter(entry => !index[entry.name].used);
+  return bound.concat(unused);
 }
 
-function getSpecialVariables(pauseInfo, path) {
-  let thrown = pauseInfo.getIn(["why", "frameFinished", "throw"], undefined);
+export function getSpecialVariables(pauseInfo: Pause, path: string) {
+  const thrown = get(pauseInfo, "why.frameFinished.throw", undefined);
 
-  let returned = pauseInfo.getIn(["why", "frameFinished", "return"], undefined);
+  const returned = get(pauseInfo, "why.frameFinished.return", undefined);
 
   const vars = [];
 
   if (thrown !== undefined) {
-    thrown = dehydrateValue(thrown);
     vars.push({
       name: "<exception>",
       path: `${path}/<exception>`,
-      contents: { value: thrown },
+      contents: { value: thrown }
     });
   }
 
   if (returned !== undefined) {
-    returned = dehydrateValue(returned);
-
     // Do not display a return value of "undefined",
     if (!returned || !returned.type || returned.type !== "undefined") {
       vars.push({
         name: "<return>",
         path: `${path}/<return>`,
-        contents: { value: returned },
+        contents: { value: returned }
       });
     }
   }
@@ -55,7 +99,7 @@ function getSpecialVariables(pauseInfo, path) {
   return vars;
 }
 
-function getThisVariable(frame, path) {
+function getThisVariable(frame: any, path: string) {
   const this_ = frame.this;
 
   if (!this_) {
@@ -65,16 +109,22 @@ function getThisVariable(frame, path) {
   return {
     name: "<this>",
     path: `${path}/<this>`,
-    contents: { value: this_ },
+    contents: { value: this_ }
   };
 }
 
-function getScopes(pauseInfo, selectedFrame) {
+export function getScopes(
+  pauseInfo: Pause,
+  selectedFrame: Frame,
+  selectedScope: ?Scope
+): ?(NamedValue[]) {
   if (!pauseInfo || !selectedFrame) {
     return null;
   }
 
-  let selectedScope = selectedFrame.scope;
+  // NOTE: it's possible that we're inspecting an old server
+  // that does not support getting frame scopes directly
+  selectedScope = selectedScope || selectedFrame.scope;
 
   if (!selectedScope) {
     return null;
@@ -83,21 +133,27 @@ function getScopes(pauseInfo, selectedFrame) {
   const scopes = [];
 
   let scope = selectedScope;
-  let pausedScopeActor = pauseInfo.getIn(["frame", "scope"]).get("actor");
+  const pausedScopeActor = get(pauseInfo, "frame.scope.actor");
+  let scopeIndex = 1;
 
   do {
-    const type = scope.type;
-    const key = scope.actor;
+    const { type, actor } = scope;
+    const key = `${actor}-${scopeIndex}`;
     if (type === "function" || type === "block") {
       const bindings = scope.bindings;
+      const sourceBindings = scope.sourceBindings;
       let title;
       if (type === "function") {
-        title = scope.function.displayName || "(anonymous)";
+        title = scope.function.displayName
+          ? simplifyDisplayName(scope.function.displayName)
+          : L10N.getStr("anonymous");
       } else {
         title = L10N.getStr("scopes.block");
       }
 
-      let vars = getBindingVariables(bindings, title);
+      let vars = sourceBindings
+        ? getSourceBindingVariables(bindings, sourceBindings, key)
+        : getBindingVariables(bindings, key);
 
       // show exception, return, and this variables in innermost scope
       if (scope.actor === pausedScopeActor) {
@@ -105,7 +161,7 @@ function getScopes(pauseInfo, selectedFrame) {
       }
 
       if (scope.actor === selectedScope.actor) {
-        let this_ = getThisVariable(selectedFrame, key);
+        const this_ = getThisVariable(selectedFrame, key);
 
         if (this_) {
           vars.push(this_);
@@ -114,7 +170,11 @@ function getScopes(pauseInfo, selectedFrame) {
 
       if (vars && vars.length) {
         vars.sort((a, b) => a.name.localeCompare(b.name));
-        scopes.push({ name: title, path: key, contents: vars });
+        scopes.push({
+          name: title,
+          path: key,
+          contents: vars
+        });
       }
     } else if (type === "object") {
       let value = scope.object;
@@ -126,39 +186,11 @@ function getScopes(pauseInfo, selectedFrame) {
       scopes.push({
         name: scope.object.class,
         path: key,
-        contents: { value },
+        contents: { value }
       });
     }
+    scopeIndex++;
   } while ((scope = scope.parent)); // eslint-disable-line no-cond-assign
 
   return scopes;
 }
-
-/**
- * Returns variables that are visible from this scope.
- * TODO: returns global variables as well
- */
-function getVisibleVariablesFromScope(pauseInfo, selectedFrame) {
-  const result = new Map();
-
-  const scopes = getScopes(pauseInfo, selectedFrame);
-  if (!scopes) {
-    return result;
-  }
-
-  // reverse so that the local variables shadow global variables
-  let scopeContents = scopes.reverse().map(scope => scope.contents);
-  scopeContents = [].concat(...scopeContents);
-
-  scopeContents.forEach(content => {
-    result.set(content.name || null, content);
-  });
-
-  return result;
-}
-
-module.exports = {
-  getScopes,
-  getSpecialVariables,
-  getVisibleVariablesFromScope,
-};

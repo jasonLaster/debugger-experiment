@@ -32,7 +32,7 @@ Function search took a big jump this week. It now supports searching for ES6 sho
 
 #### Bugs
 
-We're continuing to fix the embarressing bugs. This pause on exception bug was a long standing bug where the pause button would stay highlighted when the debugger opened even if the debugger was not going to pause on exceptions.
+We're continuing to fix the embarrassing bugs. This pause on exception bug was a long standing bug where the pause button would stay highlighted when the debugger opened even if the debugger was not going to pause on exceptions.
 
 * [Persist Pause On Exceptions][pr-0] - [@jasonLaster]
 
@@ -53,11 +53,11 @@ pass consistently on different platforms in debug mode. We disabled `visible` ch
 
 
 
-| Preview Popup |
+|Preview Popup|
 |----------------|
 |![gif-1]|
 
-| Dark Theme Updates |
+|Dark Theme Updates|
 |----|
 |![png-1]|
 |![png-2]|

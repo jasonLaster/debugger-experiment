@@ -2,8 +2,9 @@
 /**
  * This file maps the SVG React Components in the assets/images directory.
  */
-const Svg = require("../../../assets/images/Svg");
 
-require("./Svg.css");
+import Svg from "../../../assets/images/Svg";
 
-module.exports = Svg;
+import "./Svg.css";
+
+export default Svg;

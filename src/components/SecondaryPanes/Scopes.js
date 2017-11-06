@@ -1,51 +1,58 @@
 // @flow
-import { DOM as dom, PropTypes, Component, createFactory } from "react";
+import React, { PureComponent } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
-import { getSelectedFrame, getLoadedObjects, getPause } from "../../selectors";
+import {
+  getSelectedFrame,
+  getLoadedObjects,
+  getFrameScope,
+  getPause
+} from "../../selectors";
 import { getScopes } from "../../utils/scopes";
-const ObjectInspector = createFactory(require("../shared/ObjectInspector"));
+
+import { ObjectInspector } from "devtools-reps";
+import type { Pause, LoadedObject } from "debugger-html";
+import type { NamedValue } from "../../utils/scopes";
+
 import "./Scopes.css";
 
-function info(text) {
-  return dom.div({ className: "pane-info" }, text);
-}
+type Props = {
+  pauseInfo: Pause,
+  loadedObjects: LoadedObject[],
+  loadObjectProperties: Object => void,
+  selectedFrame: Object,
+  frameScopes: Object
+};
 
-let expandedCache = new Set();
-let actorsCache = [];
+type State = {
+  scopes: ?(NamedValue[])
+};
 
-class Scopes extends Component {
-  state: {
-    scopes: any,
-  };
-
-  constructor(props, ...args) {
-    const { pauseInfo, selectedFrame } = props;
+class Scopes extends PureComponent<Props, State> {
+  constructor(props: Props, ...args) {
+    const { pauseInfo, selectedFrame, frameScopes } = props;
 
     super(props, ...args);
 
     this.state = {
-      scopes: getScopes(pauseInfo, selectedFrame),
+      scopes: getScopes(pauseInfo, selectedFrame, frameScopes)
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { pauseInfo, selectedFrame, loadedObjects } = this.props;
-    return pauseInfo !== nextProps.pauseInfo ||
-      selectedFrame !== nextProps.selectedFrame ||
-      loadedObjects !== nextProps.loadedObjects;
-  }
-
   componentWillReceiveProps(nextProps) {
-    const { pauseInfo, selectedFrame } = this.props;
+    const { pauseInfo, selectedFrame, frameScopes } = this.props;
     const pauseInfoChanged = pauseInfo !== nextProps.pauseInfo;
-    const selectedFrameChange = selectedFrame !== nextProps.selectedFrame;
+    const selectedFrameChanged = selectedFrame !== nextProps.selectedFrame;
+    const frameScopesChanged = frameScopes !== nextProps.frameScopes;
 
-    if (pauseInfoChanged || selectedFrameChange) {
+    if (pauseInfoChanged || selectedFrameChanged || frameScopesChanged) {
       this.setState({
-        scopes: getScopes(nextProps.pauseInfo, nextProps.selectedFrame),
+        scopes: getScopes(
+          nextProps.pauseInfo,
+          nextProps.selectedFrame,
+          nextProps.frameScopes
+        )
       });
     }
   }
@@ -54,47 +61,49 @@ class Scopes extends Component {
     const { pauseInfo, loadObjectProperties, loadedObjects } = this.props;
     const { scopes } = this.state;
 
-    let scopeInspector = info(L10N.getStr("scopes.notAvailable"));
     if (scopes) {
-      scopeInspector = ObjectInspector({
-        roots: scopes,
-        getObjectProperties: id => loadedObjects.get(id),
-        loadObjectProperties: loadObjectProperties,
-        setExpanded: expanded => {
-          expandedCache = expanded;
-        },
-        getExpanded: () => expandedCache,
-        setActors: actors => {
-          actorsCache = actors;
-        },
-        getActors: () => actorsCache,
-        onLabelClick: (item, { expanded, setExpanded }) => {
-          setExpanded(item, !expanded);
-        },
-      });
+      return (
+        <div className="pane scopes-list">
+          <ObjectInspector
+            roots={scopes}
+            autoExpandAll={false}
+            autoExpandDepth={1}
+            getObjectProperties={id => loadedObjects[id]}
+            loadObjectProperties={loadObjectProperties}
+            disableWrap={true}
+            disabledFocus={true}
+            dimTopLevelWindow={true}
+            // TODO: See https://github.com/devtools-html/debugger.html/issues/3555.
+            getObjectEntries={actor => {}}
+            loadObjectEntries={grip => {}}
+          />
+        </div>
+      );
     }
-
-    return dom.div(
-      { className: "pane scopes-list" },
-      pauseInfo ? scopeInspector : info(L10N.getStr("scopes.notPaused"))
+    return (
+      <div className="pane scopes-list">
+        <div className="pane-info">
+          {pauseInfo
+            ? L10N.getStr("scopes.notAvailable")
+            : L10N.getStr("scopes.notPaused")}
+        </div>
+      </div>
     );
   }
 }
 
-Scopes.propTypes = {
-  pauseInfo: ImPropTypes.map,
-  loadedObjects: ImPropTypes.map,
-  loadObjectProperties: PropTypes.func,
-  selectedFrame: PropTypes.object,
-};
-
-Scopes.displayName = "Scopes";
-
 export default connect(
-  state => ({
-    pauseInfo: getPause(state),
-    selectedFrame: getSelectedFrame(state),
-    loadedObjects: getLoadedObjects(state),
-  }),
+  state => {
+    const selectedFrame = getSelectedFrame(state);
+    const frameScopes = selectedFrame
+      ? getFrameScope(state, selectedFrame.id)
+      : null;
+    return {
+      selectedFrame,
+      pauseInfo: getPause(state),
+      frameScopes: frameScopes,
+      loadedObjects: getLoadedObjects(state)
+    };
+  },
   dispatch => bindActionCreators(actions, dispatch)
 )(Scopes);

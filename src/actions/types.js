@@ -6,10 +6,16 @@ import type {
   Expression,
   LoadedObject,
   Location,
-  SourceText,
   Frame,
-  Why,
-} from "../types";
+  Scope,
+  Why
+} from "debugger-html";
+
+import type { State } from "../reducers/types";
+import type { ActiveSearchType } from "../reducers/ui";
+import type { MatchedLocations } from "../reducers/file-search";
+
+import type { SymbolDeclaration, AstLocation } from "../workers/parser";
 
 /**
  * Flow types
@@ -24,11 +30,14 @@ import type {
   * @typedef {Object} ThunkArgs
   */
 export type ThunkArgs = {
-  dispatch: () => Promise<any>,
-  getState: () => any,
+  dispatch: (action: any) => Promise<any>,
+  getState: () => State,
   client: any,
   sourceMaps: any,
+  openLink: (url: string) => void
 };
+
+export type Thunk = ThunkArgs => any;
 
 export type ActionType = Object | Function;
 
@@ -48,6 +57,18 @@ type BreakpointResult = {
   actualLocation: Location,
   id: string,
   text: string,
+  generatedLocation: Location
+};
+
+type AddBreakpointResult = {
+  previousLocation: Location,
+  breakpoint: Breakpoint
+};
+
+type ProjectTextSearchResult = {
+  sourceId: string,
+  filepath: string,
+  matches: MatchedLocations[]
 };
 
 type BreakpointAction =
@@ -57,14 +78,14 @@ type BreakpointAction =
       condition: string,
       status: AsyncStatus,
       error: string,
-      value: BreakpointResult,
+      value: AddBreakpointResult
     }
   | {
       type: "REMOVE_BREAKPOINT",
       breakpoint: Breakpoint,
       status: AsyncStatus,
       error: string,
-      disabled: boolean,
+      disabled: boolean
     }
   | {
       type: "SET_BREAKPOINT_CONDITION",
@@ -72,14 +93,14 @@ type BreakpointAction =
       condition: string,
       status: AsyncStatus,
       value: BreakpointResult,
-      error: string,
+      error: string
     }
   | {
       type: "TOGGLE_BREAKPOINTS",
       shouldDisableBreakpoints: boolean,
       status: AsyncStatus,
       error: string,
-      value: any,
+      value: any
     };
 
 type SourceAction =
@@ -88,8 +109,8 @@ type SourceAction =
   | {
       type: "SELECT_SOURCE",
       source: Source,
-      line?: number,
-      tabIndex?: number,
+      location?: { line?: number, column?: number },
+      tabIndex?: number
     }
   | { type: "SELECT_SOURCE_URL", url: string, line?: number }
   | {
@@ -97,14 +118,13 @@ type SourceAction =
       source: Source,
       status: AsyncStatus,
       error: string,
-      value: SourceText,
+      value: Source
     }
   | {
       type: "BLACKBOX",
       source: Source,
-      status: AsyncStatus,
       error: string,
-      value: { isBlackBoxed: boolean },
+      value: { isBlackBoxed: boolean }
     }
   | {
       type: "TOGGLE_PRETTY_PRINT",
@@ -114,35 +134,40 @@ type SourceAction =
       error: string,
       value: {
         isPrettyPrinted: boolean,
-        sourceText: SourceText,
-        frames: Frame[],
-      },
+        source: Source,
+        frames: Frame[]
+      }
     }
-  | { type: "CLOSE_TAB", url: string };
+  | { type: "MOVE_TAB", url: string, tabIndex: number }
+  | { type: "CLOSE_TAB", url: string, tabs: any }
+  | { type: "CLOSE_TABS", urls: string[], tabs: any };
 
 export type panelPositionType = "start" | "end";
 
 type UIAction =
   | {
-      type: "TOGGLE_FILE_SEARCH",
-      value: boolean,
+      type: "TOGGLE_ACTIVE_SEARCH",
+      value: ?ActiveSearchType
     }
   | {
-      type: "TOGGLE_PROJECT_SEARCH",
-      value: boolean,
+      type: "OPEN_QUICK_OPEN",
+      query?: string
     }
   | {
-      type: "TOGGLE_FILE_SEARCH_MODIFIER",
-      modifier: "caseSensitive" | "wholeWord" | "regexMatch",
+      type: "CLOSE_QUICK_OPEN"
+    }
+  | {
+      type: "TOGGLE_FRAMEWORK_GROUPING",
+      value: boolean
     }
   | {
       type: "SHOW_SOURCE",
-      sourceUrl: string,
+      sourceUrl: string
     }
   | {
       type: "TOGGLE_PANE",
       position: panelPositionType,
-      paneCollapsed: boolean,
+      paneCollapsed: boolean
     };
 
 type PauseAction =
@@ -153,53 +178,111 @@ type PauseAction =
       pauseInfo: {
         why: Why,
         frame: Frame,
-        isInterrupted?: boolean,
+        isInterrupted?: boolean
       },
+      scopes: Scope[],
       frames: Frame[],
       selectedFrameId: string,
-      loadedObjects: LoadedObject[],
+      loadedObjects: LoadedObject[]
     }
   | {
       type: "PAUSE_ON_EXCEPTIONS",
       shouldPauseOnExceptions: boolean,
-      shouldIgnoreCaughtExceptions: boolean,
+      shouldIgnoreCaughtExceptions: boolean
     }
-  | { type: "COMMAND", value: void }
-  | { type: "SELECT_FRAME", frame: Frame }
+  | { type: "COMMAND", value: { type: string }, command: string }
+  | { type: "SELECT_FRAME", frame: Frame, scopes: Scope[] }
   | {
       type: "LOAD_OBJECT_PROPERTIES",
       objectId: string,
       status: string,
       value: Object,
-      "@@dispatch/promise": any,
+      "@@dispatch/promise": any
     }
   | {
       type: "ADD_EXPRESSION",
       id: number,
       input: string,
-      value: string,
-      visible: boolean,
+      value: string
     }
   | {
       type: "EVALUATE_EXPRESSION",
       input: string,
-      status: string,
       value: Object,
-      visible: boolean,
-      "@@dispatch/promise": any,
+      "@@dispatch/promise": any
     }
   | {
       type: "UPDATE_EXPRESSION",
       expression: Expression,
-      input: string,
-      visible: boolean,
+      input: string
     }
   | {
       type: "DELETE_EXPRESSION",
-      input: string,
+      input: string
     };
 
 type NavigateAction = { type: "NAVIGATE", url: string };
+
+type ASTAction =
+  | {
+      type: "SET_SYMBOLS",
+      source: Source,
+      symbols: SymbolDeclaration[]
+    }
+  | {
+      type: "OUT_OF_SCOPE_LOCATIONS",
+      locations: AstLocation[]
+    }
+  | {
+      type: "SET_PREVIEW",
+      value: {
+        expression: string,
+        result: any,
+        location: AstLocation,
+        tokenPos: any,
+        cursorPos: any,
+        extra: string
+      }
+    }
+  | {
+      type: "CLEAR_SELECTION"
+    };
+
+export type SourceTreeAction = { type: "SET_EXPANDED_STATE", expanded: any };
+
+export type ProjectTextSearchAction = {
+  type: "ADD_QUERY",
+  query: string
+} & {
+  type: "ADD_SEARCH_RESULT",
+  result: ProjectTextSearchResult
+} & {
+    type: "CLEAR_QUERY"
+  };
+
+export type FileTextSearchAction =
+  | {
+      type: "TOGGLE_FILE_SEARCH_MODIFIER",
+      modifier: "caseSensitive" | "wholeWord" | "regexMatch"
+    }
+  | {
+      type: "UPDATE_FILE_SEARCH_QUERY",
+      query: string
+    }
+  | {
+      type: "UPDATE_SEARCH_RESULTS",
+      results: {
+        matches: MatchedLocations[],
+        matchIndex: number,
+        count: number,
+        index: number
+      }
+    };
+
+export type QuickOpenAction =
+  | { type: "SET_QUICK_OPEN_QUERY", query: string }
+  | { type: "OPEN_QUICK_OPEN", query?: string }
+  | { type: "CLOSE_QUICK_OPEN" };
 
 /**
  * Actions: Source, Breakpoint, and Navigation
@@ -212,4 +295,6 @@ export type Action =
   | BreakpointAction
   | PauseAction
   | NavigateAction
-  | UIAction;
+  | UIAction
+  | ASTAction
+  | QuickOpenAction;

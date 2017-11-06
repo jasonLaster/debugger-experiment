@@ -1,28 +1,36 @@
-const {
-  startSourceMapWorker,
-  stopSourceMapWorker,
-} = require("devtools-source-map");
+import { startSourceMapWorker, stopSourceMapWorker } from "devtools-source-map";
 
-const {
+import {
   startPrettyPrintWorker,
-  stopPrettyPrintWorker,
-} = require("../utils/pretty-print");
+  stopPrettyPrintWorker
+} from "../workers/pretty-print";
 
-const {
+import {
   startParserWorker,
   stopParserWorker,
-} = require("../utils/parser");
+  clearSymbols
+} from "../workers/parser";
+import { startSearchWorker, stopSearchWorker } from "../workers/search";
+import { getValue } from "devtools-config";
+import { clearHistory } from "./utils/history";
 
-const { getValue } = require("devtools-config");
+global.jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
 beforeAll(() => {
   startSourceMapWorker(getValue("workers.sourceMapURL"));
   startPrettyPrintWorker(getValue("workers.prettyPrintURL"));
   startParserWorker(getValue("workers.parserURL"));
+  startSearchWorker(getValue("workers.searchURL"));
 });
 
 afterAll(() => {
   stopSourceMapWorker();
   stopPrettyPrintWorker();
   stopParserWorker();
+  stopSearchWorker();
+});
+
+beforeEach(() => {
+  clearSymbols();
+  clearHistory();
 });

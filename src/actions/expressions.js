@@ -1,17 +1,19 @@
 // @flow
 
-import constants from "../constants";
-import { PROMISE } from "../utils/redux/middleware/promise";
-import { getExpression, getExpressions, getSelectedFrame } from "../selectors";
-
+import {
+  getExpression,
+  getExpressions,
+  getSelectedFrame,
+  getSelectedFrameId,
+  getSource
+} from "../selectors";
+import { PROMISE } from "./utils/middleware/promise";
+import { replaceOriginalVariableName } from "devtools-map-bindings/src/utils";
+import { isGeneratedId } from "devtools-source-map";
+import { wrapExpression } from "../utils/expressions";
+import * as parser from "../workers/parser";
 import type { Expression } from "../types";
 import type { ThunkArgs } from "./types";
-
-type frameIdType = string | null;
-
-function expressionExists(expressions, input) {
-  return !!expressions.find(e => e.input == input);
-}
 
 /**
  * Add expression for debugger to watch
@@ -21,27 +23,24 @@ function expressionExists(expressions, input) {
  * @memberof actions/pause
  * @static
  */
-export function addExpression(input: string, { visible = true }: Object = {}) {
+export function addExpression(input: string) {
   return async ({ dispatch, getState }: ThunkArgs) => {
-    const expressions = getExpressions(getState());
-    if (!input || expressionExists(expressions, input)) {
-      const expression = getExpression(getState(), input);
-      if (!expression.visible && visible) {
-        await dispatch(deleteExpression(expression));
-      } else {
-        return;
-      }
+    if (!input) {
+      return;
+    }
+
+    const expression = getExpression(getState(), input);
+    if (expression) {
+      return dispatch(evaluateExpression(expression));
     }
 
     dispatch({
-      type: constants.ADD_EXPRESSION,
-      input,
-      visible,
+      type: "ADD_EXPRESSION",
+      input
     });
 
-    const selectedFrame = getSelectedFrame(getState());
-    const selectedFrameId = selectedFrame ? selectedFrame.id : null;
-    dispatch(evaluateExpression({ input, visible }, selectedFrameId));
+    const newExpression = getExpression(getState(), input);
+    dispatch(evaluateExpression(newExpression));
   };
 }
 
@@ -52,15 +51,12 @@ export function updateExpression(input: string, expression: Expression) {
     }
 
     dispatch({
-      type: constants.UPDATE_EXPRESSION,
+      type: "UPDATE_EXPRESSION",
       expression,
-      input: input,
-      visible: expression.visible,
+      input: input
     });
 
-    const selectedFrame = getSelectedFrame(getState());
-    const selectedFrameId = selectedFrame ? selectedFrame.id : null;
-    dispatch(evaluateExpressions(selectedFrameId));
+    dispatch(evaluateExpressions());
   };
 }
 
@@ -74,8 +70,8 @@ export function updateExpression(input: string, expression: Expression) {
 export function deleteExpression(expression: Expression) {
   return ({ dispatch }: ThunkArgs) => {
     dispatch({
-      type: constants.DELETE_EXPRESSION,
-      input: expression.input,
+      type: "DELETE_EXPRESSION",
+      input: expression.input
     });
   };
 }
@@ -86,27 +82,76 @@ export function deleteExpression(expression: Expression) {
  * @param {number} selectedFrameId
  * @static
  */
-export function evaluateExpressions(frameId: frameIdType) {
+export function evaluateExpressions() {
   return async function({ dispatch, getState, client }: ThunkArgs) {
     const expressions = getExpressions(getState()).toJS();
-    for (let expression of expressions) {
-      await dispatch(evaluateExpression(expression, frameId));
+    for (const expression of expressions) {
+      await dispatch(evaluateExpression(expression));
     }
   };
 }
 
-function evaluateExpression(expression, frameId: frameIdType) {
-  return function({ dispatch, getState, client }: ThunkArgs) {
+function evaluateExpression(expression: Expression) {
+  return async function({ dispatch, getState, client, sourceMaps }: ThunkArgs) {
     if (!expression.input) {
       console.warn("Expressions should not be empty");
       return;
     }
 
+    let input = expression.input;
+    const error = await parser.hasSyntaxError(input);
+    if (error) {
+      return dispatch({
+        type: "EVALUATE_EXPRESSION",
+        input: expression.input,
+        value: { input: expression.input, result: error }
+      });
+    }
+
+    const frame = getSelectedFrame(getState());
+
+    if (frame) {
+      const { location, generatedLocation } = frame;
+      const source = getSource(getState(), location.sourceId);
+      const sourceId = source.get("id");
+
+      if (!isGeneratedId(sourceId)) {
+        input = await getMappedExpression(
+          { sourceMaps },
+          generatedLocation,
+          input
+        );
+      }
+    }
+
+    const frameId = getSelectedFrameId(getState());
     return dispatch({
-      type: constants.EVALUATE_EXPRESSION,
+      type: "EVALUATE_EXPRESSION",
       input: expression.input,
-      visible: expression.visible,
-      [PROMISE]: client.evaluate(expression.input, { frameId }),
+      [PROMISE]: client.evaluate(wrapExpression(input), { frameId })
     });
   };
+}
+
+/**
+ * Gets information about original variable names from the source map
+ * and replaces all posible generated names.
+ */
+export async function getMappedExpression(
+  { sourceMaps }: Object,
+  generatedLocation: Location,
+  expression: string
+): Promise<string> {
+  const astScopes = await parser.getScopes(generatedLocation);
+
+  const generatedScopes = await sourceMaps.getLocationScopes(
+    generatedLocation,
+    astScopes
+  );
+
+  if (!generatedScopes) {
+    return expression;
+  }
+
+  return replaceOriginalVariableName(expression, generatedScopes);
 }

@@ -2,8 +2,8 @@ export type Message = {
   data: {
     id: string,
     method: string,
-    args: Array<any>,
-  },
+    args: Array<any>
+  }
 };
 
 let msgId = 1;
@@ -50,7 +50,4 @@ function workerHandler(publicInterface) {
   };
 }
 
-module.exports = {
-  workerTask,
-  workerHandler,
-};
+export { workerTask, workerHandler };

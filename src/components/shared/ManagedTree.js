@@ -1,49 +1,50 @@
 // @flow
-import { createClass, PropTypes, createFactory } from "react";
-const Tree = createFactory(require("devtools-modules").Tree);
-require("./ManagedTree.css");
+import React, { Component } from "react";
+import "./ManagedTree.css";
 
-type ManagedTreeItem = {
-  contents: Array<ManagedTreeItem>,
+import { Tree } from "devtools-components";
+
+export type Item = {
+  contents: any,
   name: string,
-  path: string,
+  path: string
 };
 
-type NextProps = {
+type Props = {
   autoExpandAll: boolean,
   autoExpandDepth: number,
-  getChildren: () => any,
-  getKey: () => string,
+  getChildren: Item => Item[],
+  getPath: Item => string,
   getParent: () => any,
   getRoots: () => any,
-  highlightItems: Array<ManagedTreeItem>,
+  highlightItems?: Array<Item>,
   itemHeight: number,
-  listItems?: Array<ManagedTreeItem>,
-  onFocus: () => any,
-  renderItem: () => any,
+  listItems?: Array<Item>,
+  onFocus?: (item: any) => void,
+  onExpand?: (item: any, expanded: Set<Item>) => void,
+  onCollapse?: (item: any, expanded: Set<Item>) => void,
+  renderItem: any,
+  disabledFocus?: boolean,
+  focused?: any,
+  expanded?: any
 };
 
-type InitialState = {
+type State = {
   expanded: any,
-  focusedItem: ?ManagedTreeItem,
+  focusedItem: ?Item
 };
 
-let ManagedTree = createClass({
-  propTypes: Object.assign({}, Tree.propTypes, {
-    getExpanded: PropTypes.func,
-    setExpanded: PropTypes.func,
-  }),
+class ManagedTree extends Component<Props, State> {
+  constructor(props: Props) {
+    super();
 
-  displayName: "ManagedTree",
-
-  getInitialState(): InitialState {
-    return {
-      expanded: new Set(),
-      focusedItem: null,
+    this.state = {
+      expanded: props.expanded || new Set(),
+      focusedItem: null
     };
-  },
+  }
 
-  componentWillReceiveProps(nextProps: NextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     const listItems = nextProps.listItems;
     if (listItems && listItems != this.props.listItems && listItems.length) {
       this.expandListItems(listItems);
@@ -57,62 +58,76 @@ let ManagedTree = createClass({
     ) {
       this.highlightItem(highlightItems);
     }
-  },
 
-  componentWillMount() {
-    if (this.props.getExpanded) {
-      const expanded = this.props.getExpanded();
-      this.setState({ expanded });
+    if (nextProps.focused && nextProps.focused !== this.props.focused) {
+      this.focusItem(nextProps.focused);
     }
-  },
+  }
 
-  componentWillUnmount() {
-    if (this.props.setExpanded) {
-      this.props.setExpanded(this.state.expanded);
-    }
-  },
-
-  setExpanded(item: ManagedTreeItem, isExpanded: boolean) {
+  setExpanded = (
+    item: Item,
+    isExpanded: boolean,
+    shouldIncludeChildren: boolean
+  ) => {
+    const expandItem = i => {
+      const path = this.props.getPath(i);
+      if (isExpanded) {
+        expanded.add(path);
+      } else {
+        expanded.delete(path);
+      }
+    };
     const expanded = this.state.expanded;
-    const key = this.props.getKey(item);
-    if (isExpanded) {
-      expanded.add(key);
-    } else {
-      expanded.delete(key);
+    expandItem(item);
+
+    if (shouldIncludeChildren) {
+      let parents = [item];
+      while (parents.length) {
+        const children = [];
+        for (const parent of parents) {
+          if (parent.contents && parent.contents.length) {
+            for (const child of parent.contents) {
+              expandItem(child);
+              children.push(child);
+            }
+          }
+        }
+        parents = children;
+      }
     }
     this.setState({ expanded });
 
     if (isExpanded && this.props.onExpand) {
-      this.props.onExpand(item);
-    } else if (!expanded && this.props.onCollapse) {
-      this.props.onCollapse(item);
+      this.props.onExpand(item, expanded);
+    } else if (!isExpanded && this.props.onCollapse) {
+      this.props.onCollapse(item, expanded);
     }
-  },
+  };
 
-  expandListItems(listItems: Array<ManagedTreeItem>) {
+  expandListItems(listItems: Array<Item>) {
     const expanded = this.state.expanded;
-    listItems.forEach(item => expanded.add(this.props.getKey(item)));
+    listItems.forEach(item => expanded.add(this.props.getPath(item)));
     this.focusItem(listItems[0]);
-    this.setState({ expanded: expanded });
-  },
+    this.setState({ expanded });
+  }
 
-  highlightItem(highlightItems: Array<ManagedTreeItem>) {
+  highlightItem(highlightItems: Array<Item>) {
     const expanded = this.state.expanded;
 
     // This file is visible, so we highlight it.
-    if (expanded.has(this.props.getKey(highlightItems[0]))) {
+    if (expanded.has(this.props.getPath(highlightItems[0]))) {
       this.focusItem(highlightItems[0]);
     } else {
       // Look at folders starting from the top-level until finds a
       // closed folder and highlights this folder
       const index = highlightItems
         .reverse()
-        .findIndex(item => !expanded.has(this.props.getKey(item)));
+        .findIndex(item => !expanded.has(this.props.getPath(item)));
       this.focusItem(highlightItems[index]);
     }
-  },
+  }
 
-  focusItem(item: ManagedTreeItem) {
+  focusItem = (item: Item) => {
     if (!this.props.disabledFocus && this.state.focusedItem !== item) {
       this.setState({ focusedItem: item });
 
@@ -120,28 +135,31 @@ let ManagedTree = createClass({
         this.props.onFocus(item);
       }
     }
-  },
+  };
 
   render() {
     const { expanded, focusedItem } = this.state;
 
-    const props = Object.assign({}, this.props, {
-      isExpanded: item => expanded.has(this.props.getKey(item)),
+    const overrides = {
+      isExpanded: item => expanded.has(this.props.getPath(item)),
       focused: focusedItem,
-
-      onExpand: item => this.setExpanded(item, true),
-      onCollapse: item => this.setExpanded(item, false),
+      getKey: this.props.getPath,
+      onExpand: item => this.setExpanded(item, true, false),
+      onCollapse: item => this.setExpanded(item, false, false),
       onFocus: this.focusItem,
+      renderItem: (...args) =>
+        this.props.renderItem(...args, {
+          setExpanded: this.setExpanded
+        })
+    };
 
-      renderItem: (...args) => {
-        return this.props.renderItem(...args, {
-          setExpanded: this.setExpanded,
-        });
-      },
-    });
+    const props = { ...this.props, ...overrides };
+    return (
+      <div className="managed-tree">
+        <Tree {...props} />
+      </div>
+    );
+  }
+}
 
-    return Tree(props);
-  },
-});
-
-module.exports = ManagedTree;
+export default ManagedTree;

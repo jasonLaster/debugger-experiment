@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Result list should render the component 1`] = `
+<ul
+  className="result-list small"
+>
+  <li
+    className="result-item"
+    key="0value0"
+    onClick={[Function]}
+    title="value"
+  >
+    <div
+      className="title"
+    >
+      title
+    </div>
+    <div
+      className="subtitle"
+    >
+      subtitle
+    </div>
+  </li>
+  <li
+    className="result-item selected"
+    key="1value 11"
+    onClick={[Function]}
+    title="value 1"
+  >
+    <div
+      className="title"
+    >
+      title 1
+    </div>
+    <div
+      className="subtitle"
+    >
+      subtitle 1
+    </div>
+  </li>
+</ul>
+`;

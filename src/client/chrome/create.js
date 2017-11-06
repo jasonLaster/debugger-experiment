@@ -1,48 +1,46 @@
 // @flow
 
-import type { Location, LoadedObject } from "../types";
+import type { Location, LoadedObject } from "debugger-html";
 import type { ServerLocation } from "./types";
 
-function fromServerLocation(serverLocation?: ServerLocation): ?Location {
+export function fromServerLocation(serverLocation?: ServerLocation): ?Location {
   if (serverLocation) {
     return {
       sourceId: serverLocation.scriptId,
       line: serverLocation.lineNumber + 1,
       column: serverLocation.columnNumber,
+      sourceUrl: ""
     };
   }
 }
 
-function toServerLocation(location: Location): ServerLocation {
+export function toServerLocation(location: Location): ServerLocation {
   return {
     scriptId: location.sourceId,
-    lineNumber: location.line - 1,
+    lineNumber: location.line - 1
   };
 }
 
-function createFrame(frame: any) {
+export function createFrame(frame: any) {
   return {
     id: frame.callFrameId,
     displayName: frame.functionName,
     scopeChain: frame.scopeChain,
-    location: fromServerLocation(frame.location),
+    generatedLocation: frame.location,
+    location: fromServerLocation(frame.location)
   };
 }
 
-function createLoadedObject(serverObject: any, parentId: string): LoadedObject {
+export function createLoadedObject(
+  serverObject: any,
+  parentId: string
+): LoadedObject {
   const { value, name } = serverObject;
 
   return {
     objectId: value.objectId,
     parentId,
     name,
-    value,
+    value
   };
 }
-
-module.exports = {
-  fromServerLocation,
-  toServerLocation,
-  createFrame,
-  createLoadedObject,
-};

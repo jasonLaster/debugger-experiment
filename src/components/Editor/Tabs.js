@@ -1,28 +1,33 @@
 // @flow
 
-import { DOM as dom, PropTypes, Component, createFactory } from "react";
-import ImPropTypes from "react-immutable-proptypes";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import * as I from "immutable";
+
 import {
   getSelectedSource,
-  getSourceTabs,
-  getProjectSearchState,
-  getSourceByURL,
+  getSourcesForTabs,
+  getActiveSearch,
+  getSearchTabs
 } from "../../selectors";
-import { getFilename, isPretty } from "../../utils/source";
+import { isVisible } from "../../utils/ui";
+
+import { getFilename, getFileURL, isPretty } from "../../utils/source";
 import classnames from "classnames";
 import actions from "../../actions";
 import CloseButton from "../shared/Button/Close";
-const PaneToggleButton = createFactory(
-  require("../shared/Button/PaneToggle").default
-);
-import Svg from "../shared/Svg";
-const Dropdown = createFactory(require("../shared/Dropdown").default);
-import { showMenu, buildMenu } from "../shared/menu";
-import debounce from "lodash/debounce";
-import { formatKeyShortcut } from "../../utils/text";
+import { showMenu, buildMenu } from "devtools-launchpad";
+import { debounce } from "lodash";
 import "./Tabs.css";
+
+import PaneToggleButton from "../shared/Button/PaneToggle";
+import Dropdown from "../shared/Dropdown";
+
+import type { List } from "immutable";
+import type { SourceRecord } from "../../reducers/sources";
+import type { ActiveSearchType } from "../../reducers/ui";
+type SourcesList = List<SourceRecord>;
 
 /*
  * Finds the hidden tabs by comparing the tabs' top offset.
@@ -33,16 +38,23 @@ import "./Tabs.css";
  *
  * @returns Immutable.list
  */
-function getHiddenTabs(sourceTabs, sourceTabEls) {
+function getHiddenTabs(sourceTabs: SourcesList, sourceTabEls) {
   sourceTabEls = [].slice.call(sourceTabEls);
   function getTopOffset() {
     const topOffsets = sourceTabEls.map(t => t.getBoundingClientRect().top);
     return Math.min(...topOffsets);
   }
 
-  const tabTopOffset = getTopOffset();
+  function hasTopOffset(el) {
+    // adding 10px helps account for cases where the tab might be offset by
+    // styling such as selected tabs which don't have a border.
+    const tabTopOffset = getTopOffset();
+    return el.getBoundingClientRect().top > tabTopOffset + 10;
+  }
+
   return sourceTabs.filter((tab, index) => {
-    return sourceTabEls[index].getBoundingClientRect().top > tabTopOffset;
+    const element = sourceTabEls[index];
+    return element && hasTopOffset(element);
   });
 }
 
@@ -51,7 +63,7 @@ function getHiddenTabs(sourceTabs, sourceTabEls) {
  * https://dxr.mozilla.org/mozilla-central/source/devtools/shared/platform/content/clipboard.js
  */
 function copyToTheClipboard(string) {
-  let doCopy = function(e: any) {
+  const doCopy = function(e: any) {
     e.clipboardData.setData("text/plain", string);
     e.preventDefault();
   };
@@ -61,13 +73,33 @@ function copyToTheClipboard(string) {
   document.removeEventListener("copy", doCopy);
 }
 
-type State = {
-  dropdownShown: boolean,
-  hiddenSourceTabs: Array<Object> | null,
+type Props = {
+  sourceTabs: SourcesList,
+  searchTabs: List<ActiveSearchType>,
+  selectedSource: SourceRecord,
+  selectSource: (string, ?Object) => void,
+  moveTab: (string, number) => void,
+  closeTab: string => void,
+  closeTabs: (List<string>) => void,
+  setActiveSearch: (?ActiveSearchType) => void,
+  closeActiveSearch: () => void,
+  activeSearch: string,
+  togglePrettyPrint: string => void,
+  togglePaneCollapse: () => void,
+  toggleActiveSearch: (?string) => void,
+  showSource: string => void,
+  horizontal: boolean,
+  startPanelCollapsed: boolean,
+  endPanelCollapsed: boolean,
+  searchOn: boolean
 };
 
-class SourceTabs extends Component {
-  state: State;
+type State = {
+  dropdownShown: boolean,
+  hiddenSourceTabs: SourcesList
+};
+
+class SourceTabs extends PureComponent<Props, State> {
   onTabContextMenu: Function;
   showContextMenu: Function;
   updateHiddenSourceTabs: Function;
@@ -75,7 +107,8 @@ class SourceTabs extends Component {
   renderDropdownSource: Function;
   renderTabs: Function;
   renderTab: Function;
-  renderNewButton: Function;
+  renderSourceTab: Function;
+  renderSearchTab: Function;
   renderDropDown: Function;
   renderStartPanelToggleButton: Function;
   renderEndPanelToggleButton: Function;
@@ -85,7 +118,7 @@ class SourceTabs extends Component {
     super(props);
     this.state = {
       dropdownShown: false,
-      hiddenSourceTabs: null,
+      hiddenSourceTabs: I.List()
     };
 
     this.onTabContextMenu = this.onTabContextMenu.bind(this);
@@ -94,8 +127,8 @@ class SourceTabs extends Component {
     this.toggleSourcesDropdown = this.toggleSourcesDropdown.bind(this);
     this.renderDropdownSource = this.renderDropdownSource.bind(this);
     this.renderTabs = this.renderTabs.bind(this);
-    this.renderTab = this.renderTab.bind(this);
-    this.renderNewButton = this.renderNewButton.bind(this);
+    this.renderSourceTab = this.renderSourceTab.bind(this);
+    this.renderSearchTab = this.renderSearchTab.bind(this);
     this.renderDropDown = this.renderDropdown.bind(this);
     this.renderStartPanelToggleButton = this.renderStartPanelToggleButton.bind(
       this
@@ -124,7 +157,7 @@ class SourceTabs extends Component {
     window.removeEventListener("resize", this.onResize);
   }
 
-  onTabContextMenu(event, tab) {
+  onTabContextMenu(event, tab: string) {
     event.preventDefault();
     this.showContextMenu(event, tab);
   }
@@ -135,7 +168,7 @@ class SourceTabs extends Component {
       closeTabs,
       sourceTabs,
       showSource,
-      togglePrettyPrint,
+      togglePrettyPrint
     } = this.props;
 
     const closeTabLabel = L10N.getStr("sourceTabs.closeTab");
@@ -143,7 +176,7 @@ class SourceTabs extends Component {
     const closeTabsToEndLabel = L10N.getStr("sourceTabs.closeTabsToEnd");
     const closeAllTabsLabel = L10N.getStr("sourceTabs.closeAllTabs");
     const revealInTreeLabel = L10N.getStr("sourceTabs.revealInTree");
-    const copyLinkLabel = L10N.getStr("sourceTabs.copyLink");
+    const copyLinkLabel = L10N.getStr("copySourceUri2");
     const prettyPrintLabel = L10N.getStr("sourceTabs.prettyPrint");
 
     const closeTabKey = L10N.getStr("sourceTabs.closeTab.accesskey");
@@ -155,7 +188,7 @@ class SourceTabs extends Component {
     );
     const closeAllTabsKey = L10N.getStr("sourceTabs.closeAllTabs.accesskey");
     const revealInTreeKey = L10N.getStr("sourceTabs.revealInTree.accesskey");
-    const copyLinkKey = L10N.getStr("sourceTabs.copyLink.accesskey");
+    const copyLinkKey = L10N.getStr("copySourceUri2.accesskey");
     const prettyPrintKey = L10N.getStr("sourceTabs.prettyPrint.accesskey");
 
     const tabs = sourceTabs.map(t => t.get("id"));
@@ -163,6 +196,11 @@ class SourceTabs extends Component {
     const sourceTab = sourceTabs.find(t => t.get("id") == tab);
     const tabURLs = sourceTabs.map(thisTab => thisTab.get("url"));
     const otherTabURLs = otherTabs.map(thisTab => thisTab.get("url"));
+
+    if (!sourceTab) {
+      return;
+    }
+
     const isPrettySource = isPretty(sourceTab.toJS());
 
     const closeTabMenuItem = {
@@ -170,7 +208,7 @@ class SourceTabs extends Component {
       label: closeTabLabel,
       accesskey: closeTabKey,
       disabled: false,
-      click: () => closeTab(sourceTab.get("url")),
+      click: () => closeTab(sourceTab.get("url"))
     };
 
     const closeOtherTabsMenuItem = {
@@ -178,7 +216,7 @@ class SourceTabs extends Component {
       label: closeOtherTabsLabel,
       accesskey: closeOtherTabsKey,
       disabled: false,
-      click: () => closeTabs(otherTabURLs),
+      click: () => closeTabs(otherTabURLs)
     };
 
     const closeTabsToEndMenuItem = {
@@ -189,7 +227,7 @@ class SourceTabs extends Component {
       click: () => {
         const tabIndex = tabs.findIndex(t => t == tab);
         closeTabs(tabURLs.filter((t, i) => i > tabIndex));
-      },
+      }
     };
 
     const closeAllTabsMenuItem = {
@@ -197,7 +235,7 @@ class SourceTabs extends Component {
       label: closeAllTabsLabel,
       accesskey: closeAllTabsKey,
       disabled: false,
-      click: () => closeTabs(tabURLs),
+      click: () => closeTabs(tabURLs)
     };
 
     const showSourceMenuItem = {
@@ -205,15 +243,15 @@ class SourceTabs extends Component {
       label: revealInTreeLabel,
       accesskey: revealInTreeKey,
       disabled: false,
-      click: () => showSource(tab),
+      click: () => showSource(tab)
     };
 
-    const copySourceUrl = {
-      id: "node-menu-close-tabs-to-right",
+    const copySourceUri2 = {
+      id: "node-menu-copy-source-url",
       label: copyLinkLabel,
       accesskey: copyLinkKey,
       disabled: false,
-      click: () => copyToTheClipboard(sourceTab.get("url")),
+      click: () => copyToTheClipboard(sourceTab.get("url"))
     };
 
     const prettyPrint = {
@@ -221,7 +259,7 @@ class SourceTabs extends Component {
       label: prettyPrintLabel,
       accesskey: prettyPrintKey,
       disabled: false,
-      click: () => togglePrettyPrint(sourceTab.get("id")),
+      click: () => togglePrettyPrint(sourceTab.get("id"))
     };
 
     const items = [
@@ -229,15 +267,15 @@ class SourceTabs extends Component {
       { item: closeOtherTabsMenuItem, hidden: () => tabs.size === 1 },
       {
         item: closeTabsToEndMenuItem,
-        hidden: () => tabs.some((t, i) => t === tab && tabs.size - 1 === i),
+        hidden: () => tabs.some((t, i) => t === tab && tabs.size - 1 === i)
       },
       { item: closeAllTabsMenuItem },
       { item: { type: "separator" } },
-      { item: copySourceUrl },
-      { item: showSourceMenuItem },
+      { item: copySourceUri2 }
     ];
 
     if (!isPrettySource) {
+      items.push({ item: showSourceMenuItem });
       items.push({ item: prettyPrint });
     }
 
@@ -252,109 +290,147 @@ class SourceTabs extends Component {
     if (!this.refs.sourceTabs) {
       return;
     }
-
-    const sourceTabs = this.props.sourceTabs;
+    const { selectedSource, sourceTabs, moveTab } = this.props;
     const sourceTabEls = this.refs.sourceTabs.children;
     const hiddenSourceTabs = getHiddenTabs(sourceTabs, sourceTabEls);
+
+    if (isVisible() && hiddenSourceTabs.indexOf(selectedSource) !== -1) {
+      return moveTab(selectedSource.get("url"), 0);
+    }
 
     this.setState({ hiddenSourceTabs });
   }
 
   toggleSourcesDropdown(e) {
     this.setState({
-      dropdownShown: !this.state.dropdownShown,
+      dropdownShown: !this.state.dropdownShown
     });
   }
 
-  renderDropdownSource(source) {
+  renderDropdownSource(source: SourceRecord) {
     const { selectSource } = this.props;
     const filename = getFilename(source.toJS());
 
-    return dom.li(
-      {
-        key: source.get("id"),
-        onClick: () => {
-          // const tabIndex = getLastVisibleTabIndex(sourceTabs, sourceTabEls);
-          const tabIndex = 0;
-          selectSource(source.get("id"), { tabIndex });
-        },
-      },
-      filename
+    const onClick = () => selectSource(source.get("id"));
+    return (
+      <li key={source.get("id")} onClick={onClick}>
+        {filename}
+      </li>
     );
   }
 
   renderTabs() {
-    const sourceTabs = this.props.sourceTabs;
-    return dom.div(
-      { className: "source-tabs", ref: "sourceTabs" },
-      sourceTabs.map(this.renderTab)
+    const { sourceTabs } = this.props;
+    if (!sourceTabs) {
+      return;
+    }
+
+    return (
+      <div className="source-tabs" ref="sourceTabs">
+        {sourceTabs.map(this.renderSourceTab)}
+      </div>
     );
   }
 
-  renderTab(source) {
+  isProjectSearchEnabled() {
+    return this.props.activeSearch === "project";
+  }
+
+  isSourceSearchEnabled() {
+    return this.props.activeSearch === "source";
+  }
+
+  renderSearchTab(source: ActiveSearchType) {
+    const { closeTab, closeActiveSearch, setActiveSearch } = this.props;
+
+    function tabName(tab) {
+      return `${tab} search results`;
+    }
+
+    function onClickClose(ev) {
+      ev.stopPropagation();
+      closeActiveSearch();
+      closeTab(source);
+    }
+    const className = classnames("source-tab", {
+      active: this.isProjectSearchEnabled() || this.isSourceSearchEnabled(),
+      pretty: false
+    });
+
+    return (
+      <div
+        className={className}
+        key={source}
+        onClick={() => setActiveSearch(source)}
+        onContextMenu={e => this.onTabContextMenu(e, source)}
+        title={tabName(source)}
+      >
+        <div className="filename">{tabName(source)}</div>
+        <CloseButton
+          handleClick={onClickClose}
+          tooltip={L10N.getStr("sourceTabs.closeTabButtonTooltip")}
+        />
+      </div>
+    );
+  }
+
+  renderSourceTab(source: SourceRecord) {
     const { selectedSource, selectSource, closeTab } = this.props;
     const filename = getFilename(source.toJS());
-    const active = selectedSource &&
-      source.get("id") == selectedSource.get("id");
+    const active =
+      selectedSource &&
+      source.get("id") == selectedSource.get("id") &&
+      (!this.isProjectSearchEnabled() && !this.isSourceSearchEnabled());
     const isPrettyCode = isPretty(source.toJS());
+    const sourceAnnotation = this.getSourceAnnotation(source);
 
     function onClickClose(ev) {
       ev.stopPropagation();
       closeTab(source.get("url"));
     }
 
-    return dom.div(
-      {
-        className: classnames("source-tab", {
-          active,
-          pretty: isPrettyCode,
-        }),
-        key: source.get("id"),
-        onClick: () => selectSource(source.get("id")),
-        onContextMenu: e => this.onTabContextMenu(e, source.get("id")),
-        title: getFilename(source.toJS()),
-      },
-      isPrettyCode ? Svg("prettyPrint") : null,
-      dom.div({ className: "filename" }, filename),
-      CloseButton({
-        handleClick: onClickClose,
-        tooltip: L10N.getStr("sourceTabs.closeTabButtonTooltip"),
-      })
-    );
-  }
+    const className = classnames("source-tab", {
+      active,
+      pretty: isPrettyCode
+    });
 
-  renderNewButton() {
-    const newTabTooltip = L10N.getFormatStr(
-      "sourceTabs.newTabButtonTooltip",
-      formatKeyShortcut(`CmdOrCtrl+${L10N.getStr("sources.search.key")}`)
-    );
-    return dom.div(
-      {
-        className: "new-tab-btn",
-        onClick: () => this.props.toggleProjectSearch(),
-        title: newTabTooltip,
-      },
-      Svg("plus")
+    return (
+      <div
+        className={className}
+        key={source.get("id")}
+        onClick={() => selectSource(source.get("id"))}
+        onContextMenu={e => this.onTabContextMenu(e, source.get("id"))}
+        title={getFileURL(source.toJS())}
+      >
+        {sourceAnnotation}
+        <div className="filename">{filename}</div>
+        <CloseButton
+          handleClick={onClickClose}
+          tooltip={L10N.getStr("sourceTabs.closeTabButtonTooltip")}
+        />
+      </div>
     );
   }
 
   renderDropdown() {
     const hiddenSourceTabs = this.state.hiddenSourceTabs;
     if (!hiddenSourceTabs || hiddenSourceTabs.size == 0) {
-      return dom.div({});
+      return null;
     }
 
-    return Dropdown({
-      panel: dom.ul({}, hiddenSourceTabs.map(this.renderDropdownSource)),
-    });
+    const Panel = <ul>{hiddenSourceTabs.map(this.renderDropdownSource)}</ul>;
+
+    return <Dropdown panel={Panel} />;
   }
 
   renderStartPanelToggleButton() {
-    return PaneToggleButton({
-      position: "start",
-      collapsed: !this.props.startPanelCollapsed,
-      handleClick: this.props.togglePaneCollapse,
-    });
+    return (
+      <PaneToggleButton
+        position="start"
+        collapsed={!this.props.startPanelCollapsed}
+        handleClick={this.props.togglePaneCollapse}
+      />
+    );
   }
 
   renderEndPanelToggleButton() {
@@ -362,53 +438,47 @@ class SourceTabs extends Component {
       return;
     }
 
-    return PaneToggleButton({
-      position: "end",
-      collapsed: !this.props.endPanelCollapsed,
-      handleClick: this.props.togglePaneCollapse,
-      horizontal: this.props.horizontal,
-    });
+    return (
+      <PaneToggleButton
+        position="end"
+        collapsed={!this.props.endPanelCollapsed}
+        handleClick={this.props.togglePaneCollapse}
+        horizontal={this.props.horizontal}
+      />
+    );
+  }
+
+  getSourceAnnotation(source) {
+    const sourceObj = source.toJS();
+
+    if (isPretty(sourceObj)) {
+      return <img className="prettyPrint" />;
+    }
+    if (sourceObj.isBlackBoxed) {
+      return <img className="blackBox" />;
+    }
   }
 
   render() {
-    return dom.div(
-      { className: "source-header" },
-      this.renderStartPanelToggleButton(),
-      this.renderTabs(),
-      this.renderNewButton(),
-      this.renderDropdown(),
-      this.renderEndPanelToggleButton()
+    return (
+      <div className="source-header">
+        {this.renderStartPanelToggleButton()}
+        {this.renderTabs()}
+        {this.renderDropdown()}
+        {this.renderEndPanelToggleButton()}
+      </div>
     );
   }
 }
 
-SourceTabs.propTypes = {
-  sourceTabs: ImPropTypes.list.isRequired,
-  selectedSource: ImPropTypes.map,
-  selectSource: PropTypes.func.isRequired,
-  closeTab: PropTypes.func.isRequired,
-  closeTabs: PropTypes.func.isRequired,
-  toggleProjectSearch: PropTypes.func.isRequired,
-  togglePrettyPrint: PropTypes.func.isRequired,
-  togglePaneCollapse: PropTypes.func.isRequired,
-  showSource: PropTypes.func.isRequired,
-  horizontal: PropTypes.bool.isRequired,
-  startPanelCollapsed: PropTypes.bool.isRequired,
-  endPanelCollapsed: PropTypes.bool.isRequired,
-};
-
-SourceTabs.displayName = "SourceTabs";
-
-function getTabs(state) {
-  return getSourceTabs(state).map(url => getSourceByURL(state, url));
-}
-
-module.exports = connect(
+export default connect(
   state => {
     return {
       selectedSource: getSelectedSource(state),
-      sourceTabs: getTabs(state),
-      searchOn: getProjectSearchState(state),
+      searchTabs: getSearchTabs(state),
+      sourceTabs: getSourcesForTabs(state),
+      activeSearch: getActiveSearch(state),
+      searchOn: getActiveSearch(state) === "source"
     };
   },
   dispatch => bindActionCreators(actions, dispatch)

@@ -3,13 +3,16 @@
 export type SearchModifiers = {
   caseSensitive: boolean,
   wholeWord: boolean,
-  regexMatch: boolean,
+  regexMatch: boolean
 };
 
 export type Expression = {
   value: Object,
-  input: string,
-  visible: boolean,
+  input: string
+};
+
+export type Worker = {
+  url: string
 };
 
 export type Mode =
@@ -19,20 +22,18 @@ export type Mode =
       typescript?: boolean,
       base?: {
         name: string,
-        typescript: boolean,
-      },
+        typescript: boolean
+      }
     };
-
-export type AlignOpts = "top" | "center" | "bottom";
 
 export type {
   Breakpoint,
+  PendingBreakpoint,
   Frame,
   Grip,
   LoadedObject,
   Location,
   Source,
-  SourceText,
   Pause,
-  Why,
+  Why
 } from "debugger-html";

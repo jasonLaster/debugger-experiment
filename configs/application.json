@@ -12,11 +12,10 @@
     "firefoxProxy": false,
     "actions": false
   },
+  "performance": {
+    "actions": false
+  },
   "features": {
-    "watchExpressions": {
-      "label": "Watch Expressions",
-      "enabled": false
-    },
     "chromeScopes": {
       "label": "Chrome Scopes",
       "enabled": false
@@ -29,16 +28,12 @@
       "label": "Code Coverage",
       "enabled": false
     },
-    "searchModifiers": {
-      "label": "Search Modifiers",
+    "codeFolding": {
+      "label": "Code Folding",
       "enabled": false
     },
-    "symbolSearch": {
-      "label": "symbol Search",
-      "enabled": false
-    },
-    "editorPreview": {
-      "label": "Editor Preview",
+    "searchNav": {
+      "label": "Search Navigation",
       "enabled": false
     }
   },

@@ -1,49 +1,121 @@
-const React = require("react");
-const { DOM: dom, PropTypes } = React;
-const classnames = require("classnames");
-const Svg = require("./Svg");
-const CloseButton = require("./Button/Close").default;
+import React, { Component } from "react";
+import { isEnabled } from "devtools-config";
+import Svg from "./Svg";
+import classnames from "classnames";
+import CloseButton from "./Button/Close";
+import "./SearchInput.css";
 
-require("./SearchInput.css");
+const arrowBtn = (onClick, type, className, tooltip) => {
+  const props = {
+    onClick,
+    type,
+    className,
+    title: tooltip,
+    key: type
+  };
 
-const SearchInput = React.createClass({
-  propTypes: {
-    query: PropTypes.string.isRequired,
-    count: PropTypes.number.isRequired,
-    placeholder: PropTypes.string.isRequired,
-    summaryMsg: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    onKeyUp: PropTypes.func,
-    onKeyDown: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    size: PropTypes.string,
-  },
+  return (
+    <button {...props}>
+      <Svg name={type} />
+    </button>
+  );
+};
 
-  displayName: "SearchInput",
+class SearchInput extends Component {
+  displayName: "SearchInput";
+  props: {
+    query: string,
+    count: number,
+    placeholder: string,
+    summaryMsg: string,
+    onChange: () => void,
+    handleClose: () => void,
+    showErrorEmoji: boolean,
+    onKeyUp: () => void,
+    onKeyDown: () => void,
+    onFocus: () => void,
+    onBlur: () => void,
+    size: string,
+    handleNext: () => void,
+    handlePrev: () => void
+  };
 
-  getDefaultProps() {
-    return {
-      size: "",
-    };
-  },
+  static defaultProps = {
+    size: "",
+    showErrorEmoji: true
+  };
+
+  componentDidMount() {
+    this.$input.focus();
+    if (this.$input.value != "") {
+      this.$input.setSelectionRange(
+        this.$input.value.length + 1,
+        this.$input.value.length + 1
+      );
+    }
+  }
+
+  componentDidUpdate() {
+    this.$input.focus();
+    if (this.$input.value != "") {
+      this.$input.setSelectionRange(
+        this.$input.value.length + 1,
+        this.$input.value.length + 1
+      );
+    }
+  }
+
+  shouldShowErrorEmoji() {
+    const { count, query, showErrorEmoji } = this.props;
+    return count === 0 && query.trim() !== "" && !showErrorEmoji;
+  }
 
   renderSvg() {
-    const { count, query } = this.props;
-
-    if (count == 0 && query.trim() != "") {
-      return Svg("sad-face");
+    if (this.shouldShowErrorEmoji()) {
+      return <Svg name="sad-face" />;
     }
 
-    return Svg("magnifying-glass");
-  },
+    return <Svg name="magnifying-glass" />;
+  }
+
+  renderArrowButtons() {
+    const { handleNext, handlePrev } = this.props;
+
+    return [
+      arrowBtn(
+        handleNext,
+        "arrow-down",
+        classnames("nav-btn", "next"),
+        L10N.getFormatStr("editor.searchResults.nextResult")
+      ),
+      arrowBtn(
+        handlePrev,
+        "arrow-up",
+        classnames("nav-btn", "prev"),
+        L10N.getFormatStr("editor.searchResults.prevResult")
+      )
+    ];
+  }
+
+  renderNav() {
+    if (!isEnabled("searchNav")) {
+      return;
+    }
+
+    const { count, handleNext, handlePrev } = this.props;
+    if ((!handleNext && !handlePrev) || (!count || count == 1)) {
+      return;
+    }
+
+    return (
+      <div className="search-nav-buttons">{this.renderArrowButtons()}</div>
+    );
+  }
 
   render() {
     const {
       query,
       placeholder,
-      count,
       summaryMsg,
       onChange,
       onKeyDown,
@@ -51,34 +123,34 @@ const SearchInput = React.createClass({
       onFocus,
       onBlur,
       handleClose,
-      size,
+      size
     } = this.props;
 
-    return dom.div(
-      {
-        className: `search-field ${size}`,
-      },
-      this.renderSvg(),
-      dom.input({
-        className: classnames({
-          empty: count == 0 && query.trim() != "",
-        }),
-        onChange,
-        onKeyDown,
-        onKeyUp,
-        onFocus,
-        onBlur,
-        placeholder,
-        value: query,
-        spellCheck: false,
+    const inputProps = {
+      className: classnames({
+        empty: this.shouldShowErrorEmoji()
       }),
-      dom.div({ className: "summary" }, query != "" ? summaryMsg : ""),
-      CloseButton({
-        handleClick: handleClose,
-        buttonClass: size,
-      })
-    );
-  },
-});
+      onChange,
+      onKeyDown,
+      onKeyUp,
+      onFocus,
+      onBlur,
+      placeholder,
+      value: query,
+      spellCheck: false,
+      ref: c => (this.$input = c)
+    };
 
-module.exports = SearchInput;
+    return (
+      <div className={classnames("search-field", size)}>
+        {this.renderSvg()}
+        <input {...inputProps} />
+        <div className="summary">{summaryMsg || ""}</div>
+        {this.renderNav()}
+        <CloseButton handleClick={handleClose} buttonClass={size} />
+      </div>
+    );
+  }
+}
+
+export default SearchInput;

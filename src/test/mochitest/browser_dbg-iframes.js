@@ -6,21 +6,23 @@
  *  1. pause in the main thread
  *  2. pause in the iframe
  */
-add_task(function* () {
-  const dbg = yield initDebugger("doc-iframes.html");
+add_task(async function() {
+  const dbg = await initDebugger("doc-iframes.html");
 
   // test pausing in the main thread
-  yield reload(dbg);
-  yield waitForPaused(dbg);
-  assertPausedLocation(dbg, "iframes.html", 8);
+  await reload(dbg);
+  await waitForPaused(dbg);
+  await waitForLoadedSource(dbg, "doc-iframes.html");
+  assertPausedLocation(dbg);
 
   // test pausing in the iframe
-  yield resume(dbg);
-  yield waitForPaused(dbg);
-  assertPausedLocation(dbg, "debugger-statements.html", 8);
+  await resume(dbg);
+  await waitForPaused(dbg);
+  await waitForLoadedSource(dbg, "doc-debugger-statements.html");
+  assertPausedLocation(dbg);
 
   // test pausing in the iframe
-  yield resume(dbg);
-  yield waitForPaused(dbg);
-  assertPausedLocation(dbg, "debugger-statements.html", 12);
+  await resume(dbg);
+  await waitForPaused(dbg);
+  assertPausedLocation(dbg);
 });

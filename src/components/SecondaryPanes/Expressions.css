@@ -2,8 +2,7 @@
   width: 100%;
   margin: 0px;
   border: 1px;
-  cursor: pointer;
-  background-color: var(--theme-body-background);
+  background-color: var(--theme-sidebar-background);
   font-size: 12px;
   padding: 0px 20px;
   color: var(--theme-body-color);
@@ -21,6 +20,11 @@
   cursor: text;
 }
 
+.expressions-list {
+  /* TODO: add normalize */
+  margin: 0;
+  padding: 0;
+}
 .expression-input-container {
   padding: 0.5em;
   display: flex;
@@ -28,11 +32,11 @@
 
 .expression-container {
   border: 1px;
-  padding: 8px 5px 0px 0px;
+  padding: 0.25em 1em 0.25em 0.5em;
   width: 100%;
   color: var(--theme-body-color);
   background-color: var(--theme-body-background);
-  display: flex;
+  display: block;
   position: relative;
 }
 
@@ -49,35 +53,29 @@
   background-color: var(--search-overlays-semitransparent);
 }
 
-.expression-container .close-btn {
+.expression-container__close-btn {
   position: absolute;
-  offset-inline-end: 6px;
-  top: 6px;
+  offset-inline-end: 0px;
+  top: 4px;
 }
 
-.expression-container .close {
-  display: none;
+.expression-content {
+  position: relative;
 }
 
-.expression-container:hover .close {
+.expression-content .tree {
+  overflow-x: hidden;
+  max-width: calc(100% - var(--breakpoint-expression-right-clear-space));
+}
+
+.expression-content .tree-node {
+  overflow-x: hidden;
+}
+
+.expression-container:hover .close-btn {
   display: block;
 }
 
 .expression-input {
-  cursor: pointer;
   max-width: 50%;
-}
-
-.expression-separator {
-  padding: 0px 5px;
-}
-
-.expression-value {
-  overflow-x: scroll;
-  color: var(--theme-content-color2);
-  max-width: 50% !important;
-}
-
-.expression-error {
-  color: var(--theme-highlight-red);
 }

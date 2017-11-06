@@ -1,8 +1,14 @@
-import constants from "../constants";
 import { clearDocuments } from "../utils/editor";
 import { getSources } from "../reducers/sources";
 import { waitForMs } from "../utils/utils";
 import { newSources } from "./sources";
+import {
+  clearASTs,
+  clearSymbols,
+  clearScopes,
+  clearSources
+} from "../workers/parser";
+import { clearWasmStates } from "../utils/wasm";
 
 /**
  * Redux actions for the navigation state
@@ -16,12 +22,28 @@ import { newSources } from "./sources";
 export function willNavigate(_, event) {
   return async function({ dispatch, getState, client, sourceMaps }: ThunkArgs) {
     await sourceMaps.clearSourceMaps();
+    clearWasmStates();
     clearDocuments();
+    clearSymbols();
+    clearASTs();
+    clearScopes();
+    clearSources();
 
-    dispatch({
-      type: constants.NAVIGATE,
-      url: event.url,
-    });
+    dispatch(navigate(event.url));
+  };
+}
+
+export function navigate(url) {
+  return {
+    type: "NAVIGATE",
+    url
+  };
+}
+
+export function connect(url) {
+  return {
+    type: "CONNECT",
+    url
   };
 }
 

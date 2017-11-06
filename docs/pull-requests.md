@@ -4,7 +4,9 @@
 * [Test Steps](#test-steps)
 * [Testing](#testing)
 * [Reviews](#reviews)
+* [Git Workflow](#git-workflow)
 * [Updates](#updates)
+* [CI](#ci)
 
 ### Screenshots
 
@@ -102,6 +104,45 @@ Steps:
 3. Fetch the user's branches `git fetch <username>`
 4. checkout the user's branch `git checkout --track <username>/<pr-branch>`. `--track` is helpful if you later want to pull down subsequent changes to the PR.
 
+### Git Workflow
+
+Working on OSS is an exercise in git collaboration. No matter how well you know
+git you're going to learn something new. Here is a great overview of the github [workflow][forking].
+Also, we highly recommend the [learn git branching][git-tutorial]!
+
+[forking]: https://gist.github.com/Chaser324/ce0505fbed06b947d962#file-github-forking-md
+[git-tutorial]: https://learngitbranching.js.org/
+
+#### Merge Conflicts
+
+It's common to create a PR and a couple days later see that it has a conflict.
+There are two approaches: the github ui, update your branch locally.
+
+If the problem is simple, you can use the ui. Generally, you'll want to update your branch locally.
+The first thing to do is to clean up your unstaged work by either committing it, stashing it, or checking it out.
+Once your branch is clean, you should update your local master branch. It's a good rule of thumb that master should
+point to [origin][orig], but often the `master` branch points to
+your fork. If this is the case, then you'll need to add `origin` as a [remote][rdoc].
+
+Once master is uptodate, you can go back to your feature branch and update it.
+Generally the best thing to do is to rebase it against master: `git rebase master`,
+but rebases are complicated so checkout the [servo], [edx], and [docs][rebase-docs].
+
+In some cases, where your feature branch has some nasty conflicts you can cherry pick your
+work on top of master. There are three steps:
+
+1. squash your new commits into one commit. (save the commit sha)
+2. reset your branch against master (temporarily wiping everything) `git reset --hard master`
+3. cherry-pick your commit. `git cherry-pick 2bc3D`
+
+![rebase-screen]
+
+[orig]: https://github.com/devtools-html/debugger.html
+[edx]: https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request
+[servo]: https://github.com/servo/servo/wiki/Beginner%27s-guide-to-rebasing-and-squashing
+[rebase-docs]: https://help.github.com/articles/about-git-rebase/
+[rebase-screen]: https://shipusercontent.com/351d31ccee0a1ba552b56627a35d7118/Screen%20Shot%202017-10-12%20at%206.29.49%20PM.png
+[rdoc]: https://help.github.com/articles/adding-a-remote/
 
 ### Updates
 
@@ -113,6 +154,34 @@ There are a couple times when we do this:
 
 Here are the steps for [pushing to a branch].
 
+### CI
+
+We use [Circle] for CI, which is generally pretty great. Our test run is defined in [circle.yml].
+
+#### Testing on CI
+
+If a test is failing on CI and you're not sure why, it can be helpful to SSH in and debug
+it locally. There are three steps:
+
+1. Rebuild with SSH
+2. copy the SSH command
+3. `cd debugger.html`
+4. `jest src`
+
+##### Rebuild with SSH
+
+![](https://shipusercontent.com/c9c0c7b79785237686a784fae7d710b2/ssh%20button.png)
+
+##### SSH Command
+
+![](https://shipusercontent.com/34e3daec48feed0eba96059d42829e84/ssh%20URL.png)
+
+##### SSH from the terminal
+
+![](https://shipusercontent.com/5b5a98a8f42f537b754540dd9f80c2d1/terminal.png)
+
+
+
 [github-tables]:https://help.github.com/articles/organizing-information-with-tables/
 [github-remote]:https://help.github.com/articles/which-remote-url-should-i-use/
 [github-2fa]:https://help.github.com/articles/providing-your-2fa-authentication-code/
@@ -123,3 +192,6 @@ Here are the steps for [pushing to a branch].
 [test-docs]: ./local-development.md#unit-tests
 [linting-docs]: ./local-development.md#linting
 [pushing to a branch]: ./maintainer.md#pushing-to-a-branch
+
+[Circle]: https://circleci.com/
+[circle.yml]: ../circle.yml

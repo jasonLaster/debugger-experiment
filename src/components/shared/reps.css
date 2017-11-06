@@ -18,7 +18,7 @@
 
 .theme-firebug {
   --number-color: #000088;
-  --string-color: #FF0000;
+  --string-color: #ff0000;
   --null-color: #787878;
   --object-color: DarkGreen;
   --caption-color: #444444;
@@ -31,7 +31,6 @@
 /******************************************************************************/
 
 .objectLink:hover {
-  cursor: pointer;
   text-decoration: underline;
 }
 
@@ -127,7 +126,6 @@
 .objectRightBrace,
 .arrayLeftBracket,
 .arrayRightBracket {
-  cursor: pointer;
   font-weight: bold;
 }
 
@@ -156,7 +154,7 @@
 
 .caption {
   font-weight: bold;
-  color:  var(--caption-color);
+  color: var(--caption-color);
 }
 
 /******************************************************************************/

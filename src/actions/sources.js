@@ -9,57 +9,66 @@
  * @module actions/sources
  */
 
-import defer from "../utils/defer";
-import { PROMISE } from "../utils/redux/middleware/promise";
+import { PROMISE } from "./utils/middleware/promise";
 import assert from "../utils/assert";
-import { updateFrameLocations } from "../utils/pause";
-import { addBreakpoint } from "./breakpoints";
+import { remapBreakpoints } from "./breakpoints";
 
-import { prettyPrint } from "../utils/pretty-print";
-import { getPrettySourceURL } from "../utils/source";
+import { setEmptyLines, setOutOfScopeLocations } from "./ast";
+import { syncBreakpoint } from "./breakpoints";
+import { searchSource } from "./project-text-search";
+import { closeActiveSearch } from "./ui";
 
-import constants from "../constants";
+import { getPrettySourceURL, isLoaded } from "../utils/source";
+import { createPrettySource } from "./sources/createPrettySource";
+import { loadSourceText } from "./sources/loadSourceText";
+
 import { prefs } from "../utils/prefs";
 import { removeDocument } from "../utils/editor";
+import { isThirdParty } from "../utils/source";
+import { getGeneratedLocation } from "../utils/source-maps";
 
 import {
   getSource,
+  getSources,
   getSourceByURL,
-  getSourceText,
-  getBreakpoint,
   getPendingSelectedLocation,
-  getPendingBreakpoints,
-  getFrames,
+  getPendingBreakpointsForSource,
+  getSourceTabs,
+  getNewSelectedSourceId,
+  getSelectedLocation,
+  removeSourcesFromTabList,
+  removeSourceFromTabList,
+  getTextSearchQuery,
+  getActiveSearch
 } from "../selectors";
 
-import type { Source, SourceText } from "../types";
+import type { Source } from "../types";
 import type { ThunkArgs } from "./types";
+import type { State } from "../reducers/types";
 
 // If a request has been made to show this source, go ahead and
 // select it.
-function checkSelectedSource(state, dispatch, source) {
+async function checkSelectedSource(state: State, dispatch, source) {
   const pendingLocation = getPendingSelectedLocation(state);
-  if (pendingLocation && pendingLocation.url === source.url) {
-    dispatch(selectSource(source.id, { line: pendingLocation.line }));
+
+  if (pendingLocation && !!source.url && pendingLocation.url === source.url) {
+    await dispatch(selectSource(source.id, { location: pendingLocation }));
   }
 }
 
-function checkPendingBreakpoints(state, dispatch, source) {
-  const pendingBreakpoints = getPendingBreakpoints(state);
+async function checkPendingBreakpoints(state, dispatch, sourceId) {
+  // source may have been modified by selectSource
+  const source = getSource(state, sourceId).toJS();
+  const pendingBreakpoints = getPendingBreakpointsForSource(state, source.url);
+  if (!pendingBreakpoints.size) {
+    return;
+  }
 
-  if (pendingBreakpoints) {
-    pendingBreakpoints.forEach(pendingBreakpoint => {
-      const { location: { line, sourceUrl }, condition } = pendingBreakpoint;
-      const sameSource = sourceUrl && sourceUrl == source.url;
-
-      const location = { sourceId: source.id, sourceUrl, line };
-
-      const bp = getBreakpoint(state, location);
-
-      if (sameSource && !bp) {
-        dispatch(addBreakpoint(location, { condition }));
-      }
-    });
+  // load the source text if there is a pending breakpoint for it
+  await dispatch(loadSourceText(source));
+  const pendingBreakpointsArray = pendingBreakpoints.valueSeq().toJS();
+  for (const pendingBreakpoint of pendingBreakpointsArray) {
+    await dispatch(syncBreakpoint(sourceId, pendingBreakpoint));
   }
 }
 
@@ -69,23 +78,32 @@ function checkPendingBreakpoints(state, dispatch, source) {
  * @static
  */
 export function newSource(source: Source) {
-  return ({ dispatch, getState }: ThunkArgs) => {
-    if (prefs.clientSourceMapsEnabled) {
-      dispatch(loadSourceMap(source));
+  return async ({ dispatch, getState }: ThunkArgs) => {
+    const _source = getSource(getState(), source.id);
+    if (_source) {
+      return;
     }
 
-    dispatch({ type: constants.ADD_SOURCE, source });
+    dispatch({ type: "ADD_SOURCE", source });
 
-    checkSelectedSource(getState(), dispatch, source);
-    checkPendingBreakpoints(getState(), dispatch, source);
+    if (prefs.clientSourceMapsEnabled) {
+      await dispatch(loadSourceMap(source));
+    }
+
+    await checkSelectedSource(getState(), dispatch, source);
+    await checkPendingBreakpoints(getState(), dispatch, source.id);
   };
 }
 
 export function newSources(sources: Source[]) {
-  return ({ dispatch, getState }: ThunkArgs) => {
-    sources
-      .filter(source => !getSource(getState(), source.id))
-      .forEach(source => dispatch(newSource(source)));
+  return async ({ dispatch, getState }: ThunkArgs) => {
+    const filteredSources = sources.filter(
+      source => !getSource(getState(), source.id)
+    );
+
+    for (const source of filteredSources) {
+      await dispatch(newSource(source));
+    }
   };
 }
 
@@ -101,25 +119,32 @@ function loadSourceMap(generatedSource) {
       return;
     }
 
-    let state = getState();
-    const originalSources = urls.map(originalUrl => {
-      return {
-        url: originalUrl,
-        id: sourceMaps.generatedToOriginalId(generatedSource.id, originalUrl),
-        isPrettyPrinted: false,
-      };
-    });
+    const originalSources = urls.map(
+      originalUrl =>
+        ({
+          url: originalUrl,
+          id: sourceMaps.generatedToOriginalId(generatedSource.id, originalUrl),
+          isPrettyPrinted: false,
+          isWasm: false,
+          isBlackBoxed: false,
+          loadedState: "unloaded"
+        }: Source)
+    );
 
-    dispatch({ type: constants.ADD_SOURCES, sources: originalSources });
+    dispatch({ type: "ADD_SOURCES", sources: originalSources });
 
-    originalSources.forEach(source => {
-      checkSelectedSource(state, dispatch, source);
-      checkPendingBreakpoints(state, dispatch, source);
+    await dispatch(loadSourceText(generatedSource));
+    originalSources.forEach(async source => {
+      await checkSelectedSource(getState(), dispatch, source);
+      checkPendingBreakpoints(getState(), dispatch, source.id);
     });
   };
 }
 
-type SelectSourceOptions = { tabIndex?: number, line?: number };
+export type SelectSourceOptions = {
+  tabIndex?: number,
+  location?: { line?: number, column?: number }
+};
 
 /**
  * Deterministically select a source that has a given URL. This will
@@ -134,16 +159,16 @@ export function selectSourceURL(
   url: string,
   options: SelectSourceOptions = {}
 ) {
-  return ({ dispatch, getState }: ThunkArgs) => {
+  return async ({ dispatch, getState }: ThunkArgs) => {
     const source = getSourceByURL(getState(), url);
     if (source) {
-      dispatch(selectSource(source.get("id"), options));
+      await dispatch(selectSource(source.get("id"), options));
     } else {
       dispatch({
-        type: constants.SELECT_SOURCE_URL,
+        type: "SELECT_SOURCE_URL",
         url: url,
         tabIndex: options.tabIndex,
-        line: options.line,
+        location: options.location
       });
     }
   };
@@ -161,24 +186,28 @@ export function selectSource(id: string, options: SelectSourceOptions = {}) {
       return;
     }
 
-    let source = getSource(getState(), id);
-
+    const source = getSource(getState(), id);
     if (!source) {
-      return;
+      // If there is no source we deselect the current selected source
+      return dispatch({ type: "CLEAR_SELECTED_SOURCE" });
     }
 
-    source = source.toJS();
+    const activeSearch = getActiveSearch(getState());
+    if (activeSearch !== "file") {
+      dispatch(closeActiveSearch());
+    }
 
-    // Make sure to start a request to load the source text.
-    dispatch(loadSourceText(source));
+    dispatch(addTab(source.toJS(), 0));
 
-    dispatch({ type: constants.TOGGLE_PROJECT_SEARCH, value: false });
-
-    dispatch({
-      type: constants.SELECT_SOURCE,
-      source: source,
+    return dispatch({
+      type: "SELECT_SOURCE",
+      source: source.toJS(),
       tabIndex: options.tabIndex,
-      line: options.line,
+      location: options.location || {},
+      [PROMISE]: (async () => {
+        await dispatch(loadSourceText(source.toJS()));
+        await dispatch(setOutOfScopeLocations());
+      })()
     });
   };
 }
@@ -196,9 +225,11 @@ export function jumpToMappedLocation(sourceLocation: any) {
     const source = getSource(getState(), sourceLocation.sourceId);
     let pairedLocation;
     if (sourceMaps.isOriginalId(sourceLocation.sourceId)) {
-      pairedLocation = await sourceMaps.getGeneratedLocation(
+      pairedLocation = await getGeneratedLocation(
+        getState(),
+        source.toJS(),
         sourceLocation,
-        source.toJS()
+        sourceMaps
       );
     } else {
       pairedLocation = await sourceMaps.getOriginalLocation(
@@ -208,8 +239,24 @@ export function jumpToMappedLocation(sourceLocation: any) {
     }
 
     return dispatch(
-      selectSource(pairedLocation.sourceId, { line: pairedLocation.line })
+      selectSource(pairedLocation.sourceId, { location: pairedLocation })
     );
+  };
+}
+
+export function addTab(source: Source, tabIndex: number) {
+  return {
+    type: "ADD_TAB",
+    source,
+    tabIndex
+  };
+}
+
+export function moveTab(url: string, tabIndex: number) {
+  return {
+    type: "MOVE_TAB",
+    url,
+    tabIndex
   };
 }
 
@@ -218,8 +265,14 @@ export function jumpToMappedLocation(sourceLocation: any) {
  * @static
  */
 export function closeTab(url: string) {
-  removeDocument(url);
-  return { type: constants.CLOSE_TAB, url };
+  return ({ dispatch, getState, client }: ThunkArgs) => {
+    removeDocument(url);
+    const tabs = removeSourceFromTabList(getSourceTabs(getState()), url);
+    const sourceId = getNewSelectedSourceId(getState(), tabs);
+
+    dispatch({ type: "CLOSE_TAB", url, tabs });
+    dispatch(selectSource(sourceId));
+  };
 }
 
 /**
@@ -235,7 +288,11 @@ export function closeTabs(urls: string[]) {
       }
     });
 
-    dispatch({ type: constants.CLOSE_TABS, urls });
+    const tabs = removeSourcesFromTabList(getSourceTabs(getState()), urls);
+    const sourceId = getNewSelectedSourceId(getState(), tabs);
+
+    dispatch({ type: "CLOSE_TABS", urls, tabs });
+    dispatch(selectSource(sourceId));
   };
 }
 
@@ -252,14 +309,10 @@ export function closeTabs(urls: string[]) {
  *          [aSource, error].
  */
 export function togglePrettyPrint(sourceId: string) {
-  return ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
+  return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
     const source = getSource(getState(), sourceId).toJS();
-    let sourceText = getSourceText(getState(), sourceId);
-    if (sourceText) {
-      sourceText = sourceText.toJS();
-    }
 
-    if (sourceText && sourceText.loading) {
+    if (!source || !isLoaded(source)) {
       return {};
     }
 
@@ -268,155 +321,65 @@ export function togglePrettyPrint(sourceId: string) {
       "Pretty-printing only allowed on generated sources"
     );
 
+    const selectedLocation = getSelectedLocation(getState());
+    const selectedOriginalLocation = selectedLocation
+      ? await sourceMaps.getOriginalLocation(selectedLocation)
+      : {};
+
     const url = getPrettySourceURL(source.url);
-    const id = sourceMaps.generatedToOriginalId(source.id, url);
-    const originalSource = { url, id, isPrettyPrinted: false };
-    dispatch({ type: constants.ADD_SOURCE, source: originalSource });
+    const prettySource = getSourceByURL(getState(), url);
 
-    return dispatch({
-      type: constants.TOGGLE_PRETTY_PRINT,
-      source: originalSource,
-      [PROMISE]: (async function() {
-        const { code, mappings } = await prettyPrint({
-          source,
-          sourceText,
-          url,
-        });
-
-        await sourceMaps.applySourceMap(source.id, url, code, mappings);
-
-        let frames = getFrames(getState());
-        if (frames) {
-          frames = await updateFrameLocations(frames.toJS(), sourceMaps);
-        }
-
-        dispatch(selectSource(originalSource.id));
-
-        return { text: code, contentType: "text/javascript", frames };
-      })(),
-    });
-  };
-}
-
-/**
- * @memberof actions/sources
- * @static
- */
-export function loadSourceText(source: Source) {
-  return ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
-    // Fetch the source text only once.
-    let textInfo = getSourceText(getState(), source.id);
-    if (textInfo) {
-      // It's already loaded or is loading
-      return Promise.resolve(textInfo);
-    }
-
-    return dispatch({
-      type: constants.LOAD_SOURCE_TEXT,
-      source: source,
-      [PROMISE]: (async function() {
-        if (sourceMaps.isOriginalId(source.id)) {
-          return await sourceMaps.getOriginalSourceText(source);
-        }
-
-        const response = await client.sourceContents(source.id);
-
-        const sourceText: SourceText = {
-          id: source.id,
-          text: response.source,
-          contentType: response.contentType || "text/javascript",
-        };
-
-        return sourceText;
-        // Automatically pretty print if enabled and the test is
-        // detected to be "minified"
-        // if (Prefs.autoPrettyPrint &&
-        //     !source.isPrettyPrinted &&
-        //     SourceUtils.isMinified(source.id, response.source)) {
-        //   dispatch(togglePrettyPrint(source));
-        // }
-      })(),
-    });
-  };
-}
-
-// delay is in ms
-const FETCH_SOURCE_RESPONSE_DELAY = 200;
-
-/**
- * Starts fetching all the sources, silently.
- *
- * @memberof actions/sources
- * @static
- * @param array actors
- *        The urls for the sources to fetch. If fetching a source's text
- *        takes too long, it will be discarded.
- * @returns {Promise}
- *         A promise that is resolved after source texts have been fetched.
- */
-export function getTextForSources(actors: any[]) {
-  return ({ dispatch, getState }: ThunkArgs) => {
-    let deferred = defer();
-    let pending = new Set(actors);
-    type FetchedSourceType = [any, string, string];
-    let fetched: FetchedSourceType[] = [];
-
-    // Can't use promise.all, because if one fetch operation is rejected, then
-    // everything is considered rejected, thus no other subsequent source will
-    // be getting fetched. We don't want that. Something like Q's allSettled
-    // would work like a charm here.
-    // Try to fetch as many sources as possible.
-    for (let actor of actors) {
-      let source = getSource(getState(), actor);
-      dispatch(loadSourceText(source)).then(
-        ({ text, contentType }) => {
-          onFetch([source, text, contentType]);
-        },
-        err => {
-          onError(source, err);
-        }
+    if (prettySource) {
+      return dispatch(
+        selectSource(prettySource.get("id"), {
+          location: selectedOriginalLocation
+        })
       );
     }
 
-    setTimeout(onTimeout, FETCH_SOURCE_RESPONSE_DELAY);
+    const newPrettySource = await dispatch(createPrettySource(sourceId));
+    await dispatch(remapBreakpoints(sourceId));
+    await dispatch(setEmptyLines(newPrettySource.id));
 
-    /* Called if fetching a source takes too long. */
-    function onTimeout() {
-      pending = new Set();
-      maybeFinish();
-    }
+    return dispatch(
+      selectSource(newPrettySource.id, { location: selectedOriginalLocation })
+    );
+  };
+}
 
-    /* Called if fetching a source finishes successfully. */
-    function onFetch([aSource, aText, aContentType]: FetchedSourceType) {
-      // If fetching the source has previously timed out, discard it this time.
-      if (!pending.has(aSource.actor)) {
-        return;
+export function toggleBlackBox(source: Source) {
+  return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
+    const { isBlackBoxed, id } = source;
+
+    return dispatch({
+      type: "BLACKBOX",
+      source,
+      [PROMISE]: client.blackBox(id, isBlackBoxed)
+    });
+  };
+}
+
+/**
+  Load the text for all the available sources
+ * @memberof actions/sources
+ * @static
+ */
+export function loadAllSources() {
+  return async ({ dispatch, getState }: ThunkArgs) => {
+    const sources = getSources(getState());
+    const query = getTextSearchQuery(getState());
+    for (const [, src] of sources) {
+      const source = src.toJS();
+      if (isThirdParty(source)) {
+        continue;
       }
-      pending.delete(aSource.actor);
-      fetched.push([aSource.actor, aText, aContentType]);
-      maybeFinish();
-    }
 
-    /* Called if fetching a source failed because of an error. */
-    function onError([aSource, aError]) {
-      pending.delete(aSource.actor);
-      maybeFinish();
-    }
-
-    /* Called every time something interesting
-     *  happens while fetching sources.
-     */
-    function maybeFinish() {
-      if (pending.size == 0) {
-        // Sort the fetched sources alphabetically by their url.
-        if (deferred) {
-          deferred.resolve(
-            fetched.sort(([aFirst], [aSecond]) => aFirst > aSecond ? -1 : 1)
-          );
-        }
+      await dispatch(loadSourceText(source));
+      // If there is a current search query we search
+      // each of the source texts as they get loaded
+      if (query) {
+        await dispatch(searchSource(source.id, query));
       }
     }
-
-    return deferred.promise;
   };
 }

@@ -1,9 +1,8 @@
 // @flow
+import { isDevelopment } from "devtools-config";
 
-function assert(condition: boolean, message: string) {
-  if (!condition) {
+export default function assert(condition: boolean, message: string) {
+  if (isDevelopment() && !condition) {
     throw new Error(`Assertion failure: ${message}`);
   }
 }
-
-module.exports = assert;

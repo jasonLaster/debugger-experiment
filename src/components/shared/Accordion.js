@@ -1,5 +1,5 @@
 // @flow
-import { DOM as dom, PropTypes, createClass, createElement } from "react";
+import React, { createElement, Component } from "react";
 import Svg from "./Svg";
 
 import "./Accordion.css";
@@ -7,20 +7,30 @@ import "./Accordion.css";
 type AccordionItem = {
   buttons?: Array<Object>,
   component(): any,
+  componentProps: Object,
   header: string,
   opened: boolean,
-  onToggle?: () => any,
-  shouldOpen?: () => any,
+  onToggle?: () => void,
+  shouldOpen?: () => void
 };
 
 type Props = { items: Array<Object> };
 
-const Accordion = createClass({
-  propTypes: { items: PropTypes.array.isRequired },
-  displayName: "Accordion",
-  getInitialState() {
-    return { opened: this.props.items.map(item => item.opened), created: [] };
-  },
+type State = {
+  opened: boolean[],
+  created: boolean[]
+};
+
+class Accordion extends Component<Props, State> {
+  constructor(props: Props) {
+    super();
+
+    this.state = {
+      opened: props.items.map(item => item.opened),
+      created: []
+    };
+  }
+
   componentWillReceiveProps(nextProps: Props) {
     const newOpened = this.state.opened.map((isOpen, i) => {
       const { shouldOpen } = nextProps.items[i];
@@ -29,7 +39,8 @@ const Accordion = createClass({
     });
 
     this.setState({ opened: newOpened });
-  },
+  }
+
   handleHeaderClick(i: number) {
     const opened = [...this.state.opened];
     const created = [...this.state.created];
@@ -47,40 +58,42 @@ const Accordion = createClass({
     }
 
     this.setState({ opened, created });
-  },
-  renderContainer(item: AccordionItem, i: number) {
+  }
+
+  renderContainer = (item: AccordionItem, i: number) => {
     const { opened, created } = this.state;
     const containerClassName = `${item.header
       .toLowerCase()
       .replace(/\s/g, "-")}-pane`;
 
-    return dom.div(
-      { className: containerClassName, key: i },
-      dom.div(
-        { className: "_header", onClick: () => this.handleHeaderClick(i) },
-        Svg("arrow", { className: opened[i] ? "expanded" : "" }),
-        item.header,
-        item.buttons
-          ? dom.div({ className: "header-buttons" }, item.buttons)
-          : null
-      ),
-      created[i] || opened[i]
-        ? dom.div(
-            {
-              className: "_content",
-              style: { display: opened[i] ? "block" : "none" },
-            },
-            createElement(item.component, item.componentProps || {})
-          )
-        : null
+    return (
+      <div className={containerClassName} key={i}>
+        <div className="_header" onClick={() => this.handleHeaderClick(i)}>
+          <Svg name="arrow" className={opened[i] ? "expanded" : ""} />
+          {item.header}
+          {item.buttons ? (
+            <div className="header-buttons">{item.buttons}</div>
+          ) : null}
+        </div>
+        {created[i] || opened[i] ? (
+          <div
+            className="_content"
+            style={{ display: opened[i] ? "block" : "none" }}
+          >
+            {createElement(item.component, item.componentProps || {})}
+          </div>
+        ) : null}
+      </div>
     );
-  },
+  };
+
   render() {
-    return dom.div(
-      { className: "accordion" },
-      this.props.items.map(this.renderContainer)
+    return (
+      <div className="accordion">
+        {this.props.items.map(this.renderContainer)}
+      </div>
     );
-  },
-});
+  }
+}
 
 export default Accordion;

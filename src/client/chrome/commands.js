@@ -1,17 +1,17 @@
 // @flow
 
-const {
+import {
   toServerLocation,
   fromServerLocation,
-  createLoadedObject,
-} = require("./create");
+  createLoadedObject
+} from "./create";
 
-import type { Location } from "../types";
+import type { Location } from "debugger-html";
 import type { ServerLocation, Agents } from "./types";
 
 type setBreakpointResponseType = {
   breakpointId: string,
-  serverLocation?: ServerLocation,
+  serverLocation?: ServerLocation
 };
 
 let debuggerAgent;
@@ -56,28 +56,28 @@ function breakOnNext() {
 }
 
 function sourceContents(sourceId: string) {
-  return debuggerAgent.getScriptSource({ scriptId: sourceId }).then(({
-    scriptSource,
-  }) => ({
-    source: scriptSource,
-    contentType: null,
-  }));
+  return debuggerAgent
+    .getScriptSource({ scriptId: sourceId })
+    .then(({ scriptSource }) => ({
+      source: scriptSource,
+      contentType: null
+    }));
 }
 
 async function setBreakpoint(location: Location, condition: string) {
-  let {
+  const {
     breakpointId,
-    serverLocation,
+    serverLocation
   }: setBreakpointResponseType = await debuggerAgent.setBreakpoint({
     location: toServerLocation(location),
-    columnNumber: location.column,
+    columnNumber: location.column
   });
 
   const actualLocation = fromServerLocation(serverLocation) || location;
 
   return {
     id: breakpointId,
-    actualLocation: actualLocation,
+    actualLocation: actualLocation
   };
 }
 
@@ -87,7 +87,7 @@ function removeBreakpoint(breakpointId: string) {
 
 async function getProperties(object: any) {
   const { result } = await runtimeAgent.getProperties({
-    objectId: object.objectId,
+    objectId: object.objectId
   });
 
   const loadedObjects = result.map(createLoadedObject);
@@ -121,10 +121,7 @@ const clientCommands = {
   evaluate,
   debuggeeCommand,
   navigate,
-  getProperties,
+  getProperties
 };
 
-module.exports = {
-  setupCommands,
-  clientCommands,
-};
+export { setupCommands, clientCommands };
