@@ -4,7 +4,6 @@
 
 // @flow
 import React from "react";
-//import Svg from "../Svg";
 import "./Close.css";
 
 type Props = {
