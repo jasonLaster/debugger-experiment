@@ -31,14 +31,25 @@ function getStats(times) {
   };
 }
 
-export function steppingTimings() {
-  const commandTimings = getAsyncTimes("COMMAND");
-  const pausedTimings = getTimes("PAUSED");
+export default function timings() {
+  const commandTimings = getAsyncTimes();
+  const pausedTimings = getTimes();
+
+  const asyncTimings = [
+    "ADD_SOURCE",
+    "SELECT_SOURCE",
+    "LOAD_SOURCE_TEXT",
+    "COMMAND"
+  ].reduce((timings, name) => {
+    timings[name] = getAsyncTimes(name);
+    return timings;
+  }, {});
+
+  const timings = ["PAUSED"].map(getTimes);
 
   return {
-    commands: getStats(commandTimings),
-    paused: getStats(pausedTimings)
+    asyncTimings,
+    timings
   };
 }
-
 // console.log("..", asyncTimes("COMMAND"));

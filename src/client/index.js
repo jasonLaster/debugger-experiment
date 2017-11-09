@@ -48,7 +48,7 @@ async function onConnect(
   const { bpClients } = await client.onConnect(connection, actions);
   await loadFromPrefs(actions);
 
-  window.getGlobalsForTesting = () => {
+  window.getGlobalsForTesting = window.dbg = () => {
     return {
       store,
       actions,
