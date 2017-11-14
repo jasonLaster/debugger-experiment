@@ -3,6 +3,11 @@
 
 // Tests basic pretty-printing functionality.
 
+function assertFooterHidden(dbg) {
+  logSelectedSource(dbg);
+  ok(!findElement(dbg, "editorFooter"), "Footer is hidden");
+}
+
 add_task(async function() {
   const dbg = await initDebugger("doc-minified.html");
 
@@ -32,8 +37,8 @@ add_task(async function() {
 
   // The pretty-print button should go away in the pretty-printed
   // source.
-  ok(!findElement(dbg, "editorFooter"), "Footer is hidden");
+  assertFooterHidden(dbg);
 
   await selectSource(dbg, "math.min.js");
-  ok(findElement(dbg, "editorFooter"), "Footer is hidden");
+  assertFooterHidden(dbg);
 });

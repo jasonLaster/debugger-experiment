@@ -230,6 +230,12 @@ async function waitForElement(dbg, selector) {
   return findElementWithSelector(dbg, selector);
 }
 
+function logSelectedSource(dbg) {
+  const state = dbg.getState();
+  const source = dbg.selectors.getSelectedSource(state);
+  log('selected source', { url: source.get("url"), id: source.get("id") })
+}
+
 function waitForSelectedSource(dbg, url) {
   return waitForState(
     dbg,
