@@ -49,6 +49,8 @@ export type ASTState = {
   sourceMetaData: SourceMetaDataMap
 };
 
+const emptySourceMetaData = {};
+
 export function initialState() {
   return makeRecord(
     ({
@@ -184,7 +186,7 @@ export function getPreview(state: OuterState) {
 }
 
 export function getSourceMetaData(state: OuterState, sourceId: string) {
-  return state.ast.getIn(["sourceMetaData", sourceId]) || {};
+  return state.ast.getIn(["sourceMetaData", sourceId]) || emptySourceMetaData;
 }
 
 export default update;
