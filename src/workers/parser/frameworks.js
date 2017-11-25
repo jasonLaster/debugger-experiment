@@ -37,3 +37,9 @@ function extendsComponent(classes) {
 
   return result;
 }
+
+export function getFramework(source) {
+  if (isReactComponent(source)) {
+    return "React";
+  }
+}

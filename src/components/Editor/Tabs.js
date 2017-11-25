@@ -488,19 +488,14 @@ class SourceTabs extends PureComponent<Props, State> {
 export default connect(
   state => {
     const sourceTabs = getSourcesForTabs(state);
-    const sourceTabsMetaData = {};
-    sourceTabs.forEach(source => {
-      const sourceId = source ? source.get("id") : "";
-      sourceTabsMetaData[sourceId] = getSourceMetaData(state, sourceId);
-    });
 
+    // We can now use the framework field
     return {
       selectedSource: getSelectedSource(state),
       searchTabs: getSearchTabs(state),
       sourceTabs: sourceTabs,
       activeSearch: getActiveSearch(state),
-      searchOn: getActiveSearch(state) === "source",
-      sourceTabsMetaData: sourceTabsMetaData
+      searchOn: getActiveSearch(state) === "source"
     };
   },
   dispatch => bindActionCreators(actions, dispatch)

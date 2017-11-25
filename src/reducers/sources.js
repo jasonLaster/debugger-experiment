@@ -123,6 +123,11 @@ function update(
     case "LOAD_SOURCE_TEXT":
       return setSourceTextProps(state, action);
 
+    case "SET_FRAMEWORK":
+      return state.setIn(
+        ["sources", action.source.id, "framework"],
+        action.value.framework
+      );
     case "BLACKBOX":
       if (action.status === "done") {
         return state.setIn(

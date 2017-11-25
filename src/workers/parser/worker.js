@@ -13,7 +13,7 @@ import getOutOfScopeLocations from "./getOutOfScopeLocations";
 import { getNextStep } from "./steps";
 import getEmptyLines from "./getEmptyLines";
 import { hasSyntaxError } from "./validate";
-import { isReactComponent } from "./frameworks";
+import { getFramework } from "./frameworks";
 
 import { workerUtils } from "devtools-utils";
 const { workerHandler } = workerUtils;

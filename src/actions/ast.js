@@ -19,7 +19,7 @@ import {
   getSymbols,
   getEmptyLines,
   getOutOfScopeLocations,
-  isReactComponent
+  getFramework
 } from "../workers/parser";
 
 import { findBestMatchExpression } from "../utils/ast";
@@ -46,13 +46,12 @@ export function setSourceMetaData(sourceId: SourceId) {
       return;
     }
 
-    const isReactComp = await isReactComponent(source);
+    const framework = await getFramework(source);
+
     dispatch({
-      type: "SET_SOURCE_METADATA",
+      type: "SET_FRAMEWORK",
       sourceId: source.id,
-      sourceMetaData: {
-        isReactComponent: isReactComp
-      }
+      framework
     });
   };
 }

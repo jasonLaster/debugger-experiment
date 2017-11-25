@@ -266,17 +266,16 @@ function isMinified(key: string, text: string) {
  * @static
  */
 
-function getMode(source: Source, sourceMetaData: SourceMetaDataType) {
-  const { contentType, text, isWasm, url } = source;
+function getMode(source: Source) {
+  const { contentType, text, isWasm, url, framework } = source;
 
   if (!text || isWasm) {
     return { name: "text" };
   }
 
-  if (
-    (url && url.match(/\.jsx$/i)) ||
-    (sourceMetaData && sourceMetaData.isReactComponent)
-  ) {
+  // NOTE: we're changing this check soon to
+  // just check if there's jsx...
+  if ((url && url.match(/\.jsx$/i)) || framework === "React") {
     return "jsx";
   }
 

@@ -120,13 +120,6 @@ function update(
       return initialState();
     }
 
-    case "SET_SOURCE_METADATA": {
-      return state.setIn(
-        ["sourceMetaData", action.sourceId],
-        action.sourceMetaData
-      );
-    }
-
     default: {
       return state;
     }

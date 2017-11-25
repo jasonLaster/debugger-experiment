@@ -20,7 +20,6 @@ import {
   getSelectedSource,
   getHitCountForSource,
   getCoverageEnabled,
-  getSourceMetaData,
   getConditionalPanelLine
 } from "../../selectors";
 
@@ -40,7 +39,6 @@ import EmptyLines from "./EmptyLines";
 import GutterMenu from "./GutterMenu";
 import EditorMenu from "./EditorMenu";
 import ConditionalPanel from "./ConditionalPanel";
-import type { SourceMetaDataType } from "../../reducers/ast";
 
 import {
   showSourceText,
@@ -80,8 +78,6 @@ type Props = {
   startPanelSize: number,
   endPanelSize: number,
   conditionalPanelLine: number,
-  sourceMetaData: SourceMetaDataType,
-
   // Actions
   openConditionalPanel: number => void,
   closeConditionalPanel: void => void,
@@ -470,7 +466,7 @@ class Editor extends PureComponent<Props, State> {
   }
 
   setText(props) {
-    const { selectedSource, sourceMetaData } = props;
+    const { selectedSource } = props;
     if (!this.state.editor) {
       return;
     }
@@ -488,11 +484,7 @@ class Editor extends PureComponent<Props, State> {
     }
 
     if (selectedSource) {
-      return showSourceText(
-        this.state.editor,
-        selectedSource.toJS(),
-        sourceMetaData
-      );
+      return showSourceText(this.state.editor, selectedSource.toJS());
     }
   }
 
@@ -618,8 +610,7 @@ const mapStateToProps = state => {
     hitCount: getHitCountForSource(state, sourceId),
     selectedFrame: getSelectedFrame(state),
     coverageOn: getCoverageEnabled(state),
-    conditionalPanelLine: getConditionalPanelLine(state),
-    sourceMetaData: getSourceMetaData(state, sourceId)
+    conditionalPanelLine: getConditionalPanelLine(state)
   };
 };
 
