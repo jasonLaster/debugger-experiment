@@ -1,4 +1,9 @@
 describe("breakpoints - toggle breakpoint", () => {
+  // we should actually have a source w/ a fixture
+  // that we can load w/ loadSourceText and then use
+  // realistically...
+  // see the action/sources tests
+
   it("should toggle all the breakpoints", async () => {
     const { dispatch, getState } = createStore(simpleMockThreadClient);
 
