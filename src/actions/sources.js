@@ -200,7 +200,7 @@ declare type LocationObject = {
  * @static
  */
 export function selectLocation(location: LocationObject) {
-  return ({ dispatch, getState, client }: ThunkArgs) => {
+  return function selectLocation({ dispatch, getState, client }: ThunkArgs) {
     if (!client) {
       // No connection, do nothing. This happens when the debugger is
       // shut down too fast and it tries to display a default source.

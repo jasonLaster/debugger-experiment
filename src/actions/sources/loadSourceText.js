@@ -44,7 +44,12 @@ function defer() {
  * @static
  */
 export function loadSourceText(source: Source) {
-  return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
+  return async function loadSourceText({
+    dispatch,
+    getState,
+    client,
+    sourceMaps
+  }: ThunkArgs) {
     const deferred = defer();
 
     // Fetch the source text only once.
