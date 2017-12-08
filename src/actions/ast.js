@@ -142,6 +142,47 @@ export function clearPreview() {
   };
 }
 
+async function getExtraFields(result, client) {
+  if (isReact(result)) {
+    const reactDisplayName = await client.evaluate(
+      extraProps.react.displayName,
+      {
+        frameId: selectedFrame.id
+      }
+    );
+
+    return {
+      react: {
+        displayName: reactDisplayName.result
+      }
+    };
+  }
+
+  // can we determine this without an eval?
+  if (isImmutable(result)) {
+    const value = await client.evaluate(
+      extraProps.immutable.entries(expression),
+      {
+        frameId: selectedFrame.id
+      }
+    );
+
+    const type = await client.evaluate(extraProps.immutable.type(expression), {
+      frameId: selectedFrame.id
+    });
+
+    return {
+      immutable: {
+        // we don't need isImutable because we know that it is when we see the top-level immutable field
+        type: type.result,
+        value: value.result
+      }
+    };
+  }
+
+  return {};
+}
+
 export function setPreview(
   token: string,
   tokenPos: AstLocation,
@@ -191,51 +232,11 @@ export function setPreview(
           frameId: selectedFrame.id
         });
 
-        const reactDisplayName = await client.evaluate(
-          extraProps.react.displayName,
-          {
-            frameId: selectedFrame.id
-          }
-        );
-
-        const immutable = await client.evaluate(
-          extraProps.immutable.isImmutable(expression),
-          {
-            frameId: selectedFrame.id
-          }
-        );
-
-        if (immutable.result === true) {
-          immutableEntries = await client.evaluate(
-            extraProps.immutable.entries(expression),
-            {
-              frameId: selectedFrame.id
-            }
-          );
-
-          immutableType = await client.evaluate(
-            extraProps.immutable.type(expression),
-            {
-              frameId: selectedFrame.id
-            }
-          );
-        }
-
-        const extra = {
-          react: {
-            displayName: reactDisplayName.result
-          },
-          immutable: {
-            isImmutable:
-              immutable.result && immutable.result.type !== "undefined",
-            type: immutableType && immutableType.result,
-            entries: immutableEntries && immutableEntries.result
-          }
-        };
-
         if (result === undefined) {
           return;
         }
+
+        const extra = getExtraFields(result, client);
 
         return {
           expression,
