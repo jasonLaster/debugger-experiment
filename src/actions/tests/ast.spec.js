@@ -17,6 +17,7 @@ const {
   getInScopeLines
 } = selectors;
 
+import I from "immutable";
 import { prefs } from "../../utils/prefs";
 
 const threadClient = {
@@ -58,7 +59,7 @@ describe("ast", () => {
 
       const source = makeSource("scopes.js");
       await dispatch(actions.newSource(source));
-      await dispatch(actions.loadSourceText({ id: "scopes.js" }));
+      await dispatch(actions.loadSourceText(I.Map({ id: "scopes.js" })));
 
       await waitForState(store, state => {
         const lines = getEmptyLines(state, source);
@@ -76,7 +77,9 @@ describe("ast", () => {
       const source = makeSource("reactComponent.js");
       await dispatch(actions.newSource(source));
 
-      await dispatch(actions.loadSourceText({ id: "reactComponent.js" }));
+      await dispatch(
+        actions.loadSourceText(I.Map({ id: "reactComponent.js" }))
+      );
       await waitForState(store, state => {
         const metaData = getSourceMetaData(state, source.id);
         return metaData && metaData.isReactComponent;
@@ -91,7 +94,7 @@ describe("ast", () => {
       const { dispatch, getState } = store;
       const source = makeSource("base.js");
       await dispatch(actions.newSource(source));
-      await dispatch(actions.loadSourceText({ id: "base.js" }));
+      await dispatch(actions.loadSourceText(I.Map({ id: "base.js" })));
       await waitForState(store, state => {
         const metaData = getSourceMetaData(state, source.id);
         return metaData && metaData.isReactComponent === false;
@@ -109,7 +112,7 @@ describe("ast", () => {
         const { dispatch, getState } = store;
         const base = makeSource("base.js");
         await dispatch(actions.newSource(base));
-        await dispatch(actions.loadSourceText({ id: "base.js" }));
+        await dispatch(actions.loadSourceText(I.Map({ id: "base.js" })));
         await waitForState(
           store,
           state => getSymbols(state, base).functions.length > 0
@@ -171,7 +174,7 @@ describe("ast", () => {
         const { dispatch, getState } = createStore(threadClient);
         const base = makeSource("base.js");
         await dispatch(actions.newSource(base));
-        await dispatch(actions.selectLocation({ sourceId: "base.js" }));
+        await dispatch(actions.selectSource("base.js"));
 
         const locations = getOutOfScopeLocations(getState());
         const lines = getInScopeLines(getState());
@@ -192,8 +195,8 @@ describe("ast", () => {
 
         const foo = makeSource("foo.js");
         await dispatch(actions.newSource(foo));
-        await dispatch(actions.loadSourceText({ id: "foo.js" }));
-        await dispatch(actions.selectLocation({ sourceId: "foo.js" }));
+        await dispatch(actions.loadSourceText(I.Map({ id: "foo.js" })));
+        await dispatch(actions.selectSource("foo.js"));
         await dispatch(
           actions.paused({
             why: { type: "resumeLimit" },
@@ -248,11 +251,10 @@ describe("ast", () => {
         const { dispatch, getState } = createStore(threadClient);
         const base = makeSource("base.js");
         await dispatch(actions.newSource(base));
-        await dispatch(actions.selectLocation({ sourceId: "base.js" }));
+        await dispatch(actions.selectSource("base.js"));
 
         const locations = getOutOfScopeLocations(getState());
         const lines = getInScopeLines(getState());
-
         expect(locations).toEqual(null);
         expect(lines).toEqual([1, 2, 3]);
       });
@@ -269,8 +271,9 @@ describe("ast", () => {
 
         const foo = makeSource("foo.js");
         await dispatch(actions.newSource(foo));
-        await dispatch(actions.loadSourceText({ id: "foo.js" }));
-        await dispatch(actions.selectLocation({ sourceId: "foo.js" }));
+        await dispatch(actions.loadSourceText(I.Map({ id: "foo.js" })));
+        await dispatch(actions.selectSource("foo.js"));
+
         await dispatch(
           actions.paused({
             why: { type: "resumeLimit" },
