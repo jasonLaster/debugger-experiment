@@ -26,7 +26,6 @@ describe("closing tabs", () => {
     await dispatch(actions.selectLocation({ sourceId: "foo.js" }));
     await dispatch(actions.selectLocation({ sourceId: "bar.js" }));
     dispatch(actions.closeTab("http://localhost:8000/examples/foo.js"));
-
     expect(getSelectedSource(getState()).get("id")).toBe("bar.js");
     expect(getSourceTabs(getState()).size).toBe(1);
   });

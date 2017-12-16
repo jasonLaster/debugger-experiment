@@ -47,6 +47,19 @@ export function initialState(): Record<SourcesState> {
   )();
 }
 
+export const SourceRecordClass = new I.Record({
+  id: undefined,
+  url: undefined,
+  sourceMapURL: undefined,
+  isBlackBoxed: false,
+  isPrettyPrinted: false,
+  isWasm: false,
+  text: undefined,
+  contentType: "",
+  error: undefined,
+  loadedState: "unloaded"
+});
+
 function update(
   state: Record<SourcesState> = initialState(),
   action: Action
@@ -174,7 +187,12 @@ function updateSource(state: Record<SourcesState>, source: Object | Source) {
     return state;
   }
 
-  return state.mergeIn(["sources", source.id], source);
+  const existingSource = state.getIn(["sources", source.id]);
+  if (existingSource) {
+    const updatedSource = existingSource.merge(source);
+    return state.setIn(["sources", source.id], updatedSource);
+  }
+  return state.mergeIn(["sources", source.id], new SourceRecordClass(source));
 }
 
 export function removeSourceFromTabList(tabs: any, url: string) {
@@ -319,7 +337,9 @@ function getSourceByUrlInSources(sources: SourcesMap, url: string) {
     return null;
   }
 
-  return sources.find(source => source.get("url") === url);
+  return sources.find(source => {
+    return source.get("url") === url;
+  });
 }
 
 export function getSourceInSources(
