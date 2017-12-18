@@ -103,7 +103,7 @@ export function newSources(sources: Source[]) {
     );
 
     for (const source of filteredSources) {
-      await dispatch(newSource(source));
+      dispatch(newSource(source));
     }
   };
 }
