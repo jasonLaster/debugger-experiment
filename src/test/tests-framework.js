@@ -8,7 +8,8 @@ import {
 import {
   startParserWorker,
   stopParserWorker,
-  clearSymbols
+  clearSymbols,
+  clearASTs
 } from "../workers/parser";
 import { startSearchWorker, stopSearchWorker } from "../workers/search";
 import { getValue } from "devtools-config";
@@ -36,7 +37,10 @@ afterAll(() => {
   process.removeListener("unhandledRejection", formatException);
 });
 
+afterEach(() => {});
+
 beforeEach(() => {
+  clearASTs();
   clearSymbols();
   clearHistory();
 });
