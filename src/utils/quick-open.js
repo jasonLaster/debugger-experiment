@@ -101,13 +101,15 @@ export function formatSources(sources: SourcesMap): Array<FormattedSource> {
     .valueSeq()
     .toJS()
     .filter(source => !isPretty(source) && !isThirdParty(source))
-    .map(source => ({
-      value: getSourcePath(source),
-      title: getSourcePath(source)
-        .split("/")
-        .pop(),
-      subtitle: endTruncateStr(getSourcePath(source), 100),
-      id: source.id
-    }))
-    .filter(formattedSource => formattedSource.value != "");
+    .map(source => {
+      const sourcePath = getSourcePath(source.get("url"));
+      return {
+        value: sourcePath,
+        title: sourcePath.split("/").pop(),
+        subtitle: endTruncateStr(sourcePath, 100),
+        id: source.get("id")
+      };
+    })
+    .filter(({ value }) => value != "")
+    .toJS();
 }
