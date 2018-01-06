@@ -21,7 +21,7 @@ import {
   getShouldIgnoreCaughtExceptions
 } from "../../selectors";
 
-import { isEnabled } from "devtools-config";
+import { isEnabled } from "../../utils/prefs";
 import Svg from "../shared/Svg";
 import { prefs } from "../../utils/prefs";
 
@@ -182,7 +182,7 @@ class SecondaryPanes extends Component<Props> {
   }
 
   breakpointDropdown() {
-    if (!features.breakpointsDropdown) {
+    if (!isEnabled("breakpointsDropdown")) {
       return;
     }
 
@@ -222,7 +222,7 @@ class SecondaryPanes extends Component<Props> {
       });
     }
 
-    if (features.workers) {
+    if (isEnabled("workers")) {
       items.push({
         header: L10N.getStr("workersHeader"),
         className: "workers-pane",
@@ -273,7 +273,7 @@ class SecondaryPanes extends Component<Props> {
   }
 
   renderUtilsBar() {
-    if (!features.shortcuts) {
+    if (!isEnabled("shortcuts")) {
       return;
     }
 

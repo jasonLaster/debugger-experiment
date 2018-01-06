@@ -4,7 +4,7 @@
 
 // @flow
 
-import { isEnabled } from "devtools-config";
+import { isEnabled } from "../../utils/prefs";
 import * as sourceDocumentUtils from "./source-documents";
 import { shouldPrettyPrint } from "../../utils/source";
 

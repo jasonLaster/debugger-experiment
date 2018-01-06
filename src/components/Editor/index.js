@@ -12,7 +12,7 @@ import { debugGlobal } from "devtools-launchpad";
 import { isLoaded } from "../../utils/source";
 import { isFirefox } from "devtools-config";
 import { SourceEditor } from "devtools-source-editor";
-import { features } from "../../utils/prefs";
+import { isEnabled } from "../../utils/prefs";
 
 import {
   getActiveSearch,
@@ -531,7 +531,7 @@ class Editor extends PureComponent<Props, State> {
         <EditorMenu editor={editor} />
         <GutterMenu editor={editor} />
         <ConditionalPanel editor={editor} />
-        {features.columnBreakpoints ? <CallSites editor={editor} /> : null}
+        {isEnabled("columnBreakpoints") ? <CallSites editor={editor} /> : null}
         {this.renderHitCounts()}
       </div>
     );
