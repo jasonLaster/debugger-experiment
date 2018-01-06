@@ -30,7 +30,7 @@ type PauseState = {
   command: string
 };
 
-export const State = (): PauseState => ({
+const State = (): PauseState => ({
   why: null,
   isWaitingOnBreak: false,
   frames: undefined,

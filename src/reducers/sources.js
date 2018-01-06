@@ -35,7 +35,7 @@ export type SourcesState = {
   tabs: TabList
 };
 
-export function initialState(): Record<SourcesState> {
+function initialState(): Record<SourcesState> {
   return makeRecord(
     ({
       sources: I.Map(),

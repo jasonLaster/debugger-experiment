@@ -50,7 +50,7 @@ export type ASTState = {
   sourceMetaData: SourceMetaDataMap
 };
 
-export function initialState() {
+function initialState() {
   return makeRecord(
     ({
       symbols: I.Map(),

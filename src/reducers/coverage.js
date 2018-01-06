@@ -21,7 +21,7 @@ export type CoverageState = {
   hitCount: Object
 };
 
-export const State = makeRecord(
+const State = makeRecord(
   ({
     coverageOn: false,
     hitCount: I.Map()

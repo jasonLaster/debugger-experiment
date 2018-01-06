@@ -23,7 +23,7 @@ type ExpressionState = {
   expressions: List<Expression>
 };
 
-export const State = makeRecord(
+const State = makeRecord(
   ({
     expressions: List(restoreExpressions())
   }: ExpressionState)

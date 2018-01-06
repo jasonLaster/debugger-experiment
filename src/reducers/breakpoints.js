@@ -25,7 +25,7 @@ export type BreakpointsState = {
   breakpoints: BreakpointsMap
 };
 
-export function initialState(): Record<BreakpointsState> {
+function initialState(): Record<BreakpointsState> {
   return makeRecord(
     ({
       breakpoints: I.Map(),

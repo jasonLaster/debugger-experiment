@@ -39,7 +39,7 @@ export type FileSearchState = {
   modifiers: Modifiers
 };
 
-export const State = makeRecord(
+const State = makeRecord(
   ({
     query: "",
     searchResults: {

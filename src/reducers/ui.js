@@ -39,7 +39,7 @@ export type UIState = {
   conditionalPanelLine: null | number
 };
 
-export const State = makeRecord(
+const State = makeRecord(
   ({
     selectedPrimaryPaneTab: "sources",
     activeSearch: null,

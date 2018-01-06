@@ -29,7 +29,7 @@ export type PendingBreakpointsState = {
   pendingBreakpoints: PendingBreakpointsMap
 };
 
-export function initialState(): Record<PendingBreakpointsState> {
+function initialState(): Record<PendingBreakpointsState> {
   return makeRecord(
     ({
       pendingBreakpoints: restorePendingBreakpoints()

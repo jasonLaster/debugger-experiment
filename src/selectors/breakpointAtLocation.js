@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
+// @flow
+
 import { getSelectedSource } from "../reducers/sources";
 import { getBreakpoints } from "../reducers/breakpoints";
 import { isGeneratedId } from "devtools-source-map";
@@ -64,7 +66,7 @@ function findBreakpointAtLocation(
  * This is useful for finding a breakpoint when the
  * user clicks in the gutter or on a token.
  */
-export default function getBreakpointAtLocation(state, location) {
+export function getBreakpointAtLocation(state, location) {
   const selectedSource = getSelectedSource(state);
   const breakpoints = getBreakpointsForSource(state, selectedSource);
 

@@ -25,7 +25,7 @@ type QuickOpenState = {
   searchType: QuickOpenType
 };
 
-export const State = makeRecord({
+const State = makeRecord({
   enabled: false,
   query: "",
   searchType: "sources"

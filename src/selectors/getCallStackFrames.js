@@ -51,7 +51,7 @@ export function formatCallStackFrames(
     .map(annotateFrame);
 }
 
-export default function getCallStackFrames(state) {
+export function getCallStackFrames(state) {
   const selectedSource = getSelectedSource(state);
   const sources = getSources(state);
   const frames = getFrames(state);

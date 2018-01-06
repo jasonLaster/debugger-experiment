@@ -20,7 +20,7 @@ type DebuggeeState = {
   workers: List<Worker>
 };
 
-export const State = makeRecord(
+const State = makeRecord(
   ({
     workers: List()
   }: DebuggeeState)

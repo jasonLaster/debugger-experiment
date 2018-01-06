@@ -15,7 +15,7 @@ function getLocation(frame, location) {
     : frame.location;
 }
 
-const getVisibleSelectedFrame = createSelector(
+export const getVisibleSelectedFrame = createSelector(
   getSelectedLocation,
   getSelectedFrame,
   (selectedLocation, selectedFrame) => {
@@ -31,5 +31,3 @@ const getVisibleSelectedFrame = createSelector(
     };
   }
 );
-
-export default getVisibleSelectedFrame;
