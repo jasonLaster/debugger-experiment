@@ -24,6 +24,11 @@ const threadClient = {
     return new Promise((resolve, reject) =>
       resolve({ result: evaluationResult[expression] })
     );
+  },
+  evaluateInFrame: function(frameId, expression) {
+    return new Promise((resolve, reject) =>
+      resolve({ result: evaluationResult[expression] })
+    );
   }
 };
 

@@ -4,16 +4,7 @@ exports[`setPreview member expression 1`] = `
 Object {
   "cursorPos": undefined,
   "expression": "this.bazz",
-  "extra": Object {
-    "immutable": Object {
-      "entries": null,
-      "isImmutable": false,
-      "type": null,
-    },
-    "react": Object {
-      "displayName": undefined,
-    },
-  },
+  "extra": Object {},
   "location": Object {
     "end": Object {
       "column": 37,
@@ -40,16 +31,7 @@ exports[`setPreview this 1`] = `
 Object {
   "cursorPos": undefined,
   "expression": "this",
-  "extra": Object {
-    "immutable": Object {
-      "entries": null,
-      "isImmutable": false,
-      "type": null,
-    },
-    "react": Object {
-      "displayName": undefined,
-    },
-  },
+  "extra": Object {},
   "location": Object {
     "end": Object {
       "column": 32,
