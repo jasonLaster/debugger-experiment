@@ -24,7 +24,7 @@ const config = {
 };
 
 global.DebuggerConfig = config;
-
+global.performance = { now: () => {} };
 global.L10N = require("devtools-launchpad").L10N;
 global.L10N.setBundle(readFileSync("./assets/panel/debugger.properties"));
 

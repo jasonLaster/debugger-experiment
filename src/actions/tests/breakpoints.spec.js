@@ -2,7 +2,8 @@ import {
   createStore,
   selectors,
   actions,
-  makeSource
+  makeSource,
+  makeSourceRecord
 } from "../../utils/test-head";
 
 import {
@@ -11,14 +12,17 @@ import {
 } from "./helpers/threadClient.js";
 
 describe("breakpoints", () => {
-  it("should add a breakpoint", async () => {
+  fit("should add a breakpoint", async () => {
     const { dispatch, getState } = createStore(simpleMockThreadClient);
     const loc1 = {
       sourceId: "a",
       line: 5,
       sourceUrl: "http://localhost:8000/examples/a"
     };
-    await dispatch(actions.newSource(makeSource("a")));
+    const source = makeSource("a");
+
+    await dispatch(actions.newSource(source));
+    await dispatch(actions.loadSourceText(makeSourceRecord("a")));
     await dispatch(actions.addBreakpoint(loc1));
 
     const bps = selectors.getBreakpoints(getState());

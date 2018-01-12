@@ -48,12 +48,11 @@ export function setSymbols(sourceId: SourceId) {
     }
 
     const source = sourceRecord.toJS();
-
     if (!source.text || source.isWasm || hasSymbols(getState(), source)) {
       return;
     }
 
-    const symbols = await getSymbols(source);
+    const symbols = await getSymbols(source.id);
     dispatch({ type: "SET_SYMBOLS", source, symbols });
     dispatch(setEmptyLines(source.id));
     dispatch(setSourceMetaData(source.id));
@@ -72,7 +71,7 @@ export function setEmptyLines(sourceId: SourceId) {
       return;
     }
 
-    const emptyLines = await getEmptyLines(source);
+    const emptyLines = await getEmptyLines(source.id);
 
     dispatch({
       type: "SET_EMPTY_LINES",
@@ -95,7 +94,7 @@ export function setOutOfScopeLocations() {
     const locations =
       !location.line || !source
         ? null
-        : await findOutOfScopeLocations(source.toJS(), location);
+        : await findOutOfScopeLocations(source.id, location);
 
     dispatch({
       type: "OUT_OF_SCOPE_LOCATIONS",
