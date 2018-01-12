@@ -54,7 +54,7 @@ export async function getASTLocation(
     return { name: undefined, offset: location };
   }
 
-  const symbols = await getSymbols(source);
+  const symbols = await getSymbols(source.id);
   const functions = [...symbols.functions];
 
   const scope = findClosestScope(functions, location);
@@ -71,7 +71,7 @@ export async function getASTLocation(
 }
 
 export async function findScopeByName(source: Source, name: ?string) {
-  const symbols = await getSymbols(source);
+  const symbols = await getSymbols(source.id);
   const functions = symbols.functions;
 
   return functions.find(node => node.name === name);
