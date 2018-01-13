@@ -29,7 +29,7 @@ export function setSourceMetaData(sourceId: SourceId) {
       return;
     }
 
-    const isReactComp = await isReactComponent(source);
+    const isReactComp = await isReactComponent(source.id);
     dispatch({
       type: "SET_SOURCE_METADATA",
       sourceId: source.id,

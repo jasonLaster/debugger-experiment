@@ -18,8 +18,13 @@ export function setSource(source: Source) {
 
 export function getSource(sourceId: SourceId): Source {
   if (!cachedSources.has(sourceId)) {
+    // for (const key in cachedSources.keys()) {
+    //   console.log(`key ${key}`);
+    // }
+    console.log("FF", cachedSources.keys().next().value);
     throw new Error(`Parser: source ${sourceId} was not provided.`);
   }
+
   return ((cachedSources.get(sourceId): any): Source);
 }
 

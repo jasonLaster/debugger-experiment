@@ -339,7 +339,7 @@ export function toggleBreakpoint(line: ?number, column?: number) {
         })
       );
     }
-
+    console.log(selectedSource.toJS());
     return dispatch(
       addBreakpoint({
         sourceId: selectedSource.get("id"),
