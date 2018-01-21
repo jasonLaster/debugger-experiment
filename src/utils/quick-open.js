@@ -125,3 +125,15 @@ export function formatSources(sources: SourcesMap): Array<QuickOpenResult> {
     .filter(({ value }) => value != "")
     .toJS();
 }
+
+export function formatTabs(tabs: Object) {
+  return tabs
+    .valueSeq()
+    .map(tab => ({
+      value: tab,
+      title: tab.split("/").pop(),
+      subtitle: endTruncateStr(tab, 100),
+      id: tab
+    }))
+    .toJS();
+}

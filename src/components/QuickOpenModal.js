@@ -15,6 +15,7 @@ import {
   getQuickOpenQuery,
   getQuickOpenType,
   getSelectedSource,
+  getSourceTabs,
   getSymbols
 } from "../selectors";
 import { scrollList } from "../utils/result-list";
@@ -22,7 +23,8 @@ import {
   formatSymbols,
   formatSources,
   parseLineColumn,
-  formatShortcutResults
+  formatShortcutResults,
+  formatTabs
 } from "../utils/quick-open";
 import Modal from "./shared/Modal";
 import SearchInput from "./shared/SearchInput";
@@ -98,10 +100,16 @@ export class QuickOpenModal extends Component<Props, State> {
 
     if (this.isGotoSourceQuery()) {
       const [baseQuery] = query.split(":");
-      const results = filter(this.props.sources, baseQuery, { key: "value" });
+      const results = filter(this.props.sources, baseQuery, {
+        key: "value",
+        maxResults: 1000
+      });
       this.setState({ results });
     } else {
-      const results = filter(this.props.sources, query, { key: "value" });
+      const results = filter(this.props.sources, query, {
+        key: "value",
+        maxResults: 1000
+      });
       this.setState({ results });
     }
   };
@@ -118,7 +126,8 @@ export class QuickOpenModal extends Component<Props, State> {
     }
 
     results = filter(results, query.slice(1), {
-      key: "value"
+      key: "value",
+      maxResults: 1000
     });
 
     this.setState({ results });
@@ -128,7 +137,17 @@ export class QuickOpenModal extends Component<Props, State> {
     this.setState({ results: formatShortcutResults() });
   };
 
+  showTabs = () => {
+    const tabs = this.props.tabs;
+    const results = formatTabs(tabs);
+    this.setState({ results });
+  };
+
   updateResults = (query: string) => {
+    if (query == "") {
+      return this.showTabs();
+    }
+
     if (this.isSymbolSearch()) {
       return this.searchSymbols(query);
     }
@@ -297,6 +316,7 @@ export class QuickOpenModal extends Component<Props, State> {
       searchType === "variables" ||
       searchType === "shortcuts";
 
+    const newResults = results && results.slice(0, 100);
     return (
       <Modal in={enabled} handleClose={this.closeModal}>
         <SearchInput
@@ -308,10 +328,10 @@ export class QuickOpenModal extends Component<Props, State> {
           onKeyDown={this.onKeyDown}
           handleClose={this.closeModal}
         />
-        {results && (
+        {newResults && (
           <ResultList
             key="results"
-            items={results}
+            items={newResults}
             selected={selectedIndex}
             selectItem={this.selectResultItem}
             ref="resultList"
@@ -335,6 +355,7 @@ function mapStateToProps(state) {
   return {
     enabled: getQuickOpenEnabled(state),
     sources: formatSources(getSources(state)),
+    tabs: getSourceTabs(state),
     selectedSource,
     symbols: formatSymbols(symbols),
     query: getQuickOpenQuery(state),
