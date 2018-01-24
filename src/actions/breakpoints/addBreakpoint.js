@@ -53,7 +53,7 @@ export default async function addBreakpoint(
     newGeneratedLocation
   );
 
-  console.log("meh", source);
+  // console.log("meh", source);
   const astLocation = await getASTLocation(source, newLocation);
 
   const newBreakpoint = {
