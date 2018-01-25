@@ -1,11 +1,13 @@
 import { getASTLocation } from "../astBreakpointLocation.js";
 import { getSource } from "../../../workers/parser/tests/helpers";
 import * as I from "immutable";
+import { setSource } from "../../../workers/parser/index";
 
 describe("ast", () => {
   describe("valid location", () => {
     it("returns the scope and offset", async () => {
-      const source = I.Map(getSource("math"));
+      const source = getSource("math");
+      setSource(source);
       const location = { line: 6, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe("math");
@@ -13,7 +15,8 @@ describe("ast", () => {
     });
 
     it("returns name for a nested anon fn as the parent func", async () => {
-      const source = I.Map(getSource("outOfScope"));
+      const source = getSource("outOfScope");
+      setSource(source);
       const location = { line: 25, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe("outer");
@@ -21,7 +24,8 @@ describe("ast", () => {
     });
 
     it("returns name for a nested named fn", async () => {
-      const source = I.Map(getSource("outOfScope"));
+      const source = getSource("outOfScope");
+      setSource(source);
       const location = { line: 5, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe("inner");
@@ -29,7 +33,8 @@ describe("ast", () => {
     });
 
     it("returns name for an anon fn with a named variable", async () => {
-      const source = I.Map(getSource("outOfScope"));
+      const source = getSource("outOfScope");
+      setSource(source);
       const location = { line: 40, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe("globalDeclaration");
@@ -39,7 +44,8 @@ describe("ast", () => {
 
   describe("invalid location", () => {
     it("returns the scope name for global scope as undefined", async () => {
-      const source = I.Map(getSource("class"));
+      const source = getSource("class");
+      setSource(source);
       const location = { line: 10, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe(undefined);
@@ -47,7 +53,8 @@ describe("ast", () => {
     });
 
     it("returns name for an anon fn in global scope as undefined", async () => {
-      const source = I.Map(getSource("outOfScope"));
+      const source = getSource("outOfScope");
+      setSource(source);
       const location = { line: 44, column: 0 };
       const astLocation = await getASTLocation(source, location);
       expect(astLocation.name).toBe(undefined);
