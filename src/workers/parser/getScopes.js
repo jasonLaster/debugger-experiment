@@ -5,7 +5,6 @@
 // @flow
 
 import { traverseAst } from "./utils/ast";
-import { getSource } from "./sources";
 import {
   createParseJSScopeVisitor,
   findScopes

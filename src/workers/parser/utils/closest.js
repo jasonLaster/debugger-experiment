@@ -67,7 +67,7 @@ export function getClosestExpression(
   return { expression: getNodeValue(node), location: node.loc };
 }
 
-export function getClosestScope(source: Source, location: Location) {
+export function getClosestScope(source: string, location: Location) {
   let closestPath = null;
 
   traverseAst(source, {

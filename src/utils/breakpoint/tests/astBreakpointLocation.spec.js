@@ -1,6 +1,5 @@
 import { getASTLocation } from "../astBreakpointLocation.js";
 import { getSource } from "../../../workers/parser/tests/helpers";
-import * as I from "immutable";
 import { setSource } from "../../../workers/parser/index";
 
 describe("ast", () => {

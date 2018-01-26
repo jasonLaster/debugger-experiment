@@ -10,8 +10,6 @@ import {
   simulateCorrectThreadClient,
   simpleMockThreadClient
 } from "./helpers/threadClient.js";
-import { setSource } from "../../workers/parser/index";
-import { getSource } from "../../workers/parser/sources";
 
 describe("breakpoints", () => {
   it("should add a breakpoint", async () => {

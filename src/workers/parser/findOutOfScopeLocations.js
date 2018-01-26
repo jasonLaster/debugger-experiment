@@ -4,7 +4,6 @@
 
 // @flow
 
-import type { Source } from "debugger-html";
 import type { AstLocation, AstPosition } from "./types";
 
 import get from "lodash/fp/get";

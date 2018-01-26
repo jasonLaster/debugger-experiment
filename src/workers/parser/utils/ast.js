@@ -10,8 +10,6 @@ import traverse from "babel-traverse";
 import isEmpty from "lodash/isEmpty";
 import { getSource } from "../sources";
 
-import type { Source } from "debugger-html";
-
 let ASTs = new Map();
 
 function _parse(code, opts) {

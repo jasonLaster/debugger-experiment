@@ -71,7 +71,6 @@ describe("scopes", () => {
     });
 
     it("finds variables from multiple scopes", () => {
-      let vars;
       const source = getSource("resolveToken");
       setSource(source);
 
