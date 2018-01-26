@@ -6,15 +6,14 @@ Debugging the Debugger is one of the highest levels of inception. Before you beg
 
 Setup the Debugger so that your environment looks like this [gif][debugger-intro-gif].
 
-If you have any questions, go back to the [getting setup][getting-setup]
-instructions.
+If you have any questions, go back to the [getting setup][getting-setup] instructions.
 
 
 ### Design a new theme :snowflake:
 
 Lets design a new theme for the debugger, it's not too hard! Our goal here is to style the source tree, editor, and other UI components.
 
-Share your a screenshot of your theme [here][getting-started-issue]! Here's an example camo [theme][camo-theme] that I designed the other day.
+Share your a screenshot of your theme [here](./getting-setup.md) ! Here's an example camo [theme][camo-theme] that I designed the other day.
 
 
 ### Make breakpoints dance :dancers:
@@ -22,49 +21,75 @@ Share your a screenshot of your theme [here][getting-started-issue]! Here's an e
 Adding a breakpoint is a critical piece in the inception game...
 Lets make the debugger do something special when a breakpoint is added.
 
-```diff
-diff --git a/src/components/Editor.js b/src/components/Editor.js
-index ae71d2d..66e0c04 100644
---- a/src/components/Editor.js
-+++ b/src/components/Editor.js
-@@ -78,11 +78,14 @@ const Editor = React.createClass({
-       return this.closeConditionalPanel(line);
-     }
+You can find the file that handles breakpoints here: `/debugger.html/src/components/Editor/Breakpoint.js`
+Then go ahead and find (Cntrl-F) "addBreakpoint".  This should pull up the addBreakpoint function, which (surprise!) adds a breakpoint!
+Then we are going to add an alert so can see something for our actions:
 
-+    // => hamster dance
-+
-     this.toggleBreakpoint(line);
-   },
+```javascript
+addBreakpoint() {
+    const { breakpoint, editor, selectedSource } = this.props;
+
+    // Hidden Breakpoints are never rendered on the client
+    if (breakpoint.hidden) {
+      return;
+    }
+	
+	//Add the code below
+	alert("Your first breakpoint! Congratulations!");
+	
+	
+    // NOTE: we need to wait for the breakpoint to be loaded
+    // to get the generated location
+    if (!selectedSource || breakpoint.loading) {
+      return;
+    }
 ```
 
-We currently don't have anything awesome as a demo. If you come up with something cool, feel free to share it  [here][getting-started-issue] and we can add it to the doc!
+This will show a popup when we create a breakpoint.
 
 ### Pausing FTW :red_circle:
 
 When the debugger pauses, the fun begins. Here's a [gif](http://g.recordit.co/qutDioRQvy.gif) of what the debugger does normally when it pauses. Your mission if you choose to accept it, is to make it do something truly weird.
 
-Here's a patch to get you started where we check in the Editor to see if we're paused in a re-render.
+Here's some example code that you can help you to get you started; `debugger.html/src/components/SecondaryPanes/Frames/WhyPaused.js` renders the pause reason into the sidebar, and `/debugger.html/src/utils/pause.js` is used in several places to expose the current paused state.
 
-```diff
-diff --git a/src/components/Editor.js b/src/components/Editor.js
-index ae71d2d..6690d05 100644
---- a/src/components/Editor.js
-+++ b/src/components/Editor.js
-@@ -78,11 +78,14 @@ const Editor = React.createClass({
-       return this.closeConditionalPanel(line);
-     }
+WhyPaused.js (Starts at line 48):
 
-     const line = this.editor.codeMirror.lineAtHeight(event.clientY);
-     const bp = breakpointAtLine(this.props.breakpoints, line);
-     this.showGutterMenu(event, line, bp);
-@@ -329,6 +332,11 @@ const Editor = React.createClass({
-       this.showSourceText(sourceText, selectedLocation);
-     }
+```javascript
+export default function renderWhyPaused({ pause }: { pause: Pause }) {
+  const reason = getPauseReason(pause);
 
-+    // the debugger is paused
-+    if (nextProps.selectedFrame) {
-+      // do something really cool here
-+    }
+  if (!reason) {
+    return null;
+  }
+  //Add the code below:
+  console.log("Hello from src/components/SecondaryPanes/Frames/WhyPaused.js!");
+  
+  return (
+    <div className={"pane why-paused"}>
+      <div>{L10N.getStr(reason)}</div>
+      {renderMessage(pause)}
+    </div>
+  );
+}
+renderWhyPaused.displayName = "whyPaused";
+```
+
+Then in pause.js (Starts at line 51) :
+```javascript
+export function getPauseReason(pauseInfo: Pause): string | null {
+  if (!pauseInfo) {
+    return null;
+  }
+  //Add the code below:
+  console.log("hello from src/utils/pause.js!");
+  
+  const reasonType = get(pauseInfo, "why.type", null);
+  if (!reasons[reasonType]) {
+    console.log("Please file an issue: reasonType=", reasonType);
+  }
+  return reasons[reasonType];
+}
 ```
 
 ### Debugger Philosophy
@@ -87,9 +112,8 @@ Now that you've internalized the debugger philosophy, it's time to start putting
 
 - here are @amitzur's [slides][amit-slides] from his [talk][amit-tweet]
 
-**Contribute back** take a look at how you can [contributing][contributing]. We would love the help!
-
-
+**Contribute back** take a look at how you can start [contributing][contributing]. We would love the help!
+---
 
 [contributing]: ../CONTRIBUTING.md
 [getting-setup]: ./getting-setup.md

@@ -14,15 +14,27 @@
 **Components**
 
 Issues are organized in terms of components.
-Issue titles should include a component at the front e.g. `[Editor]`
+Issue titles should include the name of the component as a tag
+at the very beginning. Consider the following titles:
 
-|Editor|SecondaryPanes|UI|Other|
-|----------|------|-----|----|
-|Editor|CommandBar|SourceTree|Accessibility|
-|SourceTabs|WatchExpressions|SourcesSearch|Theme|
-|SearchBar|Breakpoints|WelcomePane|Reducer|
-|SourceFooter|CallStack||Action|
-||Scopes|||RTL|
+* Bad: `Fix input field padding of search bar`  
+* Good: `[SearchBar] Fix input field padding`
+
+or
+
+* Bad: `Add information about titles to documentation`  
+* Good: `[Docs] Add information about titles`
+
+Some common tags include:
+
+|Editor|SecondaryPanes|UI|Other| 
+|----------|------|-----|----| 
+|Editor|CommandBar|SourceTree|Accessibility| 
+|SourceTabs|WatchExpressions|TextSearch|Theme| 
+|SearchBar|Breakpoints|WelcomeBox|Reducer| 
+|SourceFooter|CallStack||Action| 
+||Scopes||Docs|RTL|
+
 
 **User Perspective**
 
@@ -88,11 +100,16 @@ Include screenshots and animated GIFs in your pull request whenever possible.
 
 ### Claiming Issues
 
-If you'd like to work on an issue, comment on the issue and we'll mark it `in-progress`.
+If you'd like to work on an issue, `/claim` it in the issue and it'll be marked `in-progress`.
 
 * We'll check up regularly to see how it's progressing and if we can help
 * Don't hesitate to ask questions on the issue or in our slack channel. Communication is the most important part. Don't worry about over communicating!
 * Don't feel bad taking yourself off the issue if you no longer have the time or interest in the issue.
+
+
+![cl]
+
+[cl]: https://shipusercontent.com/51cd3f15f1679d995cc20e3547827ea0/Screen%20Shot%202017-10-03%20at%209.47.25%20AM.png
 
 ### Labels
 
@@ -113,6 +130,11 @@ These are the [labels](https://github.com/devtools-html/debugger.html/labels) we
 | `firefox` | [search][labels-firefox] | Firefox only issues |
 | `infrastructure` | [search][labels-infrastructure] | Issues with testing / build infrastructure |
 | `discussion` | [search][labels-discussion] | Issues need clearer requirements before work can be started |
+| `needs-description` | [search][labels-needs-description] | Issue needs a clear description and code sketch so a contributor can work on it |
+| `needs-str` | [search][labels-needs-str] | Issue needs a clear STR so that others can reproduce |
+| `needs-investigation` | [search][labels-needs-investigation] | Issue needs to be researched |
+
+
 
 ### Available Issues
 
@@ -135,13 +157,39 @@ There are a couple of ways to think about it:
 * it's great to ask questions that help make the issue available or call out vague issues.
 * it's great to sort the issues by oldest first and help make stale issues available.
 
+#### Process
+
+1. Issues that are not likely to be worked on in the next 6 weeks will be closed and documented in the [bugs][bugs-board] or [enhancements][enhancements-board].
+2. Issues will often be grouped in tracking issues around shippable goals.
+3. Current work is included in 2 week sprint milestones
+4. The [roadmap] document is updated at the beginning of every sprint, with our current progress and realistic expectations.
+
+#### What is a triaged issue?
+
+When triaging, you can think of the following description as a guide:
+a triaged issue is:
+
+* no more than 6 weeks old
+* in line with the goals of the debugger
+* a single bigger issue that is still manageable
+  *or* a set of smaller issues around a shippable goal (for example, transition the code base to JSX from `dom.div` syntax)
+* labeled (see [Labels](#labels) for more info)
+* ready to be worked on,
+  *or* has a request for more information
+  *or* has a clear next step
+
+An issue that does not fulfill those traits should probably be moved to one of the boards and
+closed.
+
 ### Issue Organization
 
 In addition to labels and components, we use a couple of boards to organize our work.
 
-**Features** [features](https://github.com/devtools-html/debugger.html/projects/10) are tracked in our features board.
+**Features** [features][features-board] a prioritized list of features that are planned or in progress. The features are often tracking issues.
 
-**Bugs** [bugs](https://github.com/devtools-html/debugger.html/projects/11) are prioritized in our bugs board.
+**Bugs** [bugs][bugs-board] a prioritized list of reported bugs.
+
+**Enhancements** [enhancements-board] a list of feature suggestions that are reviewed twice a quarter.
 
 ### Community Friendly
 
@@ -154,8 +202,8 @@ We focus on being community friendly for many reasons.
 [labels-available]:https://github.com/devtools-html/debugger.html/labels/available
 [labels-first-timers-only]:https://github.com/devtools-html/debugger.html/labels/first-timers-only
 [labels-difficulty-easy]:https://github.com/devtools-html/debugger.html/labels/difficulty%3A%20easy
-[labels-difficulty-medium]:https://github.com/devtools-html/debugger.html/labels/difficulty%3A%medium
-[labels-difficulty-hard]:https://github.com/devtools-html/debugger.html/labels/difficulty%3A%hard
+[labels-difficulty-medium]:https://github.com/devtools-html/debugger.html/labels/difficulty%3A%20medium
+[labels-difficulty-hard]:https://github.com/devtools-html/debugger.html/labels/difficulty%3A%20hard
 [labels-docs]:https://github.com/devtools-html/debugger.html/labels/docs
 [labels-design]:https://github.com/devtools-html/debugger.html/labels/design
 [labels-enhancement]:https://github.com/devtools-html/debugger.html/labels/enhancement
@@ -165,3 +213,11 @@ We focus on being community friendly for many reasons.
 [labels-infrastructure]:https://github.com/devtools-html/debugger.html/labels/infrastructure
 [labels-discussion]:https://github.com/devtools-html/debugger.html/labels/discussion
 [github-tables]: ./pull-requests.md#screenshots
+[labels-needs-description]:https://github.com/devtools-html/debugger.html/labels/needs-description
+[labels-needs-str]:https://github.com/devtools-html/debugger.html/labels/needs-str
+[labels-needs-investigation]:https://github.com/devtools-html/debugger.html/labels/needs-investigation
+
+[enhancements-board]: https://github.com/devtools-html/debugger.html/projects/6
+[bugs-board]: https://github.com/devtools-html/debugger.html/projects/11
+[features-board]: https://github.com/devtools-html/debugger.html/projects/10
+[roadmap]: ../ROADMAP.md

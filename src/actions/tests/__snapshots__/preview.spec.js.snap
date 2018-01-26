@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`setPreview Immutable list 1`] = `
+Object {
+  "cursorPos": undefined,
+  "expression": "list",
+  "extra": Object {
+    "immutable": Object {
+      "entries": Object {
+        "actor": "bazz",
+        "preview": Object {},
+      },
+      "type": "Listless",
+    },
+  },
+  "location": Object {
+    "end": Object {
+      "column": 4,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 0,
+      "line": 1,
+    },
+  },
+  "result": Object {
+    "actor": "server1.conn34.child2/obj341",
+    "preview": Object {
+      "ownProperties": Object {
+        "__altered": Object {},
+        "__hash": Object {},
+        "__ownerID": Object {},
+        "_root": Object {},
+      },
+    },
+  },
+  "tokenPos": Object {
+    "column": 4,
+    "line": 1,
+  },
+  "updating": false,
+}
+`;
+
+exports[`setPreview member expression 1`] = `
+Object {
+  "cursorPos": undefined,
+  "expression": "this.bazz",
+  "extra": Object {},
+  "location": Object {
+    "end": Object {
+      "column": 37,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 33,
+      "line": 1,
+    },
+  },
+  "result": Object {
+    "actor": "bazz",
+    "preview": Object {},
+  },
+  "tokenPos": Object {
+    "column": 34,
+    "line": 1,
+  },
+  "updating": false,
+}
+`;
+
+exports[`setPreview react instance 1`] = `
+Object {
+  "cursorPos": undefined,
+  "expression": "this",
+  "extra": Object {
+    "react": Object {
+      "displayName": "Foo",
+    },
+  },
+  "location": Object {
+    "end": Object {
+      "column": 32,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 28,
+      "line": 1,
+    },
+  },
+  "result": Object {
+    "actor": "server1.conn34.child2/obj341",
+    "preview": Object {
+      "ownProperties": Object {
+        "_reactInternalInstance": Object {},
+      },
+    },
+  },
+  "tokenPos": Object {
+    "column": 30,
+    "line": 1,
+  },
+  "updating": false,
+}
+`;
+
+exports[`setPreview this 1`] = `
+Object {
+  "cursorPos": undefined,
+  "expression": "this",
+  "extra": Object {},
+  "location": Object {
+    "end": Object {
+      "column": 32,
+      "line": 1,
+    },
+    "start": Object {
+      "column": 28,
+      "line": 1,
+    },
+  },
+  "result": Object {
+    "actor": "this",
+    "preview": Object {},
+  },
+  "tokenPos": Object {
+    "column": 30,
+    "line": 1,
+  },
+  "updating": false,
+}
+`;

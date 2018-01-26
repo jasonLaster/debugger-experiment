@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 function basename(path: string) {
@@ -21,10 +25,4 @@ function join(base: string, dir: string) {
   return `${base}/${dir}`;
 }
 
-module.exports = {
-  basename,
-  dirname,
-  isURL,
-  isAbsolute,
-  join,
-};
+export { basename, dirname, isURL, isAbsolute, join };

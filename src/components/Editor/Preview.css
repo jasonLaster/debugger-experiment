@@ -1,17 +1,25 @@
-.preview {
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
+.popover .preview {
   background: var(--theme-body-background);
-  min-width: 200px;
+  width: 350px;
   min-height: 80px;
-  border: 1px solid var(--theme-comment);
+  border: 1px solid var(--theme-splitter-color);
   padding: 10px;
   height: auto;
   min-height: inherit;
-  max-height: 130px;
+  max-height: 200px;
   overflow: auto;
-  max-width: 400px;
+  box-shadow: 1px 2px 3px var(--popup-shadow-color);
 }
 
-.preview .header {
+.theme-dark .popover .preview {
+  box-shadow: 1px 2px 3px var(--popup-shadow-color);
+}
+
+.popover .preview .header {
   width: 100%;
   line-height: 20px;
   border-bottom: 1px solid #cccccc;
@@ -19,53 +27,91 @@
   flex-direction: column;
 }
 
-.preview .header .link {
+.popover .preview .header .link {
   align-self: flex-end;
   color: var(--theme-highlight-blue);
   text-decoration: underline;
 }
-.preview .header .link:hover {
-  cursor: pointer;
+
+.selection,
+.debug-expression.selection {
+  background-color: var(--theme-highlight-yellow);
 }
 
-.selected-token {
-  background-color: var(--theme-search-overlays-semitransparent);
-  color: var(--theme-selection-color);
+.theme-dark .selection,
+.theme-dark .debug-expression.selection {
+  background-color: #743884;
 }
 
-.selected-token:hover {
-  cursor: pointer;
+.theme-dark .cm-s-mozilla .selection,
+.theme-dark .cm-s-mozilla .debug-expression.selection {
+  color: #e7ebee;
 }
 
-.preview .function-signature {
+.popover .preview .function-signature {
   padding-top: 10px;
 }
 
-.function-signature {
-  line-height: 20px;
-  align-self: center;
-}
-
-.function-signature .function-name {
-  color: var(--theme-highlight-blue);
-}
-
-.function-signature .param {
-  color: var(--string-color);
-}
-
-.function-signature .paren {
-  color: var(--object-color);
-}
-
-.function-signature .comma {
-  color: var(--object-color);
-}
-
-.theme-dark .preview {
+.theme-dark .popover .preview {
   border-color: var(--theme-body-color);
 }
 
-.theme-dark .preview .arrow svg {
-  fill: var(--theme-comment);
+.theme-dark .popover .preview .arrow svg {
+  fill: var(--theme-content-color3);
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 100;
+}
+
+.tooltip .preview {
+  background: var(--theme-toolbar-background);
+  max-width: inherit;
+  min-height: 80px;
+  border: 1px solid var(--theme-splitter-color);
+  box-shadow: 1px 2px 4px 1px var(--theme-toolbar-background-alt);
+  padding: 5px;
+  height: auto;
+  min-height: inherit;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.theme-dark .tooltip .preview {
+  border-color: var(--theme-body-color);
+}
+
+.tooltip .gap {
+  height: 4px;
+  padding-top: 4px;
+}
+
+.add-to-expression-bar {
+  border: 1px solid var(--theme-splitter-color);
+  border-top: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-size: 14px;
+  line-height: 30px;
+  background: var(--theme-toolbar-background);
+  color: var(--theme-comment-alt);
+  padding: 0 4px;
+}
+
+.add-to-expression-bar .prompt {
+  width: 1em;
+}
+
+.add-to-expression-bar .expression-to-save-label {
+  width: calc(100% - 4em);
+}
+
+.add-to-expression-bar .expression-to-save-button {
+  font-size: 14px;
+  color: var(--theme-content-color3);
 }

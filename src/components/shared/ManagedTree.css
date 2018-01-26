@@ -1,4 +1,8 @@
-.tree {
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
+.managed-tree .tree {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -8,35 +12,37 @@
   white-space: nowrap;
   overflow: auto;
   min-width: 100%;
+
+  display: grid;
+  align-content: start;
 }
 
-.tree button {
+.managed-tree .tree button {
   display: block;
 }
 
-.tree .node {
-  padding: 2px 5px;
+.managed-tree .tree .node {
+  padding: 2px 3px 2px 3px;
   position: relative;
-  cursor: pointer;
 }
 
-.tree .node.focused {
+.managed-tree .tree .node.focused {
   color: white;
   background-color: var(--theme-selection-background);
 }
 
-html:not([dir="rtl"]) .tree .node > div {
+html:not([dir="rtl"]) .managed-tree .tree .node > div {
   margin-left: 10px;
 }
 
-html[dir="rtl"] .tree .node > div {
+html[dir="rtl"] .managed-tree .tree .node > div {
   margin-right: 10px;
 }
 
-.tree .node.focused svg {
+.managed-tree .tree .node.focused svg {
   fill: white;
 }
 
-.tree-node button {
+.managed-tree .tree-node button {
   position: fixed;
 }

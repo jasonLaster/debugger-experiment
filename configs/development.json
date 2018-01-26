@@ -9,49 +9,17 @@
     "firefoxProxy": false,
     "actions": false
   },
+  "performance": {
+    "actions": false
+  },
   "workers": {
     "parserURL": "http://localhost:8000/assets/build/parser-worker.js",
     "sourceMapURL": "http://localhost:8000/assets/build/source-map-worker.js",
-    "prettyPrintURL": "http://localhost:8000/assets/build/pretty-print-worker.js"
+    "prettyPrintURL":
+      "http://localhost:8000/assets/build/pretty-print-worker.js",
+    "searchURL": "http://localhost:8000/assets/build/search-worker.js"
   },
-  "features": {
-    "watchExpressions": {
-      "label": "Watch Expressions",
-      "enabled": true
-    },
-    "chromeScopes": {
-      "label": "Chrome Scopes",
-      "enabled": false
-    },
-    "eventListeners": {
-      "label": "Event Listeners",
-      "enabled": false
-    },
-    "codeCoverage": {
-      "label": "Code Coverage",
-      "enabled": false
-    },
-    "searchModifiers": {
-      "label": "Search Modifiers",
-      "enabled": true
-    },
-    "symbolSearch": {
-      "label": "Symbol Search",
-      "enabled": false
-    },
-    "functionSearch": {
-      "label": "function Search",
-      "enabled": true
-    },
-    "editorPreview": {
-      "label": "Editor Preview",
-      "enabled": true
-    },
-    "previewMemberExpressions": {
-      "label": "Editor member expression Preview",
-      "enabled": true
-    }
-  },
+  "features": {},
   "chrome": {
     "debug": true,
     "host": "localhost",
@@ -64,10 +32,12 @@
   },
   "firefox": {
     "webSocketConnection": false,
-    "proxyHost": "localhost:9000",
-    "webSocketHost": "localhost:6080",
+    "host": "localhost",
+    "webSocketPort": 8116,
+    "tcpPort": 6080,
     "mcPath": "./firefox"
   },
+
   "development": {
     "serverPort": 8000,
     "examplesPort": 7999

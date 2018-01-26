@@ -1,77 +1,77 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import { DOM as dom, PropTypes, Component } from "react";
+import React, { Component } from "react";
+import type { Node } from "react";
 import "./Dropdown.css";
 
-class Dropdown extends Component {
-  state: {
-    dropdownShown: boolean,
-  };
-  toggleDropdown: Function;
-  renderPanel: Function;
-  renderButton: Function;
-  renderMask: Function;
+type Props = {
+  panel: React$Element<any>,
+  icon: Node
+};
 
-  constructor(props: any) {
+type State = {
+  dropdownShown: boolean
+};
+
+export class Dropdown extends Component<Props, State> {
+  toggleDropdown: Function;
+  constructor(props: Props) {
     super(props);
     this.state = {
-      dropdownShown: false,
+      dropdownShown: false
     };
 
     this.toggleDropdown = this.toggleDropdown.bind(this);
-    this.renderPanel = this.renderPanel.bind(this);
-    this.renderButton = this.renderButton.bind(this);
-    this.renderMask = this.renderMask.bind(this);
   }
 
-  toggleDropdown(e: SyntheticKeyboardEvent) {
+  toggleDropdown = (e: SyntheticKeyboardEvent<HTMLElement>) => {
     this.setState({
-      dropdownShown: !this.state.dropdownShown,
+      dropdownShown: !this.state.dropdownShown
     });
-  }
+  };
 
   renderPanel() {
-    return dom.div(
-      {
-        className: "dropdown",
-        onClick: this.toggleDropdown,
-        style: { display: this.state.dropdownShown ? "block" : "none" },
-      },
-      this.props.panel
+    return (
+      <div
+        className="dropdown"
+        onClick={this.toggleDropdown}
+        style={{ display: this.state.dropdownShown ? "block" : "none" }}
+      >
+        {this.props.panel}
+      </div>
     );
   }
 
   renderButton() {
-    return dom.button(
-      {
-        className: "dropdown-button",
-        onClick: this.toggleDropdown,
-      },
-      "»"
+    return (
+      <button className="dropdown-button" onClick={this.toggleDropdown}>
+        {this.props.icon}
+      </button>
     );
   }
 
   renderMask() {
-    return dom.div({
-      className: "dropdown-mask",
-      onClick: this.toggleDropdown,
-      style: { display: this.state.dropdownShown ? "block" : "none" },
-    });
+    return (
+      <div
+        className="dropdown-mask"
+        onClick={this.toggleDropdown}
+        style={{ display: this.state.dropdownShown ? "block" : "none" }}
+      />
+    );
   }
 
   render() {
-    return dom.div(
-      { className: "dropdown-block" },
-      this.renderPanel(),
-      this.renderButton(),
-      this.renderMask()
+    return (
+      <div className="dropdown-block">
+        {this.renderPanel()}
+        {this.renderButton()}
+        {this.renderMask()}
+      </div>
     );
   }
 }
-
-Dropdown.propTypes = {
-  panel: PropTypes.object,
-};
-
-Dropdown.displayName = "Dropdown";
 
 export default Dropdown;

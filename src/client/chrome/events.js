@@ -1,6 +1,10 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const { createFrame, createLoadedObject } = require("./create");
+import { createFrame, createLoadedObject } from "./create";
 
 let actions;
 let pageAgent;
@@ -15,24 +19,22 @@ function setupEvents(dependencies: any) {
 }
 
 // Debugger Events
-function scriptParsed(
-  {
-    scriptId,
-    url,
-    startLine,
-    startColumn,
-    endLine,
-    endColumn,
-    executionContextId,
-    hash,
-    isContentScript,
-    isInternalScript,
-    isLiveEdit,
-    sourceMapURL,
-    hasSourceURL,
-    deprecatedCommentWasUsed,
-  }: any
-) {
+function scriptParsed({
+  scriptId,
+  url,
+  startLine,
+  startColumn,
+  endLine,
+  endColumn,
+  executionContextId,
+  hash,
+  isContentScript,
+  isInternalScript,
+  isLiveEdit,
+  sourceMapURL,
+  hasSourceURL,
+  deprecatedCommentWasUsed
+}: any) {
   if (isContentScript) {
     return;
   }
@@ -45,34 +47,26 @@ function scriptParsed(
     id: scriptId,
     url,
     sourceMapURL,
-    isPrettyPrinted: false,
+    isPrettyPrinted: false
   });
 }
 
 function scriptFailedToParse() {}
 
-async function paused(
-  {
-    callFrames,
-    reason,
-    data,
-    hitBreakpoints,
-    asyncStackTrace,
-  }: any
-) {
+async function paused({
+  callFrames,
+  reason,
+  data,
+  hitBreakpoints,
+  asyncStackTrace
+}: any) {
   const frames = callFrames.map(createFrame);
   const frame = frames[0];
-  const why = Object.assign(
-    {},
-    {
-      type: reason,
-    },
-    data
-  );
+  const why = { type: reason, ...data };
 
   const objectId = frame.scopeChain[0].object.objectId;
   const { result } = await runtimeAgent.getProperties({
-    objectId,
+    objectId
   });
 
   const loadedObjects = result.map(createLoadedObject);
@@ -114,7 +108,7 @@ const clientEvents = {
   scriptFailedToParse,
   paused,
   resumed,
-  globalObjectCleared,
+  globalObjectCleared
 };
 
 const pageEvents = {
@@ -122,11 +116,7 @@ const pageEvents = {
   frameStartedLoading,
   domContentEventFired,
   loadEventFired,
-  frameStoppedLoading,
+  frameStoppedLoading
 };
 
-module.exports = {
-  setupEvents,
-  pageEvents,
-  clientEvents,
-};
+export { setupEvents, pageEvents, clientEvents };

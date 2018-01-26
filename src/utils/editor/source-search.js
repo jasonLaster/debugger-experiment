@@ -1,7 +1,10 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const buildQuery = require("./build-query");
-const findIndex = require("lodash/findIndex");
+import buildQuery from "../../workers/search/build-query";
 
 import type { SearchModifiers } from "../../types";
 
@@ -19,10 +22,9 @@ function getSearchCursor(cm, query: string, pos, modifiers: SearchModifiers) {
  * @static
  */
 function SearchState() {
-  this.posFrom = (this.posTo = (this.query = null));
+  this.posFrom = this.posTo = this.query = null;
   this.overlay = null;
   this.results = [];
-  this.matchIndex = -1;
 }
 
 /**
@@ -30,18 +32,7 @@ function SearchState() {
  * @static
  */
 function getSearchState(cm: any, query, modifiers) {
-  let state = cm.state.search || (cm.state.search = new SearchState());
-
-  // avoid generating a cursor and iterating over the results for an empty query
-  if (query) {
-    let cursor = getSearchCursor(cm, query, null, modifiers);
-
-    state.results = [];
-    while (cursor.findNext()) {
-      state.results.push(cursor.pos);
-    }
-  }
-
+  const state = cm.state.search || (cm.state.search = new SearchState());
   return state;
 }
 
@@ -66,42 +57,30 @@ function isWhitespace(query) {
 function searchOverlay(query, modifiers) {
   const regexQuery = buildQuery(query, modifiers, {
     ignoreSpaces: true,
+    // regex must be global for the overlay
+    isGlobal: true
   });
 
-  let matchLength = null;
-
   return {
-    token: function(stream) {
-      if (stream.column() === 0) {
-        matchLength = null;
+    token: function(stream, state) {
+      // set the last index to be the current stream position
+      // this acts as an offset
+      regexQuery.lastIndex = stream.pos;
+      const match = regexQuery.exec(stream.string);
+      if (match && match.index === stream.pos) {
+        // if we have a match at the current stream position
+        // set the class for a match
+        stream.pos += match[0].length || 1;
+        return "highlight highlight-full";
+      } else if (match) {
+        // if we have a match somewhere in the line, go to that point in the
+        // stream
+        stream.pos = match.index;
+      } else {
+        // if we have no matches in this line, skip to the end of the line
+        stream.skipToEnd();
       }
-      if (matchLength !== null) {
-        if (matchLength > 2) {
-          for (let i = 0; i < matchLength - 2; ++i) {
-            stream.next();
-          }
-          matchLength = 1;
-          return "highlight";
-        }
-        stream.next();
-        matchLength = null;
-        return "highlight highlight-end";
-      }
-
-      const match = stream.match(regexQuery, false);
-      if (match) {
-        stream.next();
-        const len = match[0].length;
-        if (len === 1) {
-          return "highlight highlight-full";
-        }
-        matchLength = len;
-        return "highlight highlight-start";
-      }
-      while (!stream.match(regexQuery, false) && stream.peek()) {
-        stream.next();
-      }
-    },
+    }
   };
 }
 
@@ -125,7 +104,11 @@ function updateCursor(cm, state, keepSelection) {
   }
 }
 
-function getMatchIndex(count: number, currentIndex: number, rev: boolean) {
+export function getMatchIndex(
+  count: number,
+  currentIndex: number,
+  rev: boolean
+) {
   if (!rev) {
     if (currentIndex == count - 1) {
       return 0;
@@ -150,35 +133,28 @@ function getMatchIndex(count: number, currentIndex: number, rev: boolean) {
  * @static
  */
 function doSearch(ctx, rev, query, keepSelection, modifiers: SearchModifiers) {
-  let { cm } = ctx;
-  let matchIndex = 0;
-  cm.operation(function() {
+  const { cm } = ctx;
+  if (!cm) {
+    return;
+  }
+  const defaultIndex = { line: -1, ch: -1 };
+
+  return cm.operation(function() {
     if (!query || isWhitespace(query)) {
+      clearSearch(cm, query, modifiers);
       return;
     }
 
-    let state = getSearchState(cm, query, modifiers);
-    const newQuery = state.query != query;
+    const state = getSearchState(cm, query, modifiers);
+    const isNewQuery = state.query !== query;
     state.query = query;
 
     updateOverlay(cm, state, query, modifiers);
     updateCursor(cm, state, keepSelection);
+    const searchLocation = searchNext(ctx, rev, query, isNewQuery, modifiers);
 
-    const nextMatch = searchNext(ctx, rev, query, newQuery, modifiers);
-    if (nextMatch) {
-      if (state.matchIndex === -1) {
-        matchIndex = findIndex(state.results, nextMatch);
-      } else {
-        const count = state.results.length;
-        const currentIndex = state.matchIndex;
-        matchIndex = getMatchIndex(count, currentIndex, rev);
-      }
-
-      state.matchIndex = matchIndex;
-    }
+    return searchLocation ? searchLocation.from : defaultIndex;
   });
-
-  return matchIndex;
 }
 
 function getCursorPos(newQuery, rev, state) {
@@ -196,18 +172,23 @@ function getCursorPos(newQuery, rev, state) {
  * @static
  */
 function searchNext(ctx, rev, query, newQuery, modifiers) {
-  let { cm, ed } = ctx;
+  const { cm, ed } = ctx;
   let nextMatch;
   cm.operation(function() {
-    let state = getSearchState(cm, query, modifiers);
+    const state = getSearchState(cm, query, modifiers);
     const pos = getCursorPos(newQuery, rev, state);
+
+    if (!state.query) {
+      return;
+    }
+
     let cursor = getSearchCursor(cm, state.query, pos, modifiers);
 
     const location = rev
       ? { line: cm.lastLine(), ch: null }
       : { line: cm.firstLine(), ch: 0 };
 
-    if (!cursor.find(rev)) {
+    if (!cursor.find(rev) && state.query) {
       cursor = getSearchCursor(cm, state.query, location, modifiers);
       if (!cursor.find(rev)) {
         return;
@@ -233,8 +214,12 @@ function searchNext(ctx, rev, query, newQuery, modifiers) {
  * @memberof utils/source-search
  * @static
  */
-function removeOverlay(ctx: any, query: string, modifiers: SearchModifiers) {
-  let state = getSearchState(ctx.cm, query, modifiers);
+export function removeOverlay(
+  ctx: any,
+  query: string,
+  modifiers: SearchModifiers
+) {
+  const state = getSearchState(ctx.cm, query, modifiers);
   ctx.cm.removeOverlay(state.overlay);
   const { line, ch } = ctx.cm.getCursor();
   ctx.cm.doc.setSelection({ line, ch }, { line, ch }, { scroll: false });
@@ -247,10 +232,9 @@ function removeOverlay(ctx: any, query: string, modifiers: SearchModifiers) {
  * @static
  */
 function clearSearch(cm, query: string, modifiers: SearchModifiers) {
-  let state = getSearchState(cm, query, modifiers);
+  const state = getSearchState(cm, query, modifiers);
 
   state.results = [];
-  state.matchIndex = -1;
 
   if (!state.query) {
     return;
@@ -265,7 +249,7 @@ function clearSearch(cm, query: string, modifiers: SearchModifiers) {
  * @memberof utils/source-search
  * @static
  */
-function find(
+export function find(
   ctx: any,
   query: string,
   keepSelection: boolean,
@@ -281,7 +265,7 @@ function find(
  * @memberof utils/source-search
  * @static
  */
-function findNext(
+export function findNext(
   ctx: any,
   query: string,
   keepSelection: boolean,
@@ -296,7 +280,7 @@ function findNext(
  * @memberof utils/source-search
  * @static
  */
-function findPrev(
+export function findPrev(
   ctx: any,
   query: string,
   keepSelection: boolean,
@@ -305,30 +289,4 @@ function findPrev(
   return doSearch(ctx, true, query, keepSelection, modifiers);
 }
 
-function clearIndex(ctx: any, query: string, modifiers: SearchModifiers) {
-  let state = getSearchState(ctx.cm, query, modifiers);
-  state.matchIndex = -1;
-}
-
-function countMatches(
-  query: string,
-  text: string,
-  modifiers: SearchModifiers
-): number {
-  const regexQuery = buildQuery(query, modifiers, {
-    isGlobal: true,
-  });
-  const match = text.match(regexQuery);
-  return match ? match.length : 0;
-}
-
-module.exports = {
-  buildQuery,
-  clearIndex,
-  countMatches,
-  find,
-  findNext,
-  findPrev,
-  removeOverlay,
-  getMatchIndex,
-};
+export { buildQuery };

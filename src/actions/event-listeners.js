@@ -1,7 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* global window gThreadClient setNamedTimeout services EVENTS */
+
+/* global window gThreadClient setNamedTimeout EVENTS */
 /* eslint no-shadow: 0  */
 
 /**
@@ -9,9 +10,9 @@
  * @module actions/event-listeners
  */
 
-import constants from "../constants";
 import { reportException } from "../utils/DevToolsUtils";
-import { getPause, getSourceByURL } from "../selectors";
+import { isPaused, getSourceByURL } from "../selectors";
+import { NAME as WAIT_UNTIL } from "./utils/middleware/wait-service";
 
 // delay is in ms
 const FETCH_EVENT_LISTENERS_DELAY = 200;
@@ -22,7 +23,7 @@ let fetchListenersTimerID;
  * @static
  */
 async function asPaused(state: any, client: any, func: any) {
-  if (!getPause(state)) {
+  if (!isPaused(state)) {
     await client.interrupt();
     let result;
 
@@ -54,37 +55,33 @@ export function fetchEventListeners() {
       clearTimeout(fetchListenersTimerID);
     }
 
-    fetchListenersTimerID = setTimeout(
-      () => {
-        // In case there is still a request of listeners going on (it
-        // takes several RDP round trips right now), make sure we wait
-        // on a currently running request
-        if (getState().eventListeners.fetchingListeners) {
-          dispatch({
-            type: services.WAIT_UNTIL,
-            predicate: action =>
-              action.type === constants.FETCH_EVENT_LISTENERS &&
-              action.status === "done",
-            run: dispatch => dispatch(fetchEventListeners()),
-          });
-          return;
-        }
-
+    fetchListenersTimerID = setTimeout(() => {
+      // In case there is still a request of listeners going on (it
+      // takes several RDP round trips right now), make sure we wait
+      // on a currently running request
+      if (getState().eventListeners.fetchingListeners) {
         dispatch({
-          type: constants.FETCH_EVENT_LISTENERS,
-          status: "begin",
+          type: WAIT_UNTIL,
+          predicate: action =>
+            action.type === "FETCH_EVENT_LISTENERS" && action.status === "done",
+          run: dispatch => dispatch(fetchEventListeners())
         });
+        return;
+      }
 
-        asPaused(getState(), client, _getEventListeners).then(listeners => {
-          dispatch({
-            type: constants.FETCH_EVENT_LISTENERS,
-            status: "done",
-            listeners: formatListeners(getState(), listeners),
-          });
+      dispatch({
+        type: "FETCH_EVENT_LISTENERS",
+        status: "begin"
+      });
+
+      asPaused(getState(), client, _getEventListeners).then(listeners => {
+        dispatch({
+          type: "FETCH_EVENT_LISTENERS",
+          status: "done",
+          listeners: formatListeners(getState(), listeners)
         });
-      },
-      FETCH_EVENT_LISTENERS_DELAY
-    );
+      });
+    }, FETCH_EVENT_LISTENERS_DELAY);
   };
 }
 
@@ -94,7 +91,7 @@ function formatListeners(state, listeners) {
       selector: l.node.selector,
       type: l.type,
       sourceId: getSourceByURL(state, l.function.location.url).get("id"),
-      line: l.function.location.line,
+      line: l.function.location.line
     };
   });
 }
@@ -104,12 +101,12 @@ async function _getEventListeners(threadClient) {
 
   // Make sure all the listeners are sorted by the event type, since
   // they"re not guaranteed to be clustered together.
-  response.listeners.sort((a, b) => a.type > b.type ? 1 : -1);
+  response.listeners.sort((a, b) => (a.type > b.type ? 1 : -1));
 
   // Add all the listeners in the debugger view event linsteners container.
-  let fetchedDefinitions = new Map();
-  let listeners = [];
-  for (let listener of response.listeners) {
+  const fetchedDefinitions = new Map();
+  const listeners = [];
+  for (const listener of response.listeners) {
     let definitionSite;
     if (fetchedDefinitions.has(listener.function.actor)) {
       definitionSite = fetchedDefinitions.get(listener.function.actor);
@@ -157,13 +154,13 @@ async function _getDefinitionSite(threadClient, func) {
 export function updateEventBreakpoints(eventNames) {
   return dispatch => {
     setNamedTimeout("event-breakpoints-update", 0, () => {
-      gThreadClient.pauseOnDOMEvents(eventNames, function() {
+      gThreadClient.pauseOnDOMEvents(eventNames, () => {
         // Notify that event breakpoints were added/removed on the server.
         window.emit(EVENTS.EVENT_BREAKPOINTS_UPDATED);
 
         dispatch({
-          type: constants.UPDATE_EVENT_BREAKPOINTS,
-          eventNames: eventNames,
+          type: "UPDATE_EVENT_BREAKPOINTS",
+          eventNames: eventNames
         });
       });
     });

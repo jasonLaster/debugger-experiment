@@ -2,22 +2,41 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const expressions = require("./expressions");
-const eventListeners = require("./event-listeners");
-const sources = require("./sources");
-const breakpoints = require("./breakpoints");
-const asyncRequests = require("./async-requests");
-const pause = require("./pause");
-const ui = require("./ui");
-const coverage = require("./coverage");
+/**
+ * Reducer index
+ * @module reducers/index
+ */
 
-module.exports = {
-  expressions: expressions.update,
-  eventListeners: eventListeners.update,
-  sources: sources.update,
-  breakpoints: breakpoints.update,
-  pause: pause.update,
+import expressions from "./expressions";
+import eventListeners from "./event-listeners";
+import sources from "./sources";
+import breakpoints from "./breakpoints";
+import pendingBreakpoints from "./pending-breakpoints";
+import asyncRequests from "./async-requests";
+import pause from "./pause";
+import ui from "./ui";
+import fileSearch from "./file-search";
+import ast from "./ast";
+import coverage from "./coverage";
+import projectTextSearch from "./project-text-search";
+import quickOpen from "./quick-open";
+import sourceTree from "./source-tree";
+import debuggee from "./debuggee";
+
+export default {
+  expressions,
+  eventListeners,
+  sources,
+  breakpoints,
+  pendingBreakpoints,
   asyncRequests,
-  ui: ui.update,
-  coverage: coverage.update,
+  pause,
+  ui,
+  fileSearch,
+  ast,
+  coverage,
+  projectTextSearch,
+  quickOpen,
+  sourceTree,
+  debuggee
 };

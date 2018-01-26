@@ -1,27 +1,51 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const { setupCommands, clientCommands } = require("./firefox/commands");
-const { setupEvents, clientEvents } = require("./firefox/events");
+import { setupCommands, clientCommands } from "./firefox/commands";
+import { setupEvents, clientEvents } from "./firefox/events";
+import { features } from "../utils/prefs";
+import type { Grip } from "debugger-html";
+let DebuggerClient;
 
-export async function onConnect(connection: any, actions: Object) {
+function createObjectClient(grip: Grip) {
+  return DebuggerClient.createObjectClient(grip);
+}
+
+export async function onConnect(connection: any, actions: Object): Object {
   const {
-    tabConnection: { tabTarget, threadClient, debuggerClient },
+    tabConnection: { tabTarget, threadClient, debuggerClient }
   } = connection;
 
+  DebuggerClient = debuggerClient;
+
   if (!tabTarget || !threadClient || !debuggerClient) {
-    return;
+    return { bpClients: {} };
   }
 
-  setupCommands({ threadClient, tabTarget, debuggerClient });
+  const supportsWasm =
+    features.wasm && !!debuggerClient.mainRoot.traits.wasmBinarySource;
+
+  const { bpClients } = setupCommands({
+    threadClient,
+    tabTarget,
+    debuggerClient,
+    supportsWasm
+  });
 
   if (actions) {
-    setupEvents({ threadClient, actions });
+    setupEvents({ threadClient, actions, supportsWasm });
   }
 
   tabTarget.on("will-navigate", actions.willNavigate);
   tabTarget.on("navigate", actions.navigated);
 
-  await threadClient.reconfigure({ observeAsmJS: true });
+  await threadClient.reconfigure({
+    observeAsmJS: true,
+    wasmBinarySource: supportsWasm
+  });
 
   // In Firefox, we need to initially request all of the sources. This
   // usually fires off individual `newSource` notifications as the
@@ -30,7 +54,8 @@ export async function onConnect(connection: any, actions: Object) {
   // bfcache) so explicity fire `newSource` events for all returned
   // sources.
   const sources = await clientCommands.fetchSources();
-  actions.newSources(sources);
+  await actions.connect(tabTarget.url);
+  await actions.newSources(sources);
 
   // If the threadClient is already paused, make sure to show a
   // paused state.
@@ -38,6 +63,8 @@ export async function onConnect(connection: any, actions: Object) {
   if (pausedPacket) {
     clientEvents.paused("paused", pausedPacket);
   }
+
+  return { bpClients };
 }
 
-export { clientCommands, clientEvents };
+export { createObjectClient, clientCommands, clientEvents };

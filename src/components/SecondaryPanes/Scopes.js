@@ -1,100 +1,110 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import { DOM as dom, PropTypes, Component, createFactory } from "react";
+import React, { PureComponent } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import ImPropTypes from "react-immutable-proptypes";
 import actions from "../../actions";
-import { getSelectedFrame, getLoadedObjects, getPause } from "../../selectors";
-import { getScopes } from "../../utils/scopes";
-const ObjectInspector = createFactory(require("../shared/ObjectInspector"));
+import { createObjectClient } from "../../client/firefox";
+
+import {
+  getSelectedFrame,
+  getFrameScope,
+  isPaused as getIsPaused,
+  getPauseReason
+} from "../../selectors";
+import { getScopes } from "../../utils/pause/scopes";
+
+import { ObjectInspector } from "devtools-reps";
+import type { Pause, Why } from "debugger-html";
+import type { NamedValue } from "../../utils/pause/scopes/types";
+
 import "./Scopes.css";
 
-function info(text) {
-  return dom.div({ className: "pane-info" }, text);
-}
+type Props = {
+  isPaused: Pause,
+  selectedFrame: Object,
+  frameScopes: Object,
+  why: Why
+};
 
-let expandedCache = new Set();
-let actorsCache = [];
+type State = {
+  scopes: ?(NamedValue[])
+};
 
-class Scopes extends Component {
-  state: {
-    scopes: any,
-  };
-
-  constructor(props, ...args) {
-    const { pauseInfo, selectedFrame } = props;
+class Scopes extends PureComponent<Props, State> {
+  constructor(props: Props, ...args) {
+    const { why, selectedFrame, frameScopes } = props;
 
     super(props, ...args);
 
     this.state = {
-      scopes: getScopes(pauseInfo, selectedFrame),
+      scopes: getScopes(why, selectedFrame, frameScopes)
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const { pauseInfo, selectedFrame, loadedObjects } = this.props;
-    return pauseInfo !== nextProps.pauseInfo ||
-      selectedFrame !== nextProps.selectedFrame ||
-      loadedObjects !== nextProps.loadedObjects;
-  }
-
   componentWillReceiveProps(nextProps) {
-    const { pauseInfo, selectedFrame } = this.props;
-    const pauseInfoChanged = pauseInfo !== nextProps.pauseInfo;
-    const selectedFrameChange = selectedFrame !== nextProps.selectedFrame;
+    const { isPaused, selectedFrame, frameScopes } = this.props;
+    const isPausedChanged = isPaused !== nextProps.isPaused;
+    const selectedFrameChanged = selectedFrame !== nextProps.selectedFrame;
+    const frameScopesChanged = frameScopes !== nextProps.frameScopes;
 
-    if (pauseInfoChanged || selectedFrameChange) {
+    if (isPausedChanged || selectedFrameChanged || frameScopesChanged) {
       this.setState({
-        scopes: getScopes(nextProps.pauseInfo, nextProps.selectedFrame),
+        scopes: getScopes(
+          nextProps.why,
+          nextProps.selectedFrame,
+          nextProps.frameScopes
+        )
       });
     }
   }
 
   render() {
-    const { pauseInfo, loadObjectProperties, loadedObjects } = this.props;
+    const { isPaused } = this.props;
     const { scopes } = this.state;
 
-    let scopeInspector = info(L10N.getStr("scopes.notAvailable"));
     if (scopes) {
-      scopeInspector = ObjectInspector({
-        roots: scopes,
-        getObjectProperties: id => loadedObjects.get(id),
-        loadObjectProperties: loadObjectProperties,
-        setExpanded: expanded => {
-          expandedCache = expanded;
-        },
-        getExpanded: () => expandedCache,
-        setActors: actors => {
-          actorsCache = actors;
-        },
-        getActors: () => actorsCache,
-        onLabelClick: (item, { expanded, setExpanded }) => {
-          setExpanded(item, !expanded);
-        },
-      });
+      return (
+        <div className="pane scopes-list">
+          <ObjectInspector
+            roots={scopes}
+            autoExpandAll={false}
+            autoExpandDepth={1}
+            disableWrap={true}
+            disabledFocus={true}
+            dimTopLevelWindow={true}
+            createObjectClient={grip => createObjectClient(grip)}
+          />
+        </div>
+      );
     }
-
-    return dom.div(
-      { className: "pane scopes-list" },
-      pauseInfo ? scopeInspector : info(L10N.getStr("scopes.notPaused"))
+    return (
+      <div className="pane scopes-list">
+        <div className="pane-info">
+          {isPaused
+            ? L10N.getStr("scopes.notAvailable")
+            : L10N.getStr("scopes.notPaused")}
+        </div>
+      </div>
     );
   }
 }
 
-Scopes.propTypes = {
-  pauseInfo: ImPropTypes.map,
-  loadedObjects: ImPropTypes.map,
-  loadObjectProperties: PropTypes.func,
-  selectedFrame: PropTypes.object,
-};
-
-Scopes.displayName = "Scopes";
-
 export default connect(
-  state => ({
-    pauseInfo: getPause(state),
-    selectedFrame: getSelectedFrame(state),
-    loadedObjects: getLoadedObjects(state),
-  }),
+  state => {
+    const selectedFrame = getSelectedFrame(state);
+    const frameScopes = selectedFrame
+      ? getFrameScope(state, selectedFrame.id)
+      : null;
+    return {
+      selectedFrame,
+      isPaused: getIsPaused(state),
+      why: getPauseReason(state),
+      frameScopes: frameScopes
+    };
+  },
   dispatch => bindActionCreators(actions, dispatch)
 )(Scopes);

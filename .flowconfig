@@ -1,15 +1,15 @@
 [ignore]
-.*node_modules/cjson.*
-.*node_modules/fbjs.*
-.*node_modules/npm.*
-.*node_modules/stylelint.*
-.*node_modules/config-chain.*
+.*node_modules/documentation.*
+.*node_modules/devtools-reps/src/object-inspector/index.js
+.*node_modules/devtools-mc-assets/.*
+.*node_modules/immutable/dist/immutable.js.flow
 <PROJECT_ROOT>/firefox/.*
+.*mozilla-central/.*
 .*flow-coverage-report/.*
+.*custom_format_broken.json
 
 [libs]
 ./src/global-types.js
 
 [options]
-unsafe.enable_getters_and_setters=true
 suppress_comment=\\(.\\|\n\\)*\\$FlowIgnore

@@ -1,17 +1,21 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const {
+import {
   toServerLocation,
   fromServerLocation,
-  createLoadedObject,
-} = require("./create");
+  createLoadedObject
+} from "./create";
 
-import type { Location } from "../types";
+import type { Location } from "debugger-html";
 import type { ServerLocation, Agents } from "./types";
 
 type setBreakpointResponseType = {
   breakpointId: string,
-  serverLocation?: ServerLocation,
+  serverLocation?: ServerLocation
 };
 
 let debuggerAgent;
@@ -56,28 +60,28 @@ function breakOnNext() {
 }
 
 function sourceContents(sourceId: string) {
-  return debuggerAgent.getScriptSource({ scriptId: sourceId }).then(({
-    scriptSource,
-  }) => ({
-    source: scriptSource,
-    contentType: null,
-  }));
+  return debuggerAgent
+    .getScriptSource({ scriptId: sourceId })
+    .then(({ scriptSource }) => ({
+      source: scriptSource,
+      contentType: null
+    }));
 }
 
 async function setBreakpoint(location: Location, condition: string) {
-  let {
+  const {
     breakpointId,
-    serverLocation,
+    serverLocation
   }: setBreakpointResponseType = await debuggerAgent.setBreakpoint({
     location: toServerLocation(location),
-    columnNumber: location.column,
+    columnNumber: location.column
   });
 
   const actualLocation = fromServerLocation(serverLocation) || location;
 
   return {
     id: breakpointId,
-    actualLocation: actualLocation,
+    actualLocation: actualLocation
   };
 }
 
@@ -87,7 +91,7 @@ function removeBreakpoint(breakpointId: string) {
 
 async function getProperties(object: any) {
   const { result } = await runtimeAgent.getProperties({
-    objectId: object.objectId,
+    objectId: object.objectId
   });
 
   const loadedObjects = result.map(createLoadedObject);
@@ -99,7 +103,7 @@ function evaluate(script: string) {
   return runtimeAgent.evaluate({ expression: script });
 }
 
-function debuggeeCommand(script: string) {
+function debuggeeCommand(script: string): Promise<void> {
   evaluate(script);
   return Promise.resolve();
 }
@@ -121,10 +125,7 @@ const clientCommands = {
   evaluate,
   debuggeeCommand,
   navigate,
-  getProperties,
+  getProperties
 };
 
-module.exports = {
-  setupCommands,
-  clientCommands,
-};
+export { setupCommands, clientCommands };

@@ -1,15 +1,14 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
 .result-list {
   list-style: none;
-  width: 100%;
-  background-color: var(--theme-toolbar-background);
   margin: 0px;
   padding: 0px;
   overflow: auto;
-}
-
-.result-list.big {
-  max-height: calc(100% - 32px);
+  width: calc(100% - 1px); /* 1px fixes the hidden right border */
+  background: var(--theme-body-background);
 }
 
 .result-list * {
@@ -19,14 +18,9 @@
 
 .result-list li {
   color: var(--theme-body-color);
-  background-color: var(--theme-tab-toolbar-background);
   padding: 4px 13px;
   display: flex;
   justify-content: space-between;
-}
-
-.result-list li:first-child {
-  border-top: none;
 }
 
 .result-list.big li {
@@ -37,21 +31,27 @@
 
 .result-list li:hover {
   background: var(--theme-tab-toolbar-background);
-  cursor: pointer;
 }
 
 .result-list li.selected {
-  border: 1px solid var(--theme-selection-background);
+  background: var(--accordion-header-background);
 }
 
-.result-list.big li.selected {
-  padding-left: 9px;
-  padding-top: 9px;
-}
-
-.search-bar .result-list li.selected {
+.result-list.small li.selected {
   background-color: var(--theme-selection-background);
   color: white;
+}
+
+.theme-dark .result-list.small li.selected {
+  background-color: var(--theme-body-background);
+}
+
+.theme-dark .result-list li:hover {
+  background: var(--grey-70);
+}
+
+.theme-dark .result-list li.selected {
+  background: var(--grey-70);
 }
 
 .result-list li .title {
@@ -74,6 +74,10 @@
 
 .result-list.big li .subtitle {
   line-height: 1.5em;
+}
+
+.theme-dark .result-list.big li .subtitle {
+  color: var(--theme-comment-alt);
 }
 
 .search-bar .result-list li.selected .subtitle {

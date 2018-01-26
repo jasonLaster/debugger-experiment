@@ -1,102 +1,46 @@
-const { isPretty, isJavaScript } = require("../source");
-const { isOriginalId } = require("devtools-source-map");
-const buildQuery = require("./build-query");
-const {
-  getDocument,
-  setDocument,
-  removeDocument,
-  clearDocuments,
-} = require("./source-documents");
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-import {
-  getTokenLocation,
-  getExpressionFromToken,
-  previewExpression,
-} from "./expression.js";
+// @flow
 
-const {
-  countMatches,
-  find,
-  findNext,
-  findPrev,
-  removeOverlay,
-  clearIndex,
-} = require("./source-search");
+export * from "./source-documents";
+export * from "./get-token-location";
+export * from "./source-search";
+export * from "../ui";
+export * from "./create-editor";
 
-const SourceEditor = require("./source-editor");
+import { shouldPrettyPrint } from "../source";
+import { findNext, findPrev } from "./source-search";
 
-function shouldShowPrettyPrint(selectedSource) {
+import { isWasm, lineToWasmOffset, wasmOffsetToLine } from "../wasm";
+import { isOriginalId } from "devtools-source-map";
+
+import type { AstPosition, AstLocation } from "../../workers/parser/types";
+import type { EditorPosition, EditorRange } from "../editor/types";
+
+export function shouldShowPrettyPrint(selectedSource) {
   if (!selectedSource) {
     return false;
   }
 
-  selectedSource = selectedSource.toJS();
-  const _isPretty = isPretty(selectedSource);
-  const _isJavaScript = isJavaScript(selectedSource.url);
-  const isOriginal = isOriginalId(selectedSource.id);
-  const hasSourceMap = selectedSource.sourceMapURL;
-
-  if (_isPretty || isOriginal || hasSourceMap || !_isJavaScript) {
-    return false;
-  }
-
-  return true;
+  return shouldPrettyPrint(selectedSource);
 }
 
-function shouldShowFooter(selectedSource, horizontal) {
+export function shouldShowFooter(selectedSource, horizontal) {
   if (!horizontal) {
     return true;
   }
-
-  return shouldShowPrettyPrint(selectedSource);
+  if (!selectedSource) {
+    return false;
+  }
+  return (
+    shouldShowPrettyPrint(selectedSource) ||
+    isOriginalId(selectedSource.get("id"))
+  );
 }
 
-function forEachLine(codeMirror, iter) {
-  codeMirror.doc.iter(0, codeMirror.lineCount(), iter);
-}
-
-function removeLineClass(codeMirror, line, className) {
-  codeMirror.removeLineClass(line, "line", className);
-}
-
-function clearLineClass(codeMirror, className) {
-  forEachLine(codeMirror, line => {
-    removeLineClass(codeMirror, line, className);
-  });
-}
-
-function isTextForSource(sourceText) {
-  return !sourceText.get("loading") && !sourceText.get("error");
-}
-
-function breakpointAtLine(breakpoints, line) {
-  return breakpoints.find(b => {
-    return b.location.line === line + 1;
-  });
-}
-
-function getTextForLine(codeMirror, line) {
-  return codeMirror.getLine(line - 1).trim();
-}
-
-function getCursorLine(codeMirror) {
-  return codeMirror.getCursor().line;
-}
-
-/**
- * Forces the breakpoint gutter to be the same size as the line
- * numbers gutter. Editor CSS will absolutely position the gutter
- * beneath the line numbers. This makes it easy to be flexible with
- * how we overlay breakpoints.
- */
-function resizeBreakpointGutter(editor) {
-  const gutters = editor.display.gutters;
-  const lineNumbers = gutters.querySelector(".CodeMirror-linenumbers");
-  const breakpoints = gutters.querySelector(".breakpoints");
-  breakpoints.style.width = `${lineNumbers.clientWidth}px`;
-}
-
-function traverseResults(e, ctx, query, dir, modifiers) {
+export function traverseResults(e, ctx, query, dir, modifiers) {
   e.stopPropagation();
   e.preventDefault();
 
@@ -107,61 +51,106 @@ function traverseResults(e, ctx, query, dir, modifiers) {
   }
 }
 
-function createEditor() {
-  return new SourceEditor({
-    mode: "javascript",
-    readOnly: true,
-    lineNumbers: true,
-    theme: "mozilla",
-    lineWrapping: false,
-    matchBrackets: true,
-    showAnnotationRuler: true,
-    enableCodeFolding: false,
-    gutters: ["breakpoints", "hit-markers"],
-    value: " ",
-    extraKeys: {
-      // Override code mirror keymap to avoid conflicts with split console.
-      Esc: false,
-      "Cmd-F": false,
-      "Cmd-G": false,
-    },
+export function toEditorLine(sourceId: string, lineOrOffset: number): number {
+  if (isWasm(sourceId)) {
+    // TODO ensure offset is always "mappable" to edit line.
+    return wasmOffsetToLine(sourceId, lineOrOffset) || 0;
+  }
+
+  return lineOrOffset ? lineOrOffset - 1 : 1;
+}
+
+export function toEditorPosition(location: AstPosition): EditorPosition {
+  return {
+    line: toEditorLine(location.sourceId, location.line),
+    column: isWasm(location.sourceId) || !location.column ? 0 : location.column
+  };
+}
+
+export function toEditorRange(
+  sourceId: string,
+  location: AstLocation
+): EditorRange {
+  const { start, end } = location;
+  return {
+    start: toEditorPosition({ ...start, sourceId }),
+    end: toEditorPosition({ ...end, sourceId })
+  };
+}
+
+export function toSourceLine(sourceId: string, line: number): ?number {
+  return isWasm(sourceId) ? lineToWasmOffset(sourceId, line) : line + 1;
+}
+
+export function scrollToColumn(codeMirror: any, line: number, column: number) {
+  const { top, left } = codeMirror.charCoords(
+    { line: line, ch: column },
+    "local"
+  );
+
+  const scroller = codeMirror.getScrollerElement();
+  const centeredX = Math.max(left - scroller.offsetWidth / 2, 0);
+  const centeredY = Math.max(top - scroller.offsetHeight / 2, 0);
+
+  codeMirror.scrollTo(centeredX, centeredY);
+}
+
+export function toSourceLocation(
+  sourceId: string,
+  location: EditorPosition
+): AstPosition {
+  return {
+    line: toSourceLine(sourceId, location.line),
+    column: isWasm(sourceId) ? undefined : location.column
+  };
+}
+
+export function markText(editor: any, className, { start, end }: EditorRange) {
+  return editor.codeMirror.markText(
+    { ch: start.column, line: start.line },
+    { ch: end.column, line: end.line },
+    { className }
+  );
+}
+
+export function lineAtHeight(editor, sourceId, event) {
+  const editorLine = editor.codeMirror.lineAtHeight(event.clientY);
+  return toSourceLine(sourceId, editorLine);
+}
+
+export function getSourceLocationFromMouseEvent(editor, selectedLocation, e) {
+  const { line, ch } = editor.codeMirror.coordsChar({
+    left: e.clientX,
+    top: e.clientY
+  });
+
+  return {
+    sourceId: selectedLocation.sourceId,
+    line: line + 1,
+    column: ch + 1
+  };
+}
+
+export function forEachLine(codeMirror, iter) {
+  codeMirror.operation(() => {
+    codeMirror.doc.iter(0, codeMirror.lineCount(), iter);
   });
 }
 
-function updateDocument(editor, selectedSource, sourceText) {
-  if (selectedSource) {
-    let sourceId = selectedSource.get("id");
-    const doc = getDocument(sourceId) || editor.createDocument();
-    editor.replaceDocument(doc);
-  } else if (sourceText) {
-    this.setText(sourceText.get("text"));
-  }
+export function removeLineClass(codeMirror, line, className) {
+  codeMirror.removeLineClass(line, "line", className);
 }
 
-module.exports = {
-  createEditor,
-  shouldShowPrettyPrint,
-  shouldShowFooter,
-  clearLineClass,
-  buildQuery,
-  getDocument,
-  setDocument,
-  removeDocument,
-  clearDocuments,
-  countMatches,
-  find,
-  findNext,
-  findPrev,
-  clearIndex,
-  removeOverlay,
-  isTextForSource,
-  breakpointAtLine,
-  getTextForLine,
-  getCursorLine,
-  resizeBreakpointGutter,
-  traverseResults,
-  getTokenLocation,
-  getExpressionFromToken,
-  previewExpression,
-  updateDocument,
-};
+export function clearLineClass(codeMirror, className) {
+  forEachLine(codeMirror, line => {
+    removeLineClass(codeMirror, line, className);
+  });
+}
+
+export function getTextForLine(codeMirror, line) {
+  return codeMirror.getLine(line - 1).trim();
+}
+
+export function getCursorLine(codeMirror) {
+  return codeMirror.getCursor().line;
+}

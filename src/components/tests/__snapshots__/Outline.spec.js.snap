@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Outline should render a list of functions when properties change 1`] = `
+<div
+  className="outline"
+>
+  <ul
+    className="outline-list"
+  >
+    <li
+      className="outline-list__element"
+      key="my_example_function1:21:undefined"
+      onClick={[Function]}
+    >
+      <Svg
+        name="function"
+      />
+      <PreviewFunction
+        func={
+          Object {
+            "name": "my_example_function1",
+            "parameterNames": undefined,
+          }
+        }
+      />
+    </li>
+    <li
+      className="outline-list__element"
+      key="my_example_function2:22:undefined"
+      onClick={[Function]}
+    >
+      <Svg
+        name="function"
+      />
+      <PreviewFunction
+        func={
+          Object {
+            "name": "my_example_function2",
+            "parameterNames": undefined,
+          }
+        }
+      />
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`Outline should render ignore anonimous functions 1`] = `
+<div
+  className="outline"
+>
+  <ul
+    className="outline-list"
+  >
+    <li
+      className="outline-list__element"
+      key="my_example_function1:21:undefined"
+      onClick={[Function]}
+    >
+      <Svg
+        name="function"
+      />
+      <PreviewFunction
+        func={
+          Object {
+            "name": "my_example_function1",
+            "parameterNames": undefined,
+          }
+        }
+      />
+    </li>
+  </ul>
+</div>
+`;

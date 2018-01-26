@@ -1,18 +1,23 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import { DOM as dom, PropTypes, Component, createFactory } from "react";
-import ImPropTypes from "react-immutable-proptypes";
+import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import actions from "../../actions";
-import { getChromeScopes, getLoadedObjects, getPause } from "../../selectors";
-const ManagedTree = createFactory(require("../shared/ManagedTree"));
 import classnames from "classnames";
-import Svg from "../shared/Svg";
-import "./Scopes.css";
 
-function info(text) {
-  return dom.div({ className: "pane-info" }, text);
-}
+import actions from "../../actions";
+import type { Scope, Pause } from "debugger-html";
+import {
+  getChromeScopes,
+  getLoadedObjects,
+  isPaused as getIsPaused
+} from "../../selectors";
+import Svg from "../shared/Svg";
+import ManagedTree from "../shared/ManagedTree";
+import "./Scopes.css";
 
 // check to see if its an object with propertie
 function nodeHasProperties(item) {
@@ -34,7 +39,14 @@ function createNode(name, path, contents) {
   return { name, path, contents };
 }
 
-class Scopes extends Component {
+type Props = {
+  scopes: Array<Scope>,
+  loadedObjects: Map<string, any>,
+  loadObjectProperties: Object => void,
+  isPaused: Pause
+};
+
+class Scopes extends Component<Props> {
   objectCache: Object;
   getChildren: Function;
   onExpand: Function;
@@ -58,20 +70,18 @@ class Scopes extends Component {
 
     const nodes = Object.keys(ownProperties)
       .sort()
-      .filter(name => {
-        // Ignore non-concrete values like getters and setters
-        // for now by making sure we have a value.
-        return "value" in ownProperties[name];
-      })
-      .map(name => {
-        return createNode(name, `${parentPath}/${name}`, ownProperties[name]);
-      });
+      // Ignore non-concrete values like getters and setters
+      // for now by making sure we have a value.
+      .filter(name => "value" in ownProperties[name])
+      .map(name =>
+        createNode(name, `${parentPath}/${name}`, ownProperties[name])
+      );
 
     // Add the prototype if it exists and is not null
     if (prototype && prototype.type !== "null") {
       nodes.push(
         createNode("__proto__", `${parentPath}/__proto__`, {
-          value: prototype,
+          value: prototype
         })
       );
     }
@@ -83,33 +93,35 @@ class Scopes extends Component {
     const notEnumberable = false;
     const objectValue = "";
 
-    return dom.div(
-      {
-        className: classnames("node object-node", {
+    return (
+      <div
+        className={classnames("node object-node", {
           focused: false,
-          "not-enumerable": notEnumberable,
-        }),
-        style: { marginLeft: depth * 15 },
-        key: item.path,
-        onClick: e => {
+          "not-enumerable": notEnumberable
+        })}
+        style={{ marginLeft: depth * 15 }}
+        key={item.path}
+        onClick={e => {
           e.stopPropagation();
           setExpanded(item, !expanded);
-        },
-      },
-      Svg("arrow", {
-        className: classnames({
-          expanded: expanded,
-          hidden: nodeIsPrimitive(item),
-        }),
-      }),
-      dom.span({ className: "object-label" }, item.name),
-      dom.span({ className: "object-delimiter" }, objectValue ? ": " : ""),
-      dom.span({ className: "object-value" }, objectValue || "")
+        }}
+      >
+        <Svg
+          name="arrow"
+          className={classnames({
+            expanded,
+            hidden: nodeIsPrimitive(item)
+          })}
+        />
+        <span className="object-label">{item.name}</span>
+        <span className="object-delimiter">{objectValue ? ": " : ""}</span>
+        <span className="object-value">{objectValue || ""}</span>
+      </div>
     );
   }
 
   getObjectProperties(item) {
-    this.props.loadedObjects.get(item.contents.value.objectId);
+    this.props.loadedObjects[item.contents.value.objectId];
   }
 
   getChildren(item) {
@@ -159,56 +171,49 @@ class Scopes extends Component {
       return {
         name: name,
         path: name,
-        contents: { value: scope.object },
+        contents: { value: scope.object }
       };
     });
   }
 
   render() {
-    const { pauseInfo } = this.props;
+    const { isPaused } = this.props;
 
-    if (!pauseInfo) {
-      return dom.div(
-        { className: "pane scopes-list" },
-        info(L10N.getStr("scopes.notPaused"))
+    if (!isPaused) {
+      return (
+        <div className={classnames("pane", "scopes-list")}>
+          <div className="pane-info">{L10N.getStr("scopes.notPaused")}</div>
+        </div>
       );
     }
 
     const roots = this.getRoots();
 
-    return dom.div(
-      { className: "pane scopes-list" },
-      ManagedTree({
-        itemHeight: 20,
-        getParent: item => null,
-        getChildren: this.getChildren,
-        getRoots: () => roots,
-        getKey: item => item.path,
-        autoExpand: 0,
-        autoExpandDepth: 1,
-        autoExpandAll: false,
-        disabledFocus: true,
-        onExpand: this.onExpand,
-        renderItem: this.renderItem,
-      })
+    return (
+      <div className={classnames("pane", "scopes-list")}>
+        <ManagedTree
+          itemHeight={20}
+          getParent={item => null}
+          getChildren={this.getChildren}
+          getRoots={() => roots}
+          getPath={item => item.path}
+          autoExpand={0}
+          autoExpandDepth={1}
+          autoExpandAll={false}
+          disabledFocus={true}
+          onExpand={this.onExpand}
+          renderItem={this.renderItem}
+        />
+      </div>
     );
   }
 }
 
-Scopes.propTypes = {
-  scopes: PropTypes.array,
-  loadedObjects: ImPropTypes.map,
-  loadObjectProperties: PropTypes.func,
-  pauseInfo: PropTypes.object,
-};
-
-Scopes.displayName = "Scopes";
-
 export default connect(
   state => ({
-    pauseInfo: getPause(state),
+    isPaused: getIsPaused(state),
     loadedObjects: getLoadedObjects(state),
-    scopes: getChromeScopes(state),
+    scopes: getChromeScopes(state)
   }),
   dispatch => bindActionCreators(actions, dispatch)
 )(Scopes);

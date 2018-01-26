@@ -1,58 +1,63 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import { DOM as dom, PropTypes, createClass } from "react";
+import React, { Component } from "react";
 import classnames from "classnames";
 
 import "./ResultList.css";
 
-type ResultListItem = {
-  id: string,
-  subtitle: string,
-  title: string,
-  value: string,
+type Props = {
+  items: Array<any>,
+  selected: number,
+  selectItem: (
+    event: SyntheticKeyboardEvent<HTMLElement>,
+    item: any,
+    index: number
+  ) => void,
+  size: string
 };
 
-const ResultList = createClass({
-  propTypes: {
-    items: PropTypes.array.isRequired,
-    selected: PropTypes.number.isRequired,
-    selectItem: PropTypes.func.isRequired,
-    size: PropTypes.string,
-  },
+export default class ResultList extends Component<Props> {
+  displayName: "ResultList";
 
-  displayName: "ResultList",
+  static defaultProps = {
+    size: "small"
+  };
 
-  getDefaultProps() {
-    return {
-      size: "",
+  constructor(props: Props) {
+    super(props);
+    (this: any).renderListItem = this.renderListItem.bind(this);
+  }
+
+  renderListItem(item: any, index: number) {
+    const { selectItem, selected } = this.props;
+    const props = {
+      onClick: event => selectItem(event, item, index),
+      key: `${item.id}${item.value}${index}`,
+      ref: String(index),
+      title: item.value,
+      className: classnames("result-item", {
+        selected: index === selected
+      })
     };
-  },
 
-  renderListItem(item: ResultListItem, index: number) {
-    return dom.li(
-      {
-        onClick: () => this.props.selectItem(item),
-        key: `${item.id}${item.value}${index}`,
-        ref: index,
-        title: item.value,
-        className: classnames({
-          selected: index === this.props.selected,
-        }),
-      },
-      dom.div({ className: "title" }, item.title),
-      dom.div({ className: "subtitle" }, item.subtitle)
+    return (
+      <li {...props}>
+        <div className="title">{item.title}</div>
+        <div className="subtitle">{item.subtitle}</div>
+      </li>
     );
-  },
+  }
 
   render() {
-    let { size } = this.props;
-    size = size || "";
-    return dom.ul(
-      {
-        className: `result-list ${size}`,
-      },
-      this.props.items.map(this.renderListItem)
-    );
-  },
-});
+    const { size, items } = this.props;
 
-export default ResultList;
+    return (
+      <ul className={classnames("result-list", size)}>
+        {items.map(this.renderListItem)}
+      </ul>
+    );
+  }
+}

@@ -1,5 +1,9 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import constants from "../constants";
+
 import type { ThunkArgs } from "./types";
 
 export function recordCoverage() {
@@ -7,8 +11,8 @@ export function recordCoverage() {
     const { coverage } = await client.recordCoverage();
 
     return dispatch({
-      type: constants.RECORD_COVERAGE,
-      value: { coverage },
+      type: "RECORD_COVERAGE",
+      value: { coverage }
     });
   };
 }

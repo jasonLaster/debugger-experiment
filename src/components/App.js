@@ -1,46 +1,104 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-import { DOM as dom, PropTypes, Component, createFactory } from "react";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { features } from "../utils/prefs";
 import actions from "../actions";
-import { getSources, getSelectedSource, getPaneCollapse } from "../selectors";
+import { ShortcutsModal } from "./ShortcutsModal";
+
+import {
+  getSelectedSource,
+  getPaneCollapse,
+  getActiveSearch,
+  getQuickOpenEnabled,
+  getOrientation
+} from "../selectors";
+
+import type { SourceRecord, OrientationType } from "../reducers/types";
+import { isVisible } from "../utils/ui";
 
 import { KeyShortcuts } from "devtools-modules";
 const shortcuts = new KeyShortcuts({ window });
+
+import { Services } from "devtools-modules";
+const { appinfo } = Services;
+
+const isMacOS = appinfo.OS === "Darwin";
 
 const verticalLayoutBreakpoint = window.matchMedia("(min-width: 800px)");
 
 import "./variables.css";
 import "./App.css";
 import "./shared/menu.css";
-import "./shared/SplitBox.css";
 import "./shared/reps.css";
 
-const SplitBox = createFactory(require("devtools-modules").SplitBox);
+import SplitBox from "devtools-splitter";
 
-const ProjectSearch = createFactory(require("./ProjectSearch").default);
-const Sources = createFactory(require("./Sources").default);
-const Editor = createFactory(require("./Editor"));
-const SecondaryPanes = createFactory(require("./SecondaryPanes").default);
-const WelcomeBox = createFactory(require("./WelcomeBox").default);
-const EditorTabs = createFactory(require("./Editor/Tabs"));
+import ProjectSearch from "./ProjectSearch";
 
-class App extends Component {
-  state: { horizontal: boolean };
+import PrimaryPanes from "./PrimaryPanes";
+
+import Editor from "./Editor";
+
+import SecondaryPanes from "./SecondaryPanes";
+
+import WelcomeBox from "./WelcomeBox";
+
+import EditorTabs from "./Editor/Tabs";
+
+import QuickOpenModal from "./QuickOpenModal";
+
+type Props = {
+  selectedSource: SourceRecord,
+  orientation: OrientationType,
+  startPanelCollapsed: boolean,
+  endPanelCollapsed: boolean,
+  activeSearch: string,
+  quickOpenEnabled: boolean,
+  setActiveSearch: string => void,
+  closeActiveSearch: () => void,
+  closeProjectSearch: () => void,
+  openQuickOpen: (query?: string) => void,
+  closeQuickOpen: () => void,
+  setOrientation: OrientationType => void
+};
+
+type State = {
+  shortcutsModalEnabled: boolean,
+  startPanelSize: number,
+  endPanelSize: number
+};
+
+class App extends Component<Props, State> {
   onLayoutChange: Function;
   getChildContext: Function;
   renderEditorPane: Function;
   renderVerticalLayout: Function;
+  toggleQuickOpenModal: Function;
+  onEscape: Function;
+  onCommandSlash: Function;
 
   constructor(props) {
     super(props);
-    this.state = { horizontal: verticalLayoutBreakpoint.matches };
+    this.state = {
+      shortcutsModalEnabled: false,
+      startPanelSize: 0,
+      endPanelSize: 0
+    };
 
     this.getChildContext = this.getChildContext.bind(this);
     this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.toggleQuickOpenModal = this.toggleQuickOpenModal.bind(this);
     this.renderEditorPane = this.renderEditorPane.bind(this);
     this.renderVerticalLayout = this.renderVerticalLayout.bind(this);
+    this.onEscape = this.onEscape.bind(this);
+    this.onCommandSlash = this.onCommandSlash.bind(this);
   }
 
   getChildContext() {
@@ -49,117 +107,255 @@ class App extends Component {
 
   componentDidMount() {
     verticalLayoutBreakpoint.addListener(this.onLayoutChange);
+    this.setOrientation();
+
+    shortcuts.on(L10N.getStr("symbolSearch.search.key2"), (_, e) =>
+      this.toggleQuickOpenModal(_, e, "@")
+    );
+
+    const searchKeys = [
+      L10N.getStr("sources.search.key2"),
+      L10N.getStr("sources.search.alt.key")
+    ];
+    searchKeys.forEach(key => shortcuts.on(key, this.toggleQuickOpenModal));
+
+    shortcuts.on(L10N.getStr("gotoLineModal.key"), (_, e) =>
+      this.toggleQuickOpenModal(_, e, ":")
+    );
+
+    shortcuts.on("Escape", this.onEscape);
+    shortcuts.on("Cmd+/", this.onCommandSlash);
   }
 
   componentWillUnmount() {
     verticalLayoutBreakpoint.removeListener(this.onLayoutChange);
+    shortcuts.off(
+      L10N.getStr("symbolSearch.search.key2"),
+      this.toggleQuickOpenModal
+    );
+
+    const searchKeys = [
+      L10N.getStr("sources.search.key2"),
+      L10N.getStr("sources.search.alt.key")
+    ];
+    searchKeys.forEach(key => shortcuts.off(key, this.toggleQuickOpenModal));
+
+    shortcuts.off(L10N.getStr("gotoLineModal.key"), this.toggleQuickOpenModal);
+
+    shortcuts.off("Escape", this.onEscape);
+  }
+
+  onEscape(_, e) {
+    const {
+      activeSearch,
+      quickOpenEnabled,
+      closeActiveSearch,
+      closeQuickOpen
+    } = this.props;
+
+    if (activeSearch) {
+      e.preventDefault();
+      closeActiveSearch();
+    }
+
+    if (quickOpenEnabled === true) {
+      closeQuickOpen();
+    }
+  }
+
+  onCommandSlash() {
+    this.toggleShortcutsModal();
+  }
+
+  isHorizontal() {
+    return this.props.orientation === "horizontal";
+  }
+
+  toggleQuickOpenModal(_, e: SyntheticEvent<HTMLElement>, query?: string) {
+    const { quickOpenEnabled, openQuickOpen, closeQuickOpen } = this.props;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (quickOpenEnabled === true) {
+      closeQuickOpen();
+      return;
+    }
+
+    if (query != null) {
+      openQuickOpen(query);
+      return;
+    }
+    openQuickOpen();
+    return;
   }
 
   onLayoutChange() {
-    this.setState({ horizontal: verticalLayoutBreakpoint.matches });
+    this.setOrientation();
+  }
+
+  setOrientation() {
+    const orientation = verticalLayoutBreakpoint.matches
+      ? "horizontal"
+      : "vertical";
+    if (isVisible()) {
+      this.props.setOrientation(orientation);
+    }
   }
 
   renderEditorPane() {
     const { startPanelCollapsed, endPanelCollapsed } = this.props;
-    const { horizontal } = this.state;
-    return dom.div(
-      { className: "editor-pane" },
-      dom.div(
-        { className: "editor-container" },
-        EditorTabs({ startPanelCollapsed, endPanelCollapsed, horizontal }),
-        Editor({ horizontal }),
-        !this.props.selectedSource ? WelcomeBox({ horizontal }) : null,
-        ProjectSearch()
-      )
+    const { endPanelSize, startPanelSize } = this.state;
+    const horizontal = this.isHorizontal();
+
+    return (
+      <div className="editor-pane">
+        <div className="editor-container">
+          <EditorTabs
+            startPanelCollapsed={startPanelCollapsed}
+            endPanelCollapsed={endPanelCollapsed}
+            horizontal={horizontal}
+            startPanelSize={startPanelSize}
+            endPanelSize={endPanelSize}
+          />
+          <Editor
+            horizontal={horizontal}
+            startPanelSize={startPanelSize}
+            endPanelSize={endPanelSize}
+          />
+          {!this.props.selectedSource ? (
+            <WelcomeBox horizontal={horizontal} />
+          ) : null}
+          <ProjectSearch />
+        </div>
+      </div>
     );
   }
 
+  toggleShortcutsModal() {
+    this.setState({
+      shortcutsModalEnabled: !this.state.shortcutsModalEnabled
+    });
+  }
+
   renderHorizontalLayout() {
-    const { sources, startPanelCollapsed, endPanelCollapsed } = this.props;
-    const { horizontal } = this.state;
+    const { startPanelCollapsed, endPanelCollapsed } = this.props;
+    const horizontal = this.isHorizontal();
 
     const overflowX = endPanelCollapsed ? "hidden" : "auto";
 
-    return dom.div(
-      { className: "debugger" },
-      SplitBox({
-        style: { width: "100vw" },
-        initialSize: "250px",
-        minSize: 10,
-        maxSize: "50%",
-        splitterSize: 1,
-        startPanel: Sources({ sources, horizontal }),
-        startPanelCollapsed,
-        endPanel: SplitBox({
-          style: { overflowX },
-          initialSize: "300px",
-          minSize: 10,
-          maxSize: "80%",
-          splitterSize: 1,
-          endPanelControl: true,
-          startPanel: this.renderEditorPane(),
-          endPanel: SecondaryPanes({ horizontal }),
-          endPanelCollapsed,
-          vert: horizontal,
-        }),
-      })
+    return (
+      <SplitBox
+        style={{ width: "100vw" }}
+        initialSize="250px"
+        minSize={10}
+        maxSize="50%"
+        splitterSize={1}
+        onResizeEnd={size => this.setState({ startPanelSize: size })}
+        startPanel={<PrimaryPanes horizontal={horizontal} />}
+        startPanelCollapsed={startPanelCollapsed}
+        endPanel={
+          <SplitBox
+            style={{ overflowX }}
+            initialSize="300px"
+            minSize={10}
+            maxSize="80%"
+            splitterSize={1}
+            onResizeEnd={size => this.setState({ endPanelSize: size })}
+            endPanelControl={true}
+            startPanel={this.renderEditorPane()}
+            endPanel={
+              <SecondaryPanes
+                horizontal={horizontal}
+                toggleShortcutsModal={() => this.toggleShortcutsModal()}
+              />
+            }
+            endPanelCollapsed={endPanelCollapsed}
+            vert={horizontal}
+          />
+        }
+      />
     );
   }
 
   renderVerticalLayout() {
-    const { sources, startPanelCollapsed, endPanelCollapsed } = this.props;
-    const { horizontal } = this.state;
+    const { startPanelCollapsed, endPanelCollapsed } = this.props;
+    const horizontal = this.isHorizontal();
 
-    return dom.div(
-      { className: "debugger" },
-      SplitBox({
-        style: { width: "100vw" },
-        initialSize: "300px",
-        minSize: 30,
-        maxSize: "99%",
-        splitterSize: 1,
-        vert: horizontal,
-        startPanel: SplitBox({
-          style: { width: "100vw" },
-          initialSize: "250px",
-          minSize: 10,
-          maxSize: "40%",
-          splitterSize: 1,
-          startPanelCollapsed,
-          startPanel: Sources({ sources, horizontal }),
-          endPanel: this.renderEditorPane(),
-        }),
-        endPanel: SecondaryPanes({ horizontal }),
-        endPanelCollapsed,
-      })
+    return (
+      <SplitBox
+        style={{ width: "100vw" }}
+        initialSize="300px"
+        minSize={30}
+        maxSize="99%"
+        splitterSize={1}
+        vert={horizontal}
+        startPanel={
+          <SplitBox
+            style={{ width: "100vw" }}
+            initialSize="250px"
+            minSize={10}
+            maxSize="40%"
+            splitterSize={1}
+            startPanelCollapsed={startPanelCollapsed}
+            startPanel={<PrimaryPanes horizontal={horizontal} />}
+            endPanel={this.renderEditorPane()}
+          />
+        }
+        endPanel={
+          <SecondaryPanes
+            horizontal={horizontal}
+            toggleShortcutsModal={() => this.toggleShortcutsModal()}
+          />
+        }
+        endPanelCollapsed={endPanelCollapsed}
+      />
+    );
+  }
+
+  renderShortcutsModal() {
+    const additionalClass = isMacOS ? "mac" : "";
+
+    if (!features.shortcuts) {
+      return;
+    }
+
+    return (
+      <ShortcutsModal
+        additionalClass={additionalClass}
+        enabled={this.state.shortcutsModalEnabled}
+        handleClose={() => this.toggleShortcutsModal()}
+      />
     );
   }
 
   render() {
-    return this.state.horizontal
-      ? this.renderHorizontalLayout()
-      : this.renderVerticalLayout();
+    const { quickOpenEnabled } = this.props;
+    return (
+      <div className="debugger">
+        {this.isHorizontal()
+          ? this.renderHorizontalLayout()
+          : this.renderVerticalLayout()}
+        {quickOpenEnabled === true && <QuickOpenModal />}
+        {this.renderShortcutsModal()}
+      </div>
+    );
   }
 }
 
-App.propTypes = {
-  sources: PropTypes.object,
-  selectSource: PropTypes.func,
-  selectedSource: PropTypes.object,
-  startPanelCollapsed: PropTypes.bool,
-  endPanelCollapsed: PropTypes.bool,
-};
-
-App.displayName = "App";
-
 App.childContextTypes = { shortcuts: PropTypes.object };
 
-export default connect(
-  state => ({
-    sources: getSources(state),
+function mapStateToProps(state) {
+  return {
     selectedSource: getSelectedSource(state),
     startPanelCollapsed: getPaneCollapse(state, "start"),
     endPanelCollapsed: getPaneCollapse(state, "end"),
-  }),
-  dispatch => bindActionCreators(actions, dispatch)
+    activeSearch: getActiveSearch(state),
+    quickOpenEnabled: getQuickOpenEnabled(state),
+    orientation: getOrientation(state)
+  };
+}
+
+export default connect(mapStateToProps, dispatch =>
+  bindActionCreators(actions, dispatch)
 )(App);

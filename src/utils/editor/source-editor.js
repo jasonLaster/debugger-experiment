@@ -1,4 +1,6 @@
-// @flow
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
  * CodeMirror source editor utils
@@ -14,10 +16,21 @@ require("codemirror/mode/coffeescript/coffeescript");
 require("codemirror/mode/jsx/jsx");
 require("codemirror/mode/elm/elm");
 require("codemirror/mode/clojure/clojure");
-require("../../components/Editor/codemirror-mozilla.css");
 require("codemirror/addon/search/searchcursor");
+require("codemirror/addon/fold/foldcode");
+require("codemirror/addon/fold/brace-fold");
+require("codemirror/addon/fold/indent-fold");
+require("codemirror/addon/fold/foldgutter");
+require("codemirror/addon/selection/active-line");
+require("codemirror/addon/edit/matchbrackets");
+require("codemirror/mode/clike/clike");
+require("codemirror/mode/rust/rust");
 
-import type { Mode, AlignOpts } from "../../types";
+require("./source-editor.css");
+
+// NOTE: we should eventually use debugger-html context type mode
+type Mode = string | Object;
+export type AlignOpts = "top" | "center" | "bottom";
 
 // Maximum allowed margin (in number of lines) from top or bottom of the editor
 // while shifting to a line which was initially out of view.
@@ -27,6 +40,7 @@ type SourceEditorOpts = {
   enableCodeFolding: boolean,
   extraKeys: Object,
   gutters: string[],
+  foldGutter: boolean,
   lineNumbers: boolean,
   lineWrapping: boolean,
   matchBrackets: boolean,
@@ -34,10 +48,10 @@ type SourceEditorOpts = {
   readOnly: boolean,
   showAnnotationRuler: boolean,
   theme: string,
-  value: string,
+  value: string
 };
 
-class SourceEditor {
+export default class SourceEditor {
   opts: SourceEditorOpts;
   editor: any;
 
@@ -96,11 +110,17 @@ class SourceEditor {
    * @memberof utils/source-editor
    */
   alignLine(line: number, align: AlignOpts = "top") {
-    let cm = this.editor;
-    let from = cm.lineAtHeight(0, "page");
-    let to = cm.lineAtHeight(cm.getWrapperElement().clientHeight, "page");
-    let linesVisible = to - from;
-    let halfVisible = Math.round(linesVisible / 2);
+    const cm = this.editor;
+    const editorClientRect = cm.getWrapperElement().getBoundingClientRect();
+
+    const from = cm.lineAtHeight(editorClientRect.top, "page");
+    const to = cm.lineAtHeight(
+      editorClientRect.height + editorClientRect.top,
+      "page"
+    );
+
+    const linesVisible = to - from;
+    const halfVisible = Math.round(linesVisible / 2);
 
     // If the target line is in view, skip the vertical alignment part.
     if (line <= to && line >= from) {
@@ -110,13 +130,14 @@ class SourceEditor {
     // Setting the offset so that the line always falls in the upper half
     // of visible lines (lower half for bottom aligned).
     // MAX_VERTICAL_OFFSET is the maximum allowed value.
-    let offset = Math.min(halfVisible, MAX_VERTICAL_OFFSET);
+    const offset = Math.min(halfVisible, MAX_VERTICAL_OFFSET);
 
-    let topLine = {
-      center: Math.max(line - halfVisible, 0),
-      bottom: Math.max(line - linesVisible + offset, 0),
-      top: Math.max(line - offset, 0),
-    }[align || "top"] || offset;
+    let topLine =
+      {
+        center: Math.max(line - halfVisible, 0),
+        bottom: Math.max(line - linesVisible + offset, 0),
+        top: Math.max(line - offset, 0)
+      }[align || "top"] || offset;
 
     // Bringing down the topLine to total lines in the editor if exceeding.
     topLine = Math.min(topLine, cm.lineCount());
@@ -128,9 +149,7 @@ class SourceEditor {
    * @memberof utils/source-editor
    */
   setFirstVisibleLine(line: number) {
-    let { top } = this.editor.charCoords({ line: line, ch: 0 }, "local");
+    const { top } = this.editor.charCoords({ line: line, ch: 0 }, "local");
     this.editor.scrollTo(0, top);
   }
 }
-
-module.exports = SourceEditor;

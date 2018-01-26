@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 /**
@@ -5,71 +9,79 @@
  * @module reducers/ui
  */
 
-const constants = require("../constants");
-const makeRecord = require("../utils/makeRecord");
-const { prefs } = require("../utils/prefs");
+import makeRecord from "../utils/makeRecord";
+import { prefs } from "../utils/prefs";
 
 import type { Action, panelPositionType } from "../actions/types";
 import type { Record } from "../utils/makeRecord";
 
-type fileSearchModifiersType = {
-  caseSensitive: boolean,
-  wholeWord: boolean,
-  regexMatch: boolean,
-};
+export type ActiveSearchType = "project" | "file";
+
+export type OrientationType = "horizontal" | "vertical";
+
+export type SelectedPrimaryPaneTabType = "sources" | "outline";
 
 export type UIState = {
-  fileSearchOn: boolean,
-  fileSearchQuery: string,
-  fileSearchModifiers: Record<fileSearchModifiersType>,
-  projectSearchOn: boolean,
+  selectedPrimaryPaneTab: SelectedPrimaryPaneTabType,
+  activeSearch: ?ActiveSearchType,
+  contextMenu: any,
   shownSource: string,
   startPanelCollapsed: boolean,
   endPanelCollapsed: boolean,
+  frameworkGroupingOn: boolean,
+  projectDirectoryRoot: string,
+  orientation: OrientationType,
+  highlightedLineRange?: {
+    start?: number,
+    end?: number,
+    sourceId?: number
+  },
+  conditionalPanelLine: null | number
 };
 
-const State = makeRecord(
+export const State = makeRecord(
   ({
-    fileSearchOn: false,
-    fileSearchQuery: "",
-    fileSearchModifiers: makeRecord({
-      caseSensitive: true,
-      wholeWord: false,
-      regexMatch: false,
-    })(),
-    projectSearchOn: false,
+    selectedPrimaryPaneTab: "sources",
+    activeSearch: null,
+    contextMenu: {},
     shownSource: "",
+    projectDirectoryRoot: "",
     startPanelCollapsed: prefs.startPanelCollapsed,
     endPanelCollapsed: prefs.endPanelCollapsed,
+    frameworkGroupingOn: prefs.frameworkGroupingOn,
+    highlightedLineRange: undefined,
+    conditionalPanelLine: null,
+    orientation: "horizontal"
   }: UIState)
 );
 
-function update(state = State(), action: Action): Record<UIState> {
+function update(
+  state: Record<UIState> = State(),
+  action: Action
+): Record<UIState> {
   switch (action.type) {
-    case constants.TOGGLE_PROJECT_SEARCH: {
-      return state.set("projectSearchOn", action.value);
+    case "TOGGLE_ACTIVE_SEARCH": {
+      return state.set("activeSearch", action.value);
     }
 
-    case constants.TOGGLE_FILE_SEARCH: {
-      return state.set("fileSearchOn", action.value);
+    case "TOGGLE_FRAMEWORK_GROUPING": {
+      prefs.frameworkGroupingOn = action.value;
+      return state.set("frameworkGroupingOn", action.value);
     }
 
-    case constants.UPDATE_FILE_SEARCH_QUERY: {
-      return state.set("fileSearchQuery", action.query);
+    case "SET_CONTEXT_MENU": {
+      return state.set("contextMenu", action.contextMenu);
     }
 
-    case constants.TOGGLE_FILE_SEARCH_MODIFIER: {
-      return state.setIn(
-        ["fileSearchModifiers", action.modifier],
-        !state.getIn(["fileSearchModifiers", action.modifier])
-      );
+    case "SET_ORIENTATION": {
+      return state.set("orientation", action.orientation);
     }
 
-    case constants.SHOW_SOURCE: {
+    case "SHOW_SOURCE": {
       return state.set("shownSource", action.sourceUrl);
     }
 
-    case constants.TOGGLE_PANE: {
+    case "TOGGLE_PANE": {
       if (action.position == "start") {
         prefs.startPanelCollapsed = action.paneCollapsed;
         return state.set("startPanelCollapsed", action.paneCollapsed);
@@ -77,6 +89,40 @@ function update(state = State(), action: Action): Record<UIState> {
 
       prefs.endPanelCollapsed = action.paneCollapsed;
       return state.set("endPanelCollapsed", action.paneCollapsed);
+    }
+
+    case "HIGHLIGHT_LINES":
+      const { start, end, sourceId } = action.location;
+      let lineRange = {};
+
+      if (start && end && sourceId) {
+        lineRange = { start, end, sourceId };
+      }
+
+      return state.set("highlightedLineRange", lineRange);
+
+    case "CLOSE_QUICK_OPEN":
+    case "CLEAR_HIGHLIGHT_LINES":
+      return state.set("highlightedLineRange", {});
+
+    case "OPEN_CONDITIONAL_PANEL":
+      return state.set("conditionalPanelLine", action.line);
+
+    case "CLOSE_CONDITIONAL_PANEL":
+      return state.set("conditionalPanelLine", null);
+
+    case "SET_PROJECT_DIRECTORY_ROOT":
+      prefs.projectDirectoryRoot = action.url;
+      return state.set("projectDirectoryRoot", action.url);
+
+    case "SET_PRIMARY_PANE_TAB":
+      return state.set("selectedPrimaryPaneTab", action.tabName);
+
+    case "CLOSE_PROJECT_SEARCH": {
+      if (state.get("activeSearch") === "project") {
+        return state.set("activeSearch", null);
+      }
+      return state;
     }
 
     default: {
@@ -89,29 +135,29 @@ function update(state = State(), action: Action): Record<UIState> {
 // https://github.com/devtools-html/debugger.html/blob/master/src/reducers/sources.js#L179-L185
 type OuterState = { ui: Record<UIState> };
 
-type SearchFieldType = "projectSearchOn" | "fileSearchOn";
-function getSearchState(field: SearchFieldType, state: OuterState): boolean {
-  return state.ui.get(field);
-}
-
-function getFileSearchQueryState(state: OuterState): string {
-  return state.ui.get("fileSearchQuery");
-}
-
-function getFileSearchModifierState(
+export function getSelectedPrimaryPaneTab(
   state: OuterState
-): Record<fileSearchModifiersType> {
-  return state.ui.get("fileSearchModifiers");
+): SelectedPrimaryPaneTabType {
+  return state.ui.get("selectedPrimaryPaneTab");
 }
 
-const getProjectSearchState = getSearchState.bind(null, "projectSearchOn");
-const getFileSearchState = getSearchState.bind(null, "fileSearchOn");
+export function getActiveSearch(state: OuterState): ActiveSearchType {
+  return state.ui.get("activeSearch");
+}
 
-function getShownSource(state: OuterState): boolean {
+export function getContextMenu(state: OuterState): any {
+  return state.ui.get("contextMenu");
+}
+
+export function getFrameworkGroupingState(state: OuterState): boolean {
+  return state.ui.get("frameworkGroupingOn");
+}
+
+export function getShownSource(state: OuterState): boolean {
   return state.ui.get("shownSource");
 }
 
-function getPaneCollapse(
+export function getPaneCollapse(
   state: OuterState,
   position: panelPositionType
 ): boolean {
@@ -122,13 +168,20 @@ function getPaneCollapse(
   return state.ui.get("endPanelCollapsed");
 }
 
-module.exports = {
-  State,
-  update,
-  getProjectSearchState,
-  getFileSearchState,
-  getFileSearchQueryState,
-  getFileSearchModifierState,
-  getShownSource,
-  getPaneCollapse,
-};
+export function getHighlightedLineRange(state: OuterState) {
+  return state.ui.get("highlightedLineRange");
+}
+
+export function getConditionalPanelLine(state: OuterState): null | number {
+  return state.ui.get("conditionalPanelLine");
+}
+
+export function getProjectDirectoryRoot(state: OuterState): boolean {
+  return state.ui.get("projectDirectoryRoot");
+}
+
+export function getOrientation(state: OuterState): boolean {
+  return state.ui.get("orientation");
+}
+
+export default update;

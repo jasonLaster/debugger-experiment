@@ -1,13 +1,21 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const firefox = require("./firefox");
-const chrome = require("./chrome");
-const { prefs } = require("../utils/prefs");
-const {
+import * as firefox from "./firefox";
+import * as chrome from "./chrome";
+
+import { prefs } from "../utils/prefs";
+import { setupHelper } from "../utils/dbg";
+
+import { isFirefoxPanel } from "devtools-config";
+import {
   bootstrapApp,
   bootstrapStore,
-  bootstrapWorkers,
-} = require("../utils/bootstrap");
+  bootstrapWorkers
+} from "../utils/bootstrap";
 
 function loadFromPrefs(actions: Object) {
   const { pauseOnExceptions, ignoreCaughtExceptions } = prefs;
@@ -21,7 +29,10 @@ function getClient(connection: any) {
   return clientType == "firefox" ? firefox : chrome;
 }
 
-async function onConnect(connection: Object, services: Object) {
+async function onConnect(
+  connection: Object,
+  { services, toolboxActions }: Object
+) {
   // NOTE: the landing page does not connect to a JS process
   if (!connection) {
     return;
@@ -29,15 +40,30 @@ async function onConnect(connection: Object, services: Object) {
 
   const client = getClient(connection);
   const commands = client.clientCommands;
-  const { store, actions, selectors } = bootstrapStore(commands, services);
+  const { store, actions, selectors } = bootstrapStore(commands, {
+    services,
+    toolboxActions
+  });
 
   bootstrapWorkers();
-  await client.onConnect(connection, actions);
+  const { bpClients } = await client.onConnect(connection, actions);
   await loadFromPrefs(actions);
+
+  if (!isFirefoxPanel()) {
+    setupHelper({
+      store,
+      actions,
+      selectors,
+      client: client.clientCommands,
+      connection,
+      bpClients,
+      services
+    });
+  }
 
   bootstrapApp(connection, { store, actions });
 
   return { store, actions, selectors, client: commands };
 }
 
-module.exports = { onConnect };
+export { onConnect };

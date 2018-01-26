@@ -1,10 +1,10 @@
 ## Debugging Tips
 
-+ [Components](#components)
-+ [Actions](#actions)
-+ [Reducers](#reducers)
-+ [Client](#client)
-+ [Communication](#communication)
+* [Components](#components)
+* [Actions](#actions)
+* [Reducers](#reducers)
+* [Client](#client)
+* [Communication](#communication)
 
 The best thing about React and Redux is that it simplifies the development workflow.
 
@@ -22,6 +22,8 @@ The react devtools extension is useful for finding the correct component.
 Once you find the component, check the component's state and props and monitor the render calls.
 The easiest way to do this is to add a breakpoint in the render function.
 
+![react-dt]
+
 ### Actions
 
 Actions are the Debugger's API for adding breakpoints, stepping, and everything else.
@@ -29,18 +31,20 @@ Actions are the Debugger's API for adding breakpoints, stepping, and everything 
 Sometimes you want to know how to invoke an action or figure out why it's not working.
 Sometimes you want to understand why the state is what it is and what actions have occurred.
 
-A good place to start is logging. You can log the Debugger's actions by enabling `logging.actions` in your local config.
+A good place to start is logging. You can log the Debugger's actions by enabling `logging.actions` in your local config. You can also use Redux's devtools to see the actions that are invoked and how they updated the state.
 
 Once you've narrowed the question down to an action you can debug it either in the console or unit tests.
 
-It's easy to try invoking an action in the console with the `getGlobalsForTesting` helper:
+It's easy to try invoking an action in the console with the `dbg helper:
 
 ```js
-getGlobalsForTesting().actions.selectSource()
+dbg.actions.selectLocation();
 ```
 
 We have unit tests for several of our actions in `src/actions/tests`.
-It's nice to look at the unit tests to see how an action *should* be called. If you don't see the use case you're looking for, add a unit test to try it out. Once you get it working you can PR the new unit test and everyone benefits :)
+It's nice to look at the unit tests to see how an action _should_ be called. If you don't see the use case you're looking for, add a unit test to try it out. Once you get it working you can PR the new unit test and everyone benefits :)
+
+![redux-dt]
 
 ### Reducers
 
@@ -49,16 +53,16 @@ For instance, what does a breakpoint look like?
 In Redux, the reducers are like the application database and it's tremendously useful to be able to inspect them.
 
 It's easy to view the current Debugger state in the console with
-the `appStore` global. Because the data is immutable, you'll need to request the state each time you want to see it.
+the `dbg` global. Because the store is immutable, you'll need to request the state each time you want to see it.
 
 ```js
-appStore.getState().sources.toJS()
+dbg.store.getState().sources.toJS();
 ```
 
-You can also test out a selector in the console with the `getGlobalsForTesting` helper:
+You can also test out a selector in the console with the `dbg helper:
 
 ```js
-getGlobalsForTesting().selectors.getBreakpoints(appStore.getState())
+dbg.selectors.getBreakpoints(dbg.store.getState());
 ```
 
 ### Client
@@ -92,7 +96,7 @@ Here's a sample of some websocket frames from the Debugger attaching:
 
 ### Communication
 
-Lastly, it's worth mentioning that Developer Tools is an *advanced* subject
+Lastly, it's worth mentioning that Developer Tools are an _advanced_ subject
 you're actually inquiring into how JS works. It's awesome that you're curious and there
 are lots of people in our [slack] channel who are learning alongside of you.
 
@@ -102,3 +106,5 @@ Also, down the road, this is a subject that plenty of people are interested in l
 
 [slack]: https://devtools-html-slack.herokuapp.com/
 [talks]: ../CONTRIBUTING.md#give-a-talk-speech_balloon
+[react-dt]: https://cloud.githubusercontent.com/assets/254562/25345125/2cdc225e-28e2-11e7-9642-c7ead9916218.png
+[redux-dt]: https://cloud.githubusercontent.com/assets/254562/25345124/2cd6cf8e-28e2-11e7-8d4a-00a566240e74.png

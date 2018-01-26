@@ -1,12 +1,19 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
+.breakpoints-toggle {
+  margin: 2px 3px;
+}
+
 .breakpoints-list * {
-  -moz-user-select: none;
   user-select: none;
 }
 
 .breakpoints-list .breakpoint {
   font-size: 12px;
   color: var(--theme-content-color1);
-  padding: 0.5em 12px 0.5em 5px;
+  padding: 0.5em 1em 0.5em 0.5em;
   line-height: 1em;
   position: relative;
   transition: all 0.25s ease;
@@ -43,7 +50,6 @@ html .breakpoints-list .breakpoint.paused {
 }
 
 .breakpoints-list .breakpoint:hover {
-  cursor: pointer;
   background-color: var(--search-overlays-semitransparent);
 }
 
@@ -51,14 +57,25 @@ html .breakpoints-list .breakpoint.paused {
   border-color: var(--breakpoint-active-color-hover);
 }
 
-.breakpoints-list .breakpoint-checkbox {
-  margin-inline-start: 0;
-}
-
 .breakpoints-list .breakpoint-label {
+  max-width: calc(100% - var(--breakpoint-expression-right-clear-space));
   display: inline-block;
   padding-inline-start: 2px;
-  padding-bottom: 4px;
+  cursor: default;
+}
+
+.breakpoint-label .breakpoint-checkbox {
+  margin-inline-start: 0;
+  vertical-align: text-bottom;
+}
+
+.breakpoint-label .location {
+  width: 100%;
+  display: inline-block;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  padding: 1px 0;
+  vertical-align: bottom;
 }
 
 .breakpoints-list .pause-indicator {
@@ -85,8 +102,9 @@ html .breakpoints-list .breakpoint.paused {
 
 .breakpoint .close-btn {
   position: absolute;
-  offset-inline-end: 16px;
-  top: 12px;
+  offset-inline-end: 13px;
+  offset-inline-start: auto;
+  top: 9px;
 }
 
 .breakpoint .close {

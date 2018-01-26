@@ -1,15 +1,20 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 import type {
   BreakpointId,
   BreakpointResult,
+  Frame,
   FrameId,
-  ActorId,
   Location,
   Script,
   Source,
   SourceId,
-} from "../types";
+  Worker
+} from "debugger-html";
 
 import type {
   TabTarget,
@@ -17,28 +22,34 @@ import type {
   Grip,
   ThreadClient,
   ObjectClient,
-  BreakpointClient,
-  BreakpointResponse,
+  BPClients
 } from "./types";
 
-const { createSource } = require("./create");
+import { makePendingLocationId } from "../../utils/breakpoint";
 
-let bpClients: { [id: ActorId]: BreakpointClient };
+import { createSource, createBreakpointLocation } from "./create";
+
+let bpClients: BPClients;
 let threadClient: ThreadClient;
 let tabTarget: TabTarget;
-let debuggerClient: DebuggerClient | null;
+let debuggerClient: DebuggerClient;
+let supportsWasm: boolean;
 
 type Dependencies = {
   threadClient: ThreadClient,
   tabTarget: TabTarget,
-  debuggerClient: DebuggerClient | null,
+  debuggerClient: DebuggerClient,
+  supportsWasm: boolean
 };
 
-function setupCommands(dependencies: Dependencies): void {
+function setupCommands(dependencies: Dependencies): { bpClients: BPClients } {
   threadClient = dependencies.threadClient;
   tabTarget = dependencies.tabTarget;
   debuggerClient = dependencies.debuggerClient;
+  supportsWasm = dependencies.supportsWasm;
   bpClients = {};
+
+  return { bpClients };
 }
 
 function resume(): Promise<*> {
@@ -74,6 +85,26 @@ function sourceContents(sourceId: SourceId): Source {
   return sourceClient.source();
 }
 
+function getBreakpointByLocation(location: Location) {
+  const id = makePendingLocationId(location);
+  const bpClient = bpClients[id];
+
+  if (bpClient) {
+    const { actor, url, line, column, condition } = bpClient.location;
+    return {
+      id: bpClient.actor,
+      condition,
+      actualLocation: {
+        line,
+        column,
+        sourceId: actor,
+        sourceUrl: url
+      }
+    };
+  }
+  return null;
+}
+
 function setBreakpoint(
   location: Location,
   condition: boolean,
@@ -86,40 +117,35 @@ function setBreakpoint(
       line: location.line,
       column: location.column,
       condition,
-      noSliding,
+      noSliding
     })
-    .then((res: BreakpointResponse) => onNewBreakpoint(location, res));
+    .then(([{ actualLocation }, bpClient]) => {
+      actualLocation = createBreakpointLocation(location, actualLocation);
+      const id = makePendingLocationId(actualLocation);
+      bpClients[id] = bpClient;
+      bpClient.location.line = actualLocation.line;
+      bpClient.location.column = actualLocation.column;
+      bpClient.location.url = actualLocation.sourceUrl || "";
+
+      return { id, actualLocation };
+    });
 }
 
-function onNewBreakpoint(
-  location: Location,
-  res: BreakpointResponse
-): BreakpointResult {
-  const bpClient = res[1];
-  let actualLocation = res[0].actualLocation;
-  bpClients[bpClient.actor] = bpClient;
-
-  // Firefox only returns `actualLocation` if it actually changed,
-  // but we want it always to exist. Format `actualLocation` if it
-  // exists, otherwise use `location`.
-  actualLocation = actualLocation
-    ? {
-        sourceId: actualLocation.source.actor,
-        line: actualLocation.line,
-        column: actualLocation.column,
-      }
-    : location;
-
-  return {
-    id: bpClient.actor,
-    actualLocation,
-  };
-}
-
-function removeBreakpoint(breakpointId: BreakpointId) {
-  const bpClient = bpClients[breakpointId];
-  delete bpClients[breakpointId];
-  return bpClient.remove();
+function removeBreakpoint(
+  generatedLocation: Location
+): Promise<void> | ?BreakpointResult {
+  try {
+    const id = makePendingLocationId(generatedLocation);
+    const bpClient = bpClients[id];
+    if (!bpClient) {
+      console.warn("No breakpoint to delete on server");
+      return Promise.resolve();
+    }
+    delete bpClients[id];
+    return bpClient.remove();
+  } catch (_error) {
+    console.warn("No breakpoint to delete on server");
+  }
 }
 
 function setBreakpointCondition(
@@ -128,20 +154,31 @@ function setBreakpointCondition(
   condition: boolean,
   noSliding: boolean
 ) {
-  let bpClient = bpClients[breakpointId];
+  const bpClient = bpClients[breakpointId];
   delete bpClients[breakpointId];
 
   return bpClient
     .setCondition(threadClient, condition, noSliding)
-    .then(_bpClient => onNewBreakpoint(location, [{}, _bpClient]));
+    .then(_bpClient => {
+      bpClients[breakpointId] = _bpClient;
+      return { id: breakpointId };
+    });
 }
 
 type EvaluateParam = {
-  frameId?: FrameId,
+  frameId?: FrameId
 };
 
-function evaluate(script: Script, { frameId }: EvaluateParam) {
+function evaluateInFrame(frameId: string, script: Script) {
+  return evaluate(script, { frameId });
+}
+
+function evaluate(script: Script, { frameId }: EvaluateParam): Promise<mixed> {
   const params = frameId ? { frameActor: frameId } : {};
+  if (!tabTarget || !tabTarget.activeConsole) {
+    return Promise.resolve();
+  }
+
   return new Promise(resolve => {
     tabTarget.activeConsole.evaluateJS(
       script,
@@ -151,7 +188,7 @@ function evaluate(script: Script, { frameId }: EvaluateParam) {
   });
 }
 
-function debuggeeCommand(script: Script) {
+function debuggeeCommand(script: Script): ?Promise<void> {
   tabTarget.activeConsole.evaluateJS(script, () => {}, {});
 
   if (!debuggerClient) {
@@ -178,8 +215,21 @@ function getProperties(grip: Grip): Promise<*> {
   const objClient = threadClient.pauseGrip(grip);
 
   return objClient.getPrototypeAndProperties().then(resp => {
+    const { ownProperties, safeGetterValues } = resp;
+    for (const name in safeGetterValues) {
+      const { enumerable, writable, getterValue } = safeGetterValues[name];
+      ownProperties[name] = { enumerable, writable, value: getterValue };
+    }
     return resp;
   });
+}
+
+async function getFrameScopes(frame: Frame): Promise<*> {
+  if (frame.scope) {
+    return frame.scope;
+  }
+
+  return threadClient.getEnvironment(frame.id);
 }
 
 function pauseOnExceptions(
@@ -195,6 +245,17 @@ function pauseOnExceptions(
 function prettyPrint(sourceId: SourceId, indentSize: number): Promise<*> {
   const sourceClient = threadClient.source({ actor: sourceId });
   return sourceClient.prettyPrint(indentSize);
+}
+
+async function blackBox(sourceId: SourceId, isBlackBoxed: boolean): Promise<*> {
+  const sourceClient = threadClient.source({ actor: sourceId });
+  if (isBlackBoxed) {
+    await sourceClient.unblackBox();
+  } else {
+    await sourceClient.blackBox();
+  }
+
+  return { isBlackBoxed: !isBlackBoxed };
 }
 
 function disablePrettyPrint(sourceId: SourceId): Promise<*> {
@@ -216,10 +277,26 @@ function pauseGrip(func: Function): ObjectClient {
 
 async function fetchSources() {
   const { sources } = await threadClient.getSources();
-  return sources.map(createSource);
+  return sources.map(source => createSource(source, { supportsWasm }));
+}
+
+async function fetchWorkers(): Promise<{ workers: Worker[] }> {
+  // NOTE: The Worker and Browser Content toolboxes do not have a parent
+  // with a listWorkers function
+  // TODO: there is a listWorkers property, but it is not a function on the
+  // parent. Investigate what it is
+  if (
+    !threadClient._parent ||
+    typeof threadClient._parent.listWorkers != "function"
+  ) {
+    return Promise.resolve({ workers: [] });
+  }
+
+  return threadClient._parent.listWorkers();
 }
 
 const clientCommands = {
+  blackBox,
   interrupt,
   eventListeners,
   pauseGrip,
@@ -229,21 +306,22 @@ const clientCommands = {
   stepOver,
   breakOnNext,
   sourceContents,
+  getBreakpointByLocation,
   setBreakpoint,
   removeBreakpoint,
   setBreakpointCondition,
   evaluate,
+  evaluateInFrame,
   debuggeeCommand,
   navigate,
   reload,
   getProperties,
+  getFrameScopes,
   pauseOnExceptions,
   prettyPrint,
   disablePrettyPrint,
   fetchSources,
+  fetchWorkers
 };
 
-module.exports = {
-  setupCommands,
-  clientCommands,
-};
+export { setupCommands, clientCommands };

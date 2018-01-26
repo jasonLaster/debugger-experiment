@@ -1,69 +1,149 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import constants from "../constants";
-import {
-  getSource,
-  getProjectSearchState,
-  getFileSearchState,
-} from "../selectors";
+
+import { getSource, getActiveSearch, getPaneCollapse } from "../selectors";
 import type { ThunkArgs } from "./types";
+import type {
+  ActiveSearchType,
+  OrientationType,
+  SelectedPrimaryPaneTabType
+} from "../reducers/ui";
 
-export function toggleProjectSearch(toggleValue?: boolean) {
-  return ({ dispatch, getState }: ThunkArgs) => {
-    if (toggleValue != null) {
-      dispatch({
-        type: constants.TOGGLE_PROJECT_SEARCH,
-        value: toggleValue,
-      });
-    } else {
-      dispatch({
-        type: constants.TOGGLE_PROJECT_SEARCH,
-        value: !getProjectSearchState(getState()),
-      });
-    }
+export function setContextMenu(type: string, event: any) {
+  return ({ dispatch }: ThunkArgs) => {
+    dispatch({ type: "SET_CONTEXT_MENU", contextMenu: { type, event } });
   };
 }
 
-export function toggleFileSearch(toggleValue?: boolean) {
-  return ({ dispatch, getState }: ThunkArgs) => {
-    if (toggleValue != null) {
-      dispatch({
-        type: constants.TOGGLE_FILE_SEARCH,
-        value: toggleValue,
-      });
-    } else {
-      dispatch({
-        type: constants.TOGGLE_FILE_SEARCH,
-        value: !getFileSearchState(getState()),
-      });
-    }
-  };
+export function setPrimaryPaneTab(tabName: SelectedPrimaryPaneTabType) {
+  return { type: "SET_PRIMARY_PANE_TAB", tabName };
 }
 
-export function setFileSearchQuery(query: string) {
+export function closeActiveSearch() {
   return {
-    type: constants.UPDATE_FILE_SEARCH_QUERY,
-    query,
+    type: "TOGGLE_ACTIVE_SEARCH",
+    value: null
   };
 }
 
-export function toggleFileSearchModifier(modifier: string) {
-  return { type: constants.TOGGLE_FILE_SEARCH_MODIFIER, modifier };
+export function setActiveSearch(activeSearch?: ActiveSearchType) {
+  return ({ dispatch, getState }: ThunkArgs) => {
+    const activeSearchState = getActiveSearch(getState());
+    if (activeSearchState === activeSearch) {
+      return;
+    }
+
+    dispatch({
+      type: "TOGGLE_ACTIVE_SEARCH",
+      value: activeSearch
+    });
+  };
+}
+
+export function toggleFrameworkGrouping(toggleValue: boolean) {
+  return ({ dispatch, getState }: ThunkArgs) => {
+    dispatch({
+      type: "TOGGLE_FRAMEWORK_GROUPING",
+      value: toggleValue
+    });
+  };
 }
 
 export function showSource(sourceId: string) {
   return ({ dispatch, getState }: ThunkArgs) => {
     const source = getSource(getState(), sourceId);
+
+    dispatch(setPrimaryPaneTab("sources"));
     dispatch({
-      type: constants.SHOW_SOURCE,
-      sourceUrl: source.get("url"),
+      type: "SHOW_SOURCE",
+      sourceUrl: ""
+    });
+
+    dispatch({
+      type: "SHOW_SOURCE",
+      sourceUrl: source.get("url")
     });
   };
 }
 
 export function togglePaneCollapse(position: string, paneCollapsed: boolean) {
-  return {
-    type: constants.TOGGLE_PANE,
-    position,
-    paneCollapsed,
+  return ({ dispatch, getState }: ThunkArgs) => {
+    const prevPaneCollapse = getPaneCollapse(getState(), position);
+    if (prevPaneCollapse === paneCollapsed) {
+      return;
+    }
+
+    dispatch({
+      type: "TOGGLE_PANE",
+      position,
+      paneCollapsed
+    });
   };
+}
+
+/**
+ * @memberof actions/sources
+ * @static
+ */
+export function highlightLineRange(location: {
+  start: number,
+  end: number,
+  sourceId: number
+}) {
+  return {
+    type: "HIGHLIGHT_LINES",
+    location
+  };
+}
+
+export function flashLineRange(location: {
+  start: number,
+  end: number,
+  sourceId: number
+}) {
+  return ({ dispatch }: ThunkArgs) => {
+    dispatch(highlightLineRange(location));
+    setTimeout(() => dispatch(clearHighlightLineRange()), 200);
+  };
+}
+
+/**
+ * @memberof actions/sources
+ * @static
+ */
+export function clearHighlightLineRange() {
+  return {
+    type: "CLEAR_HIGHLIGHT_LINES"
+  };
+}
+
+export function openConditionalPanel(line: ?number) {
+  if (!line) {
+    return;
+  }
+
+  return {
+    type: "OPEN_CONDITIONAL_PANEL",
+    line
+  };
+}
+
+export function closeConditionalPanel() {
+  return {
+    type: "CLOSE_CONDITIONAL_PANEL"
+  };
+}
+
+export function setProjectDirectoryRoot(url: Object) {
+  return {
+    type: "SET_PROJECT_DIRECTORY_ROOT",
+    url
+  };
+}
+
+export function setOrientation(orientation: OrientationType) {
+  return { type: "SET_ORIENTATION", orientation };
 }

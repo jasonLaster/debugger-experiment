@@ -1,15 +1,22 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 export type SearchModifiers = {
   caseSensitive: boolean,
   wholeWord: boolean,
-  regexMatch: boolean,
+  regexMatch: boolean
 };
 
 export type Expression = {
   value: Object,
-  input: string,
-  visible: boolean,
+  input: string
+};
+
+export type Worker = {
+  url: string
 };
 
 export type Mode =
@@ -19,20 +26,18 @@ export type Mode =
       typescript?: boolean,
       base?: {
         name: string,
-        typescript: boolean,
-      },
+        typescript: boolean
+      }
     };
-
-export type AlignOpts = "top" | "center" | "bottom";
 
 export type {
   Breakpoint,
+  PendingBreakpoint,
   Frame,
   Grip,
   LoadedObject,
   Location,
   Source,
-  SourceText,
   Pause,
-  Why,
+  Why
 } from "debugger-html";

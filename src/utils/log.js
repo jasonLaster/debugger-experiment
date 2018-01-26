@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 /* @flow */
 
 /**
@@ -8,7 +12,7 @@
  * @module utils/log
  */
 
-const { isDevelopment } = require("devtools-config");
+import { isDevelopment } from "devtools-config";
 
 /**
  * Produces a formatted console log line by imploding args, prefixed by [log]
@@ -19,12 +23,10 @@ const { isDevelopment } = require("devtools-config");
  * @memberof utils/log
  * @static
  */
-function log(...args: any[]) {
+export function log(...args: any[]) {
   if (!isDevelopment()) {
     return;
   }
 
   console.log.apply(console, ["[log]", ...args]);
 }
-
-module.exports = log;

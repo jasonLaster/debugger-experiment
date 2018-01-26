@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 /**
@@ -5,28 +9,30 @@
  * @module utils/test-head
  */
 
-const { combineReducers } = require("redux");
-const sourceMaps = require("devtools-source-map");
-const reducers = require("../reducers");
-const actions = require("../actions").default;
-const selectors = require("../selectors");
-const constants = require("../constants");
-
-const configureStore = require("../utils/create-store");
+import { combineReducers } from "redux";
+import sourceMaps from "devtools-source-map";
+import reducers from "../reducers";
+import actions from "../actions";
+import selectors from "../selectors";
+import { getHistory } from "../test/utils/history";
+import configureStore from "../actions/utils/create-store";
+import * as I from "immutable";
 
 /**
  * @memberof utils/test-head
  * @static
  */
-function createStore(client: any, initialState: any = {}) {
+function createStore(client: any, initialState: any = {}, sourceMapsMock: any) {
   return configureStore({
     log: false,
+    history: getHistory(),
     makeThunkArgs: args => {
-      return Object.assign({}, args, {
+      return {
+        ...args,
         client,
-        sourceMaps,
-      });
-    },
+        sourceMaps: sourceMapsMock || sourceMaps
+      };
+    }
   })(combineReducers(reducers), initialState);
 }
 
@@ -38,42 +44,80 @@ function commonLog(msg: string, data: any = {}) {
   console.log(`[INFO] ${msg} ${JSON.stringify(data)}`);
 }
 
+function makeFrame({ id, sourceId }: Object, opts: Object = {}) {
+  return { id, scope: [], location: { sourceId, line: 4 }, ...opts };
+}
+
 /**
  * @memberof utils/test-head
  * @static
  */
 function makeSource(name: string, props: any = {}) {
-  return Object.assign(
-    {
-      id: name,
-      url: `http://localhost:8000/examples/${name}`,
-    },
-    props
-  );
+  return {
+    id: name,
+    loadedState: "unloaded",
+    url: `http://localhost:8000/examples/${name}`,
+    ...props
+  };
+}
+
+function makeOriginalSource(name: string, props?: Object) {
+  const source = makeSource(name, props);
+  return { ...source, id: `${name}-original` };
+}
+
+function makeSourceRecord(name: string, props: any = {}) {
+  return I.Map(makeSource(name, props));
+}
+
+function makeFuncLocation(startLine) {
+  return {
+    start: {
+      line: startLine
+    }
+  };
+}
+
+function makeSymbolDeclaration(name: string, line: number) {
+  return {
+    id: `${name}:${line}`,
+    name,
+    location: makeFuncLocation(line)
+  };
 }
 
 /**
  * @memberof utils/test-head
  * @static
  */
-function waitForState(store: any, predicate: any) {
+function waitForState(store: any, predicate: any): Promise<void> {
   return new Promise(resolve => {
+    let ret = predicate(store.getState());
+    if (ret) {
+      resolve(ret);
+    }
+
     const unsubscribe = store.subscribe(() => {
-      if (predicate(store.getState())) {
+      ret = predicate(store.getState());
+      if (ret) {
         unsubscribe();
-        resolve();
+        resolve(ret);
       }
     });
   });
 }
 
-module.exports = {
+export {
   actions,
-  constants,
   selectors,
   reducers,
   createStore,
   commonLog,
+  makeFrame,
   makeSource,
+  makeOriginalSource,
+  makeSourceRecord,
+  makeSymbolDeclaration,
   waitForState,
+  getHistory
 };

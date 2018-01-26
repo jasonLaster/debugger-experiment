@@ -17,6 +17,8 @@ We respect your time and want to help you make the most of it as you learn more 
   * [Your First Code Contribution](#your-first-code-contribution)
   * [Coding Standards](#coding-standards)
   * [Development Guide](#development-guide-computer)
+  * [Terminology](#terminology)
+  * [Debugging Firefox](#debugging-firefox)
   * [Issues](#issues)
   * [Pull Requests](#pull-requests)
   * [Maintainer Tips](#maintainer-tips)
@@ -67,27 +69,26 @@ The best talks can be as simple as walking through how the debugger works
 and adding a small feature. For the audience in the room, this will likely be
 the first time they've seen the internals of a developer tool.
 
-Here are two example talks [Debugging the Debugger][jlongster-talk] and [Inspector Inception][jlast-talk].
-Ofcourse, feel free to ask questions in [slack][slack] or share talk slides or videos in channel.
+Of course, feel free to ask questions in [slack][slack] or share talk slides or videos in channel our `#talks` channel.
 
 ### Write a Blog Post :pencil2:
 
 Our primary goal is to help developers understand they have the skills
 to improve their environment. Writing about DevTools is the best way
-to dispell the myth that what we do is magic.
+to dispel the myth that what we do is magic.
 
 Writing is a great way to share what you learn and articulate your passion.
 Blog posts can either be technical "how x works" or narrative "how we built x".
 The most important piece is that it helps people feel welcome.
 
 If you would like to write a post and have questions ask one of us in [slack][slack].
-Also, ofcourse share what you've written in [slack][slack]!
+Also, of course share what you've written in [slack][slack]!
 Here are some examples [search boxes][search-boxes], [getting into the flow][getting-into-the-flow], [better source maps][better-sourcemaps], [stepping debugger][stepping-debugger].
 
 ### Organize a meetup :beer:
 
 Open source workshops are a great way to bring people together and contribute.
-The best thing about workshops is that it's the best way for new comers to make their first PR.
+The best thing about workshops is that it's the best way for newcomers to make their first PR.
 It's also a lot of fun!
 
 There's been four workshops so far. Two in New York, one in Tel Aviv, and one in Vancouver.
@@ -149,6 +150,16 @@ Go to [local Development](./docs/local-development.md) to learn about:
 * [Testing](./docs/local-development.md#testing)
 * [Linting](./docs/local-development.md#linting)
 
+### Terminology
+
+* [Generated / Original](./docs/terminology.md#generated--original)
+
+### Debugging Firefox
+
+At some point, you'll want to debug firefox to see your changes in the devtools panel or inspect the debugger server.
+
+Here's a guide to help you get started [guide](./docs/debugging-firefox.md)
+
 ### Issues
 
 * [Issue Titles](./docs/issues.md#issue-titles)
@@ -175,10 +186,17 @@ Go to [Pull Requests](./docs/pull-requests.md) to learn about:
 ### Maintainer Tips
 
 Helping maintain a project is the best way to contribute to its overall health.
+Here are some [notes][mdoc] on how we work.
 
-+ [Pushing to a branch](./docs/maintainer.md#pushing-to-a-branch)
-+ [Triaging issues](./docs/maintainer.md#triaging-issues)
++ [Triaging Issues](./docs/maintainer.md#triaging-issues)
++ [Making Bugs Actionable](./docs/maintainer.md#making-bugs-actionable)
++ [Closing Stale Issues](./docs/maintainer.md#reviewing-stale-issues)
++ [Making Issues available](./docs/maintainer.md#making-issues-available)
++ [Following up on In Progress work](./docs/maintainer.md#following-up-on-in-progress-work)
 + [Adding a Patch](./docs/maintainer.md#adding-a-patch)
++ [Pushing to a branch](./docs/maintainer.md#pushing-to-a-branch)
+
+[mdoc]: ./docs/maintainer.md
 
 ### Debugging Tips
 
@@ -189,14 +207,14 @@ Helping maintain a project is the best way to contribute to its overall health.
 
 ### Pro Tips
 
-Here are some tips from fellow contributors.
+Here are some tips from our contributors.
 
 * **Time management** is really important. Try your best to balance obligations.
 * **Communicate** Communicate early and often. Share your work often and try to land the smallest possible pieces.
 * **Goals** It's helpful to set realistic goals.
 * **Work** Consider talking with your manager about OSS time at work. There are several reasons why this makes sense for your employer:
   * **expertise** teams benefit from having a resident expert on debugging or other tools
-  * **marketing** your manager can market his team as OSS friendly to candidates and other employees.
+  * **marketing** your manager can market their team as OSS friendly to candidates and other employees.
   * **career development** the skills you learn in OSS translate to your own growth.
   * **sponsoring** your team benefits from having quality OSS tools. Sponsoring your OSS time is a great way to give back.
 
@@ -216,14 +234,20 @@ From that original demo the devtools.html project has progressed quite a bit.  T
 
 The debugger.html project is targeted to land in Firefox for Firefox 52.  However if you're looking to work directly on the DevTools project which ships developer tools for Firefox and Firefox Developer Edition right now you can find more information on the Mozilla wiki [DevTools / Get Involved](https://wiki.mozilla.org/DevTools/GetInvolved).
 
+### Talks, Videos, Blog posts
+
++ [Talks](./docs/talks.md)
++ [Videos](./docs/videos.md)
+
+
 ## About Us
 
 debugger.html is an Open Source [Mozilla][mozilla] [Firefox][mozilla-firefox] Developer Tools project.
 Our goal is to work with the community to build a universal JS debugger for modern times.
 
-| | |
-| ---------- | ------ |
-| ![][jasonlaster] <br/> [@jasonlaster][@jasonlaster] | ![][clarkbw] <br/> [@clarkbw][@clarkbw] |
+| | | | |
+| ---------- | ------ | ------ | ------ |
+| ![][jasonlaster] <br/> [@jasonlaster][@jasonlaster] | ![][digitarald] <br/> [@digitarald][@digitarald] | ![][codehag] <br/> [@codehag][@codehag]  | ![][violasong] <br/> [@violasong][@violasong] |
 
 ### Team Members
 
@@ -231,9 +255,9 @@ debugger.html community team members help shepherd the community.
 They are here to help mentor new comers, review pull requests, and facilitate issue discussions.
 They are a fantastic resource and genuinely friendly human beings.
 
-| | | | |
-| ---------- | ------ | ----- | ---- |
-| ![][bomsy] <br /> [@bomsy][@bomsy] | ![][jbhoosreddy] <br /> [@jbhoosreddy][@jbhoosreddy] | ![][wldcordeiro] <br />[@wldcordeiro][@wldcordeiro] | ![][irfanhudda] <br />[@irfanhudda][@irfanhudda] |
+| | | | | | | |
+| ---------- | ------ | ----- | ---- | ---- | ---- | ---- |
+| ![][bomsy] <br /> [@bomsy][@bomsy] | ![][jbhoosreddy] <br /> [@jbhoosreddy][@jbhoosreddy] | ![][wldcordeiro] <br />[@wldcordeiro][@wldcordeiro] | ![][irfanhudda] <br />[@irfanhudda][@irfanhudda] | ![][darkwing] <br />[@darkwing][@darkwing] | ![][nyrosmith] <br />[@nyrosmith][@nyrosmith] | ![][lukaszsobek] <br />[@lukaszsobek][@lukaszsobek]
 
 ### Joining Mozilla
 
@@ -254,15 +278,26 @@ Mozilla has and continues to hire many people from within the Open Source Softwa
 [@jasonlaster]:https://github.com/jasonlaster
 [@bomsy]:https://github.com/bomsy
 [@wldcordeiro]:https://github.com/wldcordeiro
-[@clarkbw]:https://github.com/clarkbw
+[@digitarald]:https://github.com/digitarald
 [@jbhoosreddy]:https://github.com/jbhoosreddy
 [@irfanhudda]:https://github.com/irfanhudda
+[@codehag]:https://github.com/codehag
+[@violasong]:https://github.com/violasong
+[@darkwing]:https://github.com/darkwing
+[@nyrosmith]:https://github.com/nyrosmith
+[@lukaszsobek]:https://github.com/lukaszsobek
+
 [jasonlaster]:https://avatars.githubusercontent.com/jasonlaster?size=56
 [bomsy]:https://avatars.githubusercontent.com/bomsy?size=56
 [wldcordeiro]:https://avatars.githubusercontent.com/wldcordeiro?size=56
-[clarkbw]:https://avatars.githubusercontent.com/clarkbw?size=56
+[digitarald]:https://avatars.githubusercontent.com/digitarald?size=56
 [jbhoosreddy]:https://avatars.githubusercontent.com/jbhoosreddy?size=56
 [irfanhudda]:https://avatars.githubusercontent.com/irfanhudda?size=56
+[codehag]:https://avatars.githubusercontent.com/codehag?size=56
+[violasong]:https://avatars.githubusercontent.com/violasong?size=56
+[darkwing]:https://avatars.githubusercontent.com/darkwing?size=56
+[nyrosmith]:https://avatars.githubusercontent.com/nyrosmith?size=56
+[lukaszsobek]:https://avatars.githubusercontent.com/lukaszsobek?size=56
 
 [mozilla]:https://www.mozilla.org/
 [mozilla-firefox]:https://www.mozilla.org/firefox/

@@ -1,28 +1,16 @@
-/* @flow */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-declare var Resolve: (result: any) => void;
-declare var Reject: (result: any) => void;
+// @flow
 
-export type Defer = {
-  resolve: Resolve,
-  reject: Reject,
-  promise: Promise<any>,
-};
+export default function defer() {
+  let resolve = () => {};
+  let reject = () => {};
+  const promise: Promise<any> = new Promise((_res, _rej) => {
+    resolve = _res;
+    reject = _rej;
+  });
 
-function defer(): Defer {
-  let resolve: Resolve; // eslint-disable-line no-unused-vars
-  let reject: Reject; // eslint-disable-line no-unused-vars
-  const promise: Promise<any> = new Promise(
-    function(innerResolve: Resolve, innerReject: Reject) {
-      resolve = innerResolve;
-      reject = innerReject;
-    }
-  );
-  return {
-    resolve,
-    reject,
-    promise,
-  };
+  return { resolve, reject, promise };
 }
-
-module.exports = defer;

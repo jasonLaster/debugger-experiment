@@ -1,24 +1,9 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import type { Pause, Frame } from "../types";
-
-export function updateFrameLocations(
-  frames: Frame[],
-  sourceMaps: any
-): Promise<Frame[]> {
-  if (!frames || frames.length == 0) {
-    return Promise.resolve(frames);
-  }
-
-  return Promise.all(
-    frames.map(frame => {
-      return sourceMaps.getOriginalLocation(frame.location).then(loc => {
-        return Object.assign(frame, {
-          location: loc,
-        });
-      });
-    })
-  );
-}
+import type { Why } from "debugger-html";
 
 // Map protocol pause "why" reason to a valid L10N key
 // These are the known unhandled reasons:
@@ -39,17 +24,39 @@ const reasons = {
   promiseRejection: "whyPaused.promiseRejection",
   assert: "whyPaused.assert",
   debugCommand: "whyPaused.debugCommand",
-  other: "whyPaused.other",
+  other: "whyPaused.other"
 };
 
-export function getPauseReason(pauseInfo: Pause): string | null {
-  if (!pauseInfo) {
+export function getPauseReason(why?: Why): string | null {
+  if (!why) {
     return null;
   }
 
-  let reasonType = pauseInfo.getIn(["why"]).get("type");
+  const reasonType = why.type;
   if (!reasons[reasonType]) {
     console.log("Please file an issue: reasonType=", reasonType);
   }
   return reasons[reasonType];
+}
+
+export function isException(why: Why) {
+  return why && why.type && why.type === "exception";
+}
+
+export function isInterrupted(why: Why) {
+  return why && why.type && why.type === "interrupted";
+}
+
+export function inDebuggerEval(why: ?Why) {
+  if (
+    why &&
+    why.type === "exception" &&
+    why.exception &&
+    why.exception.preview &&
+    why.exception.preview.fileName
+  ) {
+    return why.exception.preview.fileName === "debugger eval code";
+  }
+
+  return false;
 }

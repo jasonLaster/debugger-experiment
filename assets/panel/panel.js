@@ -4,10 +4,13 @@
 "use strict";
 
 const { Task } = require("devtools/shared/task");
-var { LocalizationHelper } = require("devtools/shared/l10n");
+const { LocalizationHelper } = require("devtools/shared/l10n");
+const { gDevTools } = require("devtools/client/framework/devtools");
+const { TargetFactory } = require("devtools/client/framework/target");
+const { Toolbox } = require("devtools/client/framework/toolbox");
 
 const DBG_STRINGS_URI = "devtools/client/locales/debugger.properties";
-var L10N = new LocalizationHelper(DBG_STRINGS_URI);
+const L10N = new LocalizationHelper(DBG_STRINGS_URI);
 
 function DebuggerPanel(iframeWindow, toolbox) {
   this.panelWin = iframeWindow;
@@ -16,7 +19,7 @@ function DebuggerPanel(iframeWindow, toolbox) {
 }
 
 DebuggerPanel.prototype = {
-  open: async function () {
+  open: async function() {
     if (!this.toolbox.target.isRemote) {
       await this.toolbox.target.makeRemote();
     }
@@ -25,12 +28,17 @@ DebuggerPanel.prototype = {
       actions,
       store,
       selectors,
-      client,
+      client
     } = await this.panelWin.Debugger.bootstrap({
       threadClient: this.toolbox.threadClient,
       tabTarget: this.toolbox.target,
-      debuggerClient: this.toolbox.target._client,
+      debuggerClient: this.toolbox.target.client,
       sourceMaps: this.toolbox.sourceMapService,
+      toolboxActions: {
+        // Open a link in a new browser tab.
+        openLink: this.openLink.bind(this),
+        openWorkerToolbox: this.openWorkerToolbox.bind(this)
+      }
     });
 
     this._actions = actions;
@@ -41,31 +49,63 @@ DebuggerPanel.prototype = {
     return this;
   },
 
-  getVarsForTests () {
+  getVarsForTests() {
     return {
       store: this._store,
       selectors: this._selectors,
       actions: this._actions,
-      client: this._client,
+      client: this._client
     };
   },
 
-  _getState: function () {
+  _getState: function() {
     return this._store.getState();
   },
 
-  getFrames: function () {
+  openLink: function(url) {
+    const parentDoc = this.toolbox.doc;
+    if (!parentDoc) {
+      return;
+    }
+
+    const win = parentDoc.querySelector("window");
+    if (!win) {
+      return;
+    }
+
+    const top = win.ownerDocument.defaultView.top;
+    if (!top || typeof top.openUILinkIn !== "function") {
+      return;
+    }
+
+    top.openUILinkIn(url, "tab");
+  },
+
+  openWorkerToolbox: function(worker) {
+    this.toolbox.target.client.attachWorker(
+      worker.actor,
+      (response, workerClient) => {
+        const workerTarget = TargetFactory.forWorker(workerClient);
+        gDevTools
+          .showToolbox(workerTarget, "jsdebugger", Toolbox.HostType.WINDOW)
+          .then(toolbox => {
+            toolbox.once("destroy", () => workerClient.detach());
+          });
+      }
+    );
+  },
+
+  getFrames: function() {
     let frames = this._selectors.getFrames(this._getState());
 
     // Frames is null when the debugger is not paused.
     if (!frames) {
       return {
         frames: [],
-        selected: -1,
+        selected: -1
       };
     }
 
-    frames = frames.toJS();
     const selectedFrame = this._selectors.getSelectedFrame(this._getState());
     const selected = frames.findIndex(frame => frame.id == selectedFrame.id);
 
@@ -76,10 +116,22 @@ DebuggerPanel.prototype = {
     return { frames, selected };
   },
 
-  destroy: function () {
+  isPaused() {
+    return this._selectors.isPaused(this._getState());
+  },
+
+  selectSource(url, line) {
+    this._actions.selectSourceURL(url, { location: { line } });
+  },
+
+  getSource(sourceURL) {
+    return this._selectors.getSourceByURL(this._getState(), sourceURL);
+  },
+
+  destroy: function() {
     this.panelWin.Debugger.destroy();
     this.emit("destroyed");
-  },
+  }
 };
 
 exports.DebuggerPanel = DebuggerPanel;

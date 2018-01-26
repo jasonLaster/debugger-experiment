@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
 /**
@@ -5,10 +9,18 @@
  * @module utils/source
  */
 
-const { endTruncateStr } = require("./utils");
-const { basename } = require("../utils/path");
+import { isOriginalId } from "devtools-source-map";
+import { endTruncateStr } from "./utils";
+import { basename } from "./path";
 
-import type { Source, SourceText } from "../types";
+import { parse as parseURL } from "url";
+export { isMinified } from "./isMinified";
+
+import type { Source } from "../types";
+import type { SourceRecord } from "../reducers/types";
+import type { SymbolDeclarations } from "../workers/parser/types";
+
+type transformUrlCallback = string => string;
 
 /**
  * Trims the query part or reference identifier of a url string, if necessary.
@@ -17,17 +29,33 @@ import type { Source, SourceText } from "../types";
  * @static
  */
 function trimUrlQuery(url: string): string {
-  let length = url.length;
-  let q1 = url.indexOf("?");
-  let q2 = url.indexOf("&");
-  let q3 = url.indexOf("#");
-  let q = Math.min(
+  const length = url.length;
+  const q1 = url.indexOf("?");
+  const q2 = url.indexOf("&");
+  const q3 = url.indexOf("#");
+  const q = Math.min(
     q1 != -1 ? q1 : length,
     q2 != -1 ? q2 : length,
     q3 != -1 ? q3 : length
   );
 
   return url.slice(0, q);
+}
+
+export function shouldPrettyPrint(source: SourceRecord) {
+  if (!source) {
+    return false;
+  }
+  const _isPretty = isPretty(source);
+  const _isJavaScript = isJavaScript(source);
+  const isOriginal = isOriginalId(source.get("id"));
+  const hasSourceMap = source.get("sourceMapURL");
+
+  if (_isPretty || isOriginal || hasSourceMap || !_isJavaScript) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -40,24 +68,45 @@ function trimUrlQuery(url: string): string {
  * @memberof utils/source
  * @static
  */
-function isJavaScript(url: ?string, contentType: string = ""): boolean {
-  return (url && /\.(jsm|js)?$/.test(trimUrlQuery(url))) ||
-    contentType.includes("javascript");
+export function isJavaScript(source: SourceRecord): boolean {
+  const url = source.get("url");
+  const contentType = source.get("contentType");
+  return (
+    (url && /\.(jsm|js)?$/.test(trimUrlQuery(url))) ||
+    !!(contentType && contentType.includes("javascript"))
+  );
 }
 
 /**
  * @memberof utils/source
  * @static
  */
-function isPretty(source: Source): boolean {
-  return source.url ? /formatted$/.test(source.url) : false;
+export function isPretty(source: SourceRecord): boolean {
+  const url = source.get("url");
+  return isPrettyURL(url);
+}
+
+export function isPrettyURL(url: string): boolean {
+  return url ? /formatted$/.test(url) : false;
+}
+
+export function isThirdParty(source: SourceRecord) {
+  const url = source.get("url");
+  if (!source || !url) {
+    return false;
+  }
+
+  return !!url.match(/(node_modules|bower_components)/);
 }
 
 /**
  * @memberof utils/source
  * @static
  */
-function getPrettySourceURL(url: string): string {
+export function getPrettySourceURL(url: ?string): string {
+  if (!url) {
+    url = "";
+  }
   return `${url}:formatted`;
 }
 
@@ -65,14 +114,26 @@ function getPrettySourceURL(url: string): string {
  * @memberof utils/source
  * @static
  */
-function getRawSourceURL(url: string): string {
+export function getRawSourceURL(url: string): string {
   return url.replace(/:formatted$/, "");
 }
 
-function getFilenameFromURL(url: string) {
+function resolveFileURL(
+  url: string,
+  transformUrl: transformUrlCallback = initialUrl => initialUrl
+) {
   url = getRawSourceURL(url || "");
-  const name = basename(url) || "(index)";
+  const name = transformUrl(url);
   return endTruncateStr(name, 50);
+}
+
+export function getFilenameFromURL(url: string) {
+  return resolveFileURL(url, initialUrl => basename(initialUrl) || "(index)");
+}
+
+export function getFormattedSourceId(id: string) {
+  const sourceId = id.split("/")[1];
+  return `SOURCE${sourceId}`;
 }
 
 /**
@@ -82,14 +143,34 @@ function getFilenameFromURL(url: string) {
  * @memberof utils/source
  * @static
  */
-function getFilename(source: Source) {
-  let { url, id } = source;
+export function getFilename(source: Source) {
+  const { url, id } = source;
   if (!url) {
-    const sourceId = id.split("/")[1];
-    return `SOURCE${sourceId}`;
+    return getFormattedSourceId(id);
   }
 
-  return getFilenameFromURL(url);
+  let filename = getFilenameFromURL(url);
+  const qMarkIdx = filename.indexOf("?");
+  if (qMarkIdx > 0) {
+    filename = filename.slice(0, qMarkIdx);
+  }
+  return filename;
+}
+
+/**
+ * Show a source url.
+ * If the source does not have a url, use the source id.
+ *
+ * @memberof utils/source
+ * @static
+ */
+export function getFileURL(source: Source) {
+  const { url, id } = source;
+  if (!url) {
+    return getFormattedSourceId(id);
+  }
+
+  return resolveFileURL(url);
 }
 
 const contentTypeModeMap = {
@@ -98,14 +179,46 @@ const contentTypeModeMap = {
   "text/coffeescript": "coffeescript",
   "text/typescript-jsx": {
     name: "jsx",
-    base: { name: "javascript", typescript: true },
+    base: { name: "javascript", typescript: true }
   },
   "text/jsx": "jsx",
   "text/x-elm": "elm",
   "text/x-clojure": "clojure",
   "text/wasm": { name: "text" },
-  html: { name: "htmlmixed" },
+  "text/html": { name: "htmlmixed" }
 };
+
+export function getSourcePath(url: string) {
+  if (!url) {
+    return "";
+  }
+
+  const { path, href } = parseURL(url);
+  // for URLs like "about:home" the path is null so we pass the full href
+  return path || href;
+}
+
+/**
+ * Returns amount of lines in the source. If source is a WebAssembly binary,
+ * the function returns amount of bytes.
+ */
+export function getSourceLineCount(source: Source) {
+  if (source.isWasm && !source.error) {
+    const { binary } = (source.text: any);
+    return binary.length;
+  }
+  return source.text != undefined ? source.text.split("\n").length : 0;
+}
+
+/**
+ *
+ * Checks if a source is minified based on some heuristics
+ * @param key
+ * @param text
+ * @return boolean
+ * @memberof utils/source
+ * @static
+ */
 
 /**
  *
@@ -116,15 +229,56 @@ const contentTypeModeMap = {
  * @static
  */
 
-function getMode(sourceText: SourceText) {
-  const { contentType, text } = sourceText;
+export function getMode(source: Source, symbols?: SymbolDeclarations) {
+  const { contentType, text, isWasm, url } = source;
+
+  if (!text || isWasm) {
+    return { name: "text" };
+  }
+
+  if ((url && url.match(/\.jsx$/i)) || (symbols && symbols.hasJsx)) {
+    return "jsx";
+  }
+
+  const languageMimeMap = [
+    { ext: ".c", mode: "text/x-csrc" },
+    { ext: ".kt", mode: "text/x-kotlin" },
+    { ext: ".cpp", mode: "text/x-c++src" },
+    { ext: ".m", mode: "text/x-objectivec" },
+    { ext: ".rs", mode: "text/x-rustsrc" }
+  ];
+
+  // check for C and other non JS languages
+  if (url) {
+    const result = languageMimeMap.find(({ ext }) => url.endsWith(ext));
+
+    if (result !== undefined) {
+      return result.mode;
+    }
+  }
+
+  // if the url ends with .marko we set the name to Javascript so
+  // syntax highlighting works for marko too
+  if (url && url.match(/\.marko$/i)) {
+    return { name: "javascript" };
+  }
+
+  // Use HTML mode for files in which the first non whitespace
+  // character is `<` regardless of extension.
+  const isHTMLLike = text.match(/^\s*</);
+  if (!contentType) {
+    if (isHTMLLike) {
+      return { name: "htmlmixed" };
+    }
+    return { name: "text" };
+  }
 
   // // @flow or /* @flow */
   if (text.match(/^\s*(\/\/ @flow|\/\* @flow \*\/)/)) {
     return contentTypeModeMap["text/typescript"];
   }
 
-  if (/script|elm|jsx|clojure|wasm/.test(contentType)) {
+  if (/script|elm|jsx|clojure|wasm|html/.test(contentType)) {
     if (contentType in contentTypeModeMap) {
       return contentTypeModeMap[contentType];
     }
@@ -132,21 +286,17 @@ function getMode(sourceText: SourceText) {
     return contentTypeModeMap["text/javascript"];
   }
 
-  // Use HTML mode for files in which the first non whitespace
-  // character is `<` regardless of extension.
-  if (text.match(/^\s*</)) {
+  if (isHTMLLike) {
     return { name: "htmlmixed" };
   }
 
   return { name: "text" };
 }
 
-module.exports = {
-  isJavaScript,
-  isPretty,
-  getPrettySourceURL,
-  getRawSourceURL,
-  getFilename,
-  getFilenameFromURL,
-  getMode,
-};
+export function isLoaded(source: SourceRecord) {
+  return source.get("loadedState") === "loaded";
+}
+
+export function isLoading(source: SourceRecord) {
+  return source.get("loadedState") === "loading";
+}

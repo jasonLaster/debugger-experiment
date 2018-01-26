@@ -1,16 +1,19 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
 .search-bar {
   display: flex;
   flex-direction: column;
-  max-height: 50%;
 }
 
 .search-bar .search-field {
   padding-left: 7px;
+  height: var(--editor-searchbar-height);
 }
 
-.search-bar .close-btn {
-  padding: 6px;
+.search-field .close-btn {
+  margin-top: 7px;
 }
 
 .search-bottom-bar * {
@@ -21,9 +24,9 @@
 .search-bottom-bar {
   display: flex;
   flex-shrink: 0;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: calc(100% - 1px);
-  height: 27px;
+  height: var(--editor-second-searchbar-height);
   background-color: var(--theme-toolbar-background);
   border-bottom: 1px solid var(--theme-splitter-color);
   padding: 0 13px;
@@ -62,10 +65,6 @@
   width: 16px;
 }
 
-.search-bottom-bar .search-modifiers button svg:hover {
-  cursor: pointer;
-}
-
 .search-bottom-bar .search-modifiers button:hover {
   background: var(--theme-toolbar-background-hover);
 }
@@ -82,32 +81,18 @@
   fill: white;
 }
 
-.search-bottom-bar .search-modifiers button.disabled svg {
-  fill: var(--theme-comment-alt);
-  cursor: default;
-}
-
 .search-bottom-bar .search-type-toggles {
   display: flex;
   align-items: center;
+  max-width: 68%;
 }
 
-.search-bottom-bar .search-type-toggles .search-toggle-title {
-  color: var(--theme-body-color-inactive);
-  font-size: 11px;
-  font-weight: normal;
-  margin: 0;
-}
-
-.search-bottom-bar .search-type-toggles .search-type-btn {
-  margin: 0 6px;
+.search-bottom-bar .search-type-name {
+  padding: 1px 0 0 0;
+  margin: 0 0 0 6px;
   border: none;
   background: transparent;
   color: var(--theme-comment-alt);
-}
-
-.search-bottom-bar .search-type-toggles .search-type-btn:hover {
-  cursor: pointer;
 }
 
 .search-bottom-bar .search-type-toggles .search-type-btn:active {

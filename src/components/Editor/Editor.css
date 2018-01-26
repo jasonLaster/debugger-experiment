@@ -1,8 +1,38 @@
-/* vim:set ts=2 sw=2 sts=2 et: */
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
+.editor-wrapper {
+  --debug-line-border: rgb(145, 188, 219);
+  --debug-expression-background: rgba(202, 227, 255, 0.5);
+  --editor-searchbar-height: 27px;
+  --editor-second-searchbar-height: 27px;
+  --debug-line-error-border: rgb(255, 0, 0);
+  --debug-expression-error-background: rgba(231, 116, 113, 0.3);
+  --editor-header-height: 30px;
+}
+
+.theme-dark .editor-wrapper {
+  --debug-expression-background: #54617e;
+  --debug-line-border: #7786a2;
+}
+
+.editor-wrapper .CodeMirror-linewidget {
+  margin-right: -7px;
+  overflow: visible;
+}
+
+.editor-wrapper .CodeMirror-sizer {
+  min-width: 0 !important;
+}
+
+.theme-dark {
+  --theme-conditional-breakpoint-color: #9fa4a9;
+}
+
+.theme-light {
+  --theme-conditional-breakpoint-color: var(--theme-body-color);
+}
 
 /**
  * There's a known codemirror flex issue with chrome that this addresses.
@@ -10,11 +40,11 @@
  */
 .editor-wrapper {
   position: absolute;
-  height: calc(100% - 31px);
-  width: 100%;
-  top: 30px;
+  height: calc(100% - var(--editor-header-height));
+  width: calc(100% - 1px);
+  top: var(--editor-header-height);
   left: 0px;
-  --editor-footer-height: 27px;
+  --editor-footer-height: 24px;
 }
 
 html[dir="rtl"] .editor-mount {
@@ -40,6 +70,10 @@ html[dir="rtl"] .editor-mount {
   height: 14px;
 }
 
+.editor-wrapper .highlight-lines {
+  background: var(--theme-selection-background-hover);
+}
+
 .coverage-on .CodeMirror-code :not(.hit-marker) .CodeMirror-line,
 .coverage-on .CodeMirror-code :not(.hit-marker) .CodeMirror-gutter-wrapper {
   opacity: 0.5;
@@ -54,11 +88,36 @@ html[dir="rtl"] .editor-mount {
   right: -4px;
 }
 
+.inline-bp {
+  background-color: #9ddfff;
+  width: 20px;
+  padding: 0px 5px;
+  margin: 0px 4px;
+  border-radius: 5px;
+  border-color: blue;
+  border: 1px solid #00b6ff;
+}
+
+.editor.new-breakpoint.folding-enabled svg {
+  right: -16px;
+}
+
 .new-breakpoint.has-condition svg {
   fill: var(--theme-graphs-yellow);
 }
 
 .editor.new-breakpoint.breakpoint-disabled svg {
+  opacity: 0.3;
+}
+
+.editor.column-breakpoint svg {
+  fill: var(--theme-selection-background);
+  vertical-align: middle;
+  width: 17px;
+  height: 14px;
+}
+
+.editor.column-breakpoint.breakpoint-disabled svg {
   opacity: 0.3;
 }
 
@@ -69,12 +128,7 @@ html[dir="rtl"] .editor-mount {
 
 .editor-wrapper .editor-mount {
   width: 100%;
-  height: calc(100% - var(--editor-footer-height));
   background-color: var(--theme-body-background);
-}
-
-.search-bar ~ .editor-mount {
-  height: calc(100% - 72px);
 }
 
 .CodeMirror-linenumber {
@@ -82,32 +136,56 @@ html[dir="rtl"] .editor-mount {
   line-height: 14px;
 }
 
+.folding-enabled .CodeMirror-linenumber {
+  text-align: left;
+  padding: 0 0 0 2px;
+}
+
 /* set the linenumber white when there is a breakpoint */
 .new-breakpoint .CodeMirror-gutter-wrapper .CodeMirror-linenumber {
   color: white;
 }
 
-/* move the breakpoint below the linenumber */
-.new-breakpoint .CodeMirror-gutter-elt:last-child {
+/* move the breakpoint below the other gutter elements */
+.new-breakpoint .CodeMirror-gutter-elt:nth-child(2) {
   z-index: 0;
 }
 
 .editor-wrapper .CodeMirror-line {
   font-size: 11px;
-  line-height: 14px;
 }
 
 .theme-dark .editor-wrapper .CodeMirror-line .cm-comment {
   color: var(--theme-content-color3);
 }
 
-.debug-line .CodeMirror-line {
-  background-color: var(--breakpoint-active-color) !important;
+.debug-expression {
+  background-color: var(--debug-expression-background);
+}
+
+debug-expression-error {
+  background-color: var(--debug-expression-error-background);
+}
+
+.new-debug-line .CodeMirror-line {
+  background-color: transparent !important;
+  outline: var(--debug-line-border) solid 1px;
 }
 
 /* Don't display the highlight color since the debug line
    is already highlighted */
-.debug-line .CodeMirror-activeline-background {
+.new-debug-line .CodeMirror-activeline-background {
+  display: none;
+}
+
+.new-debug-line-error .CodeMirror-line {
+  background-color: var(--debug-expression-error-background) !important;
+  outline: var(--debug-line-error-border) solid 1px;
+}
+
+/* Don't display the highlight color since the debug line
+  is already highlighted */
+.new-debug-line-error .CodeMirror-activeline-background {
   display: none;
 }
 
@@ -116,8 +194,12 @@ html[dir="rtl"] .editor-mount {
 }
 
 @keyframes fade-highlight-out {
-  0% { background-color: var(--theme-highlight-gray); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: var(--theme-highlight-gray);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 
 .theme-dark .highlight-line .CodeMirror-line {
@@ -125,25 +207,18 @@ html[dir="rtl"] .editor-mount {
 }
 
 @keyframes fade-highlight-out-dark {
-  0% { background-color: var(--theme-content-color3); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: var(--theme-content-color3);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 
-.welcomebox {
-  width: calc(100% - 1px);
+.CodeMirror-guttermarker-subtle {
+  visibility: hidden;
+}
 
-  /* Offsetting it by 30px for the sources-header area */
-  height: calc(100% - 30px);
-  position: absolute;
-  top: 30px;
-  left: 0;
-  padding: 50px 0;
-  text-align: center;
-  font-size: 1.25em;
-  color: var(--theme-comment-alt);
-  background-color: var(--theme-tab-toolbar-background);
-  font-weight: lighter;
-  z-index: 100;
-  -moz-user-select: none;
-  user-select: none;
+.visible {
+  visibility: visible;
 }

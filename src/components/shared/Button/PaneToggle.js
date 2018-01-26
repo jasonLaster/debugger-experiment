@@ -1,24 +1,25 @@
-// @flow
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-import { DOM as dom, PropTypes, Component } from "react";
+// @flow
+import React, { PureComponent } from "react";
 import classnames from "classnames";
 import Svg from "../Svg";
+import CommandBarButton from "./CommandBarButton";
 import "./PaneToggle.css";
 
-type NextProps = {
+type Props = {
   collapsed: boolean,
-  handleClick: () => any,
-  horizontal?: boolean,
-  position: string,
+  handleClick: (string, boolean) => void,
+  horizontal: boolean,
+  position: string
 };
 
-class PaneToggleButton extends Component {
-  shouldComponentUpdate(nextProps: NextProps) {
-    const { collapsed, horizontal } = this.props;
-
-    return horizontal !== nextProps.horizontal ||
-      collapsed !== nextProps.collapsed;
-  }
+class PaneToggleButton extends PureComponent<Props> {
+  static defaultProps = {
+    horizontal: false
+  };
 
   render() {
     const { position, collapsed, horizontal, handleClick } = this.props;
@@ -26,27 +27,19 @@ class PaneToggleButton extends Component {
       ? L10N.getStr("expandPanes")
       : L10N.getStr("collapsePanes");
 
-    return dom.div(
-      {
-        className: classnames(`toggle-button-${position}`, {
+    return (
+      <CommandBarButton
+        className={classnames("toggle-button", position, {
           collapsed,
-          vertical: horizontal != null ? !horizontal : false,
-        }),
-        onClick: () => handleClick(position, collapsed),
-        title,
-      },
-      Svg("togglePanes")
+          vertical: !horizontal
+        })}
+        onClick={() => handleClick(position, collapsed)}
+        title={title}
+      >
+        <Svg name="togglePanes" />
+      </CommandBarButton>
     );
   }
 }
-
-PaneToggleButton.propTypes = {
-  position: PropTypes.string.isRequired,
-  collapsed: PropTypes.bool.isRequired,
-  horizontal: PropTypes.bool,
-  handleClick: PropTypes.func.isRequired,
-};
-
-PaneToggleButton.displayName = "PaneToggleButton";
 
 export default PaneToggleButton;

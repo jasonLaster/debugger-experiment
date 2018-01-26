@@ -1,479 +1,220 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
 
-const React = require("react");
-const { DOM: dom, PropTypes, createFactory } = React;
-const { connect } = require("react-redux");
-const { bindActionCreators } = require("redux");
-const { findDOMNode } = require("react-dom");
-const { isEnabled } = require("devtools-config");
-const { filter } = require("fuzzaldrin-plus");
-const Svg = require("../shared/Svg");
-const actions = require("../../actions").default;
-const {
-  getFileSearchState,
-  getFileSearchQueryState,
-  getFileSearchModifierState,
-} = require("../../selectors");
-const {
-  find,
-  findNext,
-  findPrev,
-  removeOverlay,
-  countMatches,
-  clearIndex,
-} = require("../../utils/editor");
-const { getSymbols } = require("../../utils/parser");
-const { scrollList } = require("../../utils/result-list");
-const classnames = require("classnames");
-const debounce = require("lodash/debounce");
-const SearchInput = createFactory(require("../shared/SearchInput"));
-const ResultList = createFactory(require("../shared/ResultList").default);
-const ImPropTypes = require("react-immutable-proptypes");
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import Svg from "../shared/Svg";
+import actions from "../../actions";
+import {
+  getActiveSearch,
+  getSelectedSource,
+  getSelectedLocation,
+  getFileSearchQuery,
+  getFileSearchModifiers,
+  getFileSearchResults,
+  getHighlightedLineRange
+} from "../../selectors";
 
-import type { FormattedSymbolDeclaration } from "../../utils/parser/utils";
+import { removeOverlay } from "../../utils/editor";
+
+import { scrollList } from "../../utils/result-list";
+import classnames from "classnames";
+
+import type { SourceRecord } from "../../reducers/sources";
+import type { ActiveSearchType } from "../../reducers/ui";
+import type { Modifiers, SearchResults } from "../../reducers/file-search";
+
+import SearchInput from "../shared/SearchInput";
+import { debounce } from "lodash";
+import "./SearchBar.css";
+
+import type { SourceEditor } from "../../utils/editor/source-editor";
 
 function getShortcuts() {
-  const searchAgainKey = L10N.getStr("sourceSearch.search.again.key");
-  const fnSearchKey = L10N.getStr("symbolSearch.search.key");
+  const searchAgainKey = L10N.getStr("sourceSearch.search.again.key2");
+  const searchAgainPrevKey = L10N.getStr("sourceSearch.search.againPrev.key2");
+  const searchKey = L10N.getStr("sourceSearch.search.key2");
 
   return {
-    shiftSearchAgainShortcut: `CmdOrCtrl+Shift+${searchAgainKey}`,
-    searchAgainShortcut: `CmdOrCtrl+${searchAgainKey}`,
-    symbolSearchShortcut: `CmdOrCtrl+Shift+${fnSearchKey}`,
-    searchShortcut: `CmdOrCtrl+${L10N.getStr("sourceSearch.search.key")}`,
+    shiftSearchAgainShortcut: searchAgainPrevKey,
+    searchAgainShortcut: searchAgainKey,
+    searchShortcut: searchKey
   };
 }
 
-type ToggleSymbolSearchOpts = {
-  toggle: boolean,
-  searchType: string,
+type State = {
+  query: string,
+  selectedResultIndex: number,
+  count: number,
+  index: number
 };
 
-require("./SearchBar.css");
+type Props = {
+  editor?: SourceEditor,
+  selectedSource?: SourceRecord,
+  searchOn?: boolean,
+  setActiveSearch: (?ActiveSearchType) => any,
+  closeFileSearch: SourceEditor => void,
+  doSearch: (string, SourceEditor) => void,
+  traverseResults: (boolean, SourceEditor) => void,
+  searchResults: SearchResults,
+  modifiers: Modifiers,
+  toggleFileSearchModifier: string => any,
+  query: string,
+  setFileSearchQuery: string => any,
+  updateSearchResults: ({ count: number, index?: number }) => any
+};
 
-const SearchBar = React.createClass({
-  propTypes: {
-    editor: PropTypes.object,
-    sourceText: ImPropTypes.map,
-    selectSource: PropTypes.func.isRequired,
-    selectedSource: ImPropTypes.map,
-    searchOn: PropTypes.bool,
-    toggleFileSearch: PropTypes.func.isRequired,
-    searchResults: PropTypes.object.isRequired,
-    modifiers: ImPropTypes.recordOf({
-      caseSensitive: PropTypes.bool.isRequired,
-      regexMatch: PropTypes.bool.isRequired,
-      wholeWord: PropTypes.bool.isRequired,
-    }).isRequired,
-    toggleFileSearchModifier: PropTypes.func.isRequired,
-    query: PropTypes.string.isRequired,
-    setFileSearchQuery: PropTypes.func.isRequired,
-    updateSearchResults: PropTypes.func.isRequired,
-  },
-
-  displayName: "SearchBar",
-
-  getInitialState() {
-    return {
-      symbolSearchEnabled: false,
-      selectedSymbolType: "functions",
-      symbolSearchResults: [],
+class SearchBar extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      query: props.query,
       selectedResultIndex: 0,
       count: 0,
-      index: -1,
+      index: -1
     };
-  },
-
-  contextTypes: {
-    shortcuts: PropTypes.object,
-  },
+  }
 
   componentWillUnmount() {
     const shortcuts = this.context.shortcuts;
     const {
       searchShortcut,
       searchAgainShortcut,
-      shiftSearchAgainShortcut,
-      symbolSearchShortcut,
+      shiftSearchAgainShortcut
     } = getShortcuts();
 
     shortcuts.off(searchShortcut);
     shortcuts.off("Escape");
     shortcuts.off(searchAgainShortcut);
     shortcuts.off(shiftSearchAgainShortcut);
-    shortcuts.off(symbolSearchShortcut);
-  },
+  }
 
   componentDidMount() {
-    // overwrite searchContents with a debounced version to reduce the
-    // frequency of queries which improves perf on large files
-    // $FlowIgnore
-    this.searchContents = debounce(this.searchContents, 100);
-
+    // overwrite this.doSearch with debounced version to
+    // reduce frequency of queries
+    this.doSearch = debounce(this.doSearch, 100);
     const shortcuts = this.context.shortcuts;
     const {
       searchShortcut,
       searchAgainShortcut,
-      shiftSearchAgainShortcut,
-      symbolSearchShortcut,
+      shiftSearchAgainShortcut
     } = getShortcuts();
 
     shortcuts.on(searchShortcut, (_, e) => this.toggleSearch(e));
     shortcuts.on("Escape", (_, e) => this.onEscape(e));
 
     shortcuts.on(shiftSearchAgainShortcut, (_, e) =>
-      this.traverseResults(e, true));
+      this.traverseResults(e, true)
+    );
 
     shortcuts.on(searchAgainShortcut, (_, e) => this.traverseResults(e, false));
+  }
 
-    if (isEnabled("symbolSearch")) {
-      shortcuts.on(symbolSearchShortcut, (_, e) =>
-        this.toggleSymbolSearch(e, {
-          toggle: false,
-          searchType: "functions",
-        }));
-    }
-  },
-
-  componentDidUpdate(prevProps: any, prevState: any) {
-    const { sourceText, selectedSource, query, modifiers } = this.props;
-    const searchInput = this.searchInput();
-
-    if (searchInput) {
-      searchInput.focus();
-    }
-
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if (this.refs.resultList && this.refs.resultList.refs) {
       scrollList(this.refs.resultList.refs, this.state.selectedResultIndex);
     }
+  }
 
-    const hasLoaded = sourceText && !sourceText.get("loading");
-    const wasLoading = prevProps.sourceText &&
-      prevProps.sourceText.get("loading");
-
-    const doneLoading = wasLoading && hasLoaded;
-    const changedFiles = selectedSource != prevProps.selectedSource &&
-      hasLoaded;
-    const modifiersUpdated = modifiers &&
-      !modifiers.equals(prevProps.modifiers);
-
-    const isOpen = this.props.searchOn || this.state.symbolSearchEnabled;
-    const { selectedSymbolType, symbolSearchEnabled } = this.state;
-    const changedSearchType = selectedSymbolType !=
-      prevState.selectedSymbolType ||
-      symbolSearchEnabled != prevState.symbolSearchEnabled;
-
-    if (
-      isOpen &&
-      (doneLoading || changedFiles || modifiersUpdated || changedSearchType)
-    ) {
-      this.doSearch(query);
-    }
-  },
-
-  onEscape(e: SyntheticKeyboardEvent) {
+  onEscape = (e: SyntheticKeyboardEvent<HTMLElement>) => {
     this.closeSearch(e);
-  },
+  };
 
-  clearSearch() {
+  clearSearch = () => {
     const { editor: ed, query, modifiers } = this.props;
     if (ed && modifiers) {
       const ctx = { ed, cm: ed.codeMirror };
       removeOverlay(ctx, query, modifiers.toJS());
     }
-  },
+  };
 
-  closeSearch(e: SyntheticEvent) {
-    const { editor: ed } = this.props;
+  closeSearch = (e: SyntheticEvent<HTMLElement>) => {
+    const { editor, searchOn } = this.props;
 
-    if (this.props.searchOn && ed) {
+    if (editor && searchOn) {
       this.clearSearch();
-      this.props.toggleFileSearch(false);
-      this.setState({
-        symbolSearchEnabled: false,
-        selectedSymbolType: "functions",
-      });
+      this.props.closeFileSearch(editor);
       e.stopPropagation();
       e.preventDefault();
     }
-  },
+  };
 
-  toggleSearch(e: SyntheticKeyboardEvent) {
+  toggleSearch = (e: SyntheticKeyboardEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
     const { editor } = this.props;
 
     if (!this.props.searchOn) {
-      this.props.toggleFileSearch();
-    }
-
-    if (this.state.symbolSearchEnabled) {
-      this.clearSearch();
-      this.setState({
-        symbolSearchEnabled: false,
-        selectedSymbolType: "functions",
-      });
+      this.props.setActiveSearch("file");
     }
 
     if (this.props.searchOn && editor) {
       const selection = editor.codeMirror.getSelection();
-      this.setSearchValue(selection);
+      this.setState({ query: selection });
       if (selection !== "") {
         this.doSearch(selection);
       }
-      this.selectSearchInput();
     }
-  },
+  };
 
-  toggleSymbolSearch(
-    e: SyntheticKeyboardEvent,
-    { toggle, searchType }: ToggleSymbolSearchOpts = {}
-  ) {
-    const { sourceText } = this.props;
-
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    if (!sourceText) {
+  doSearch = (query: string) => {
+    const { selectedSource } = this.props;
+    if (!selectedSource || !selectedSource.get("text")) {
       return;
     }
 
-    if (!this.props.searchOn) {
-      this.props.toggleFileSearch();
-    }
+    this.props.doSearch(query, this.props.editor);
+  };
 
-    if (this.state.symbolSearchEnabled) {
-      if (toggle) {
-        this.setState({ symbolSearchEnabled: false });
-      } else {
-        this.setState({ selectedSymbolType: searchType });
-      }
-      return;
-    }
-
-    if (this.props.selectedSource) {
-      this.clearSearch();
-      this.setState({
-        symbolSearchEnabled: true,
-        selectedSymbolType: searchType,
-      });
-    }
-  },
-
-  setSearchValue(value: string) {
-    const searchInput = this.searchInput();
-    if (value == "" || !searchInput) {
-      return;
-    }
-
-    searchInput.value = value;
-  },
-
-  selectSearchInput() {
-    const searchInput = this.searchInput();
-    if (searchInput) {
-      searchInput.setSelectionRange(0, searchInput.value.length);
-    }
-  },
-
-  searchInput(): ?HTMLInputElement {
-    const node = findDOMNode(this);
-    if (node instanceof HTMLElement) {
-      const input = node.querySelector("input");
-      if (input instanceof HTMLInputElement) {
-        return input;
-      }
-    }
-    return null;
-  },
-
-  async updateSymbolSearchResults(query: string) {
-    const {
-      sourceText,
-      updateSearchResults,
-    } = this.props;
-    const { selectedSymbolType } = this.state;
-
-    if (query == "" || !sourceText) {
-      return;
-    }
-
-    const symbolDeclarations = await getSymbols(sourceText.toJS());
-    const symbolSearchResults = filter(
-      symbolDeclarations[selectedSymbolType],
-      query,
-      { key: "value" }
+  updateSearchResults = (characterIndex, line, matches) => {
+    const matchIndex = matches.findIndex(
+      elm => elm.line === line && elm.ch === characterIndex
     );
-
-    updateSearchResults({ count: symbolSearchResults.length });
-    return this.setState({ symbolSearchResults });
-  },
-
-  async doSearch(query: string) {
-    const {
-      sourceText,
-      setFileSearchQuery,
-      editor: ed,
-    } = this.props;
-    if (!sourceText || !sourceText.get("text")) {
-      return;
-    }
-
-    setFileSearchQuery(query);
-
-    if (this.state.symbolSearchEnabled) {
-      return await this.updateSymbolSearchResults(query);
-    } else if (ed) {
-      this.searchContents(query);
-    }
-  },
-
-  searchContents(query: string) {
-    const {
-      sourceText,
-      modifiers,
-      editor: ed,
-      searchResults: { index },
-    } = this.props;
-
-    if (!ed || !sourceText || !sourceText.get("text") || !modifiers) {
-      return;
-    }
-
-    const ctx = { ed, cm: ed.codeMirror };
-
-    const newCount = countMatches(
-      query,
-      sourceText.get("text"),
-      modifiers.toJS()
-    );
-
-    if (index == -1) {
-      clearIndex(ctx, query, modifiers.toJS());
-    }
-
-    const newIndex = find(ctx, query, true, modifiers.toJS());
     this.props.updateSearchResults({
-      count: newCount,
-      index: newIndex,
+      matches,
+      matchIndex,
+      count: matches.length,
+      index: characterIndex
     });
-  },
+  };
 
-  traverseResults(e: SyntheticEvent, rev: boolean) {
+  traverseResults = (e: SyntheticEvent<HTMLElement>, rev: boolean) => {
     e.stopPropagation();
     e.preventDefault();
+    const editor = this.props.editor;
 
-    const ed = this.props.editor;
-
-    if (!ed) {
+    if (!editor) {
       return;
     }
-
-    const ctx = { ed, cm: ed.codeMirror };
-
-    const {
-      query,
-      modifiers,
-      updateSearchResults,
-      searchResults: { count, index },
-    } = this.props;
-
-    if (query === "") {
-      this.props.toggleFileSearch(true);
-    }
-
-    if (index == -1 && modifiers) {
-      clearIndex(ctx, query, modifiers.toJS());
-    }
-
-    if (modifiers) {
-      const findFnc = rev ? findPrev : findNext;
-      const newIndex = findFnc(ctx, query, true, modifiers.toJS());
-      updateSearchResults({
-        index: newIndex,
-        count,
-      });
-    }
-  },
+    this.props.traverseResults(rev, editor);
+  };
 
   // Handlers
-  selectResultItem(item: FormattedSymbolDeclaration) {
-    const { selectSource, selectedSource } = this.props;
-    if (selectedSource) {
-      selectSource(selectedSource.get("id"), {
-        line: item.location.start.line,
-      });
-    }
-  },
 
-  onSelectResultItem(item: FormattedSymbolDeclaration) {
-    const { selectSource, selectedSource } = this.props;
-    if (selectedSource) {
-      selectSource(selectedSource.get("id"), {
-        line: item.location.start.line,
-      });
-    }
-  },
+  onChange = (e: SyntheticInputEvent<HTMLElement>) => {
+    this.setState({ query: e.target.value });
 
-  async onChange(e: any) {
     return this.doSearch(e.target.value);
-  },
+  };
 
-  onKeyUp(e: SyntheticKeyboardEvent) {
-    if (e.key != "Enter") {
+  onKeyDown = (e: SyntheticKeyboardEvent<HTMLElement>) => {
+    if (e.key !== "Enter" && e.key !== "F3") {
       return;
     }
 
     this.traverseResults(e, e.shiftKey);
-  },
-
-  onKeyDown(e: SyntheticKeyboardEvent) {
-    if (!this.state.symbolSearchEnabled || this.props.query == "") {
-      return;
-    }
-
-    const searchResults = this.state.symbolSearchResults,
-      resultCount = searchResults.length;
-
-    if (e.key === "ArrowUp") {
-      const selectedResultIndex = Math.max(
-        0,
-        this.state.selectedResultIndex - 1
-      );
-      this.setState({ selectedResultIndex });
-      this.onSelectResultItem(searchResults[selectedResultIndex]);
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      const selectedResultIndex = Math.min(
-        resultCount - 1,
-        this.state.selectedResultIndex + 1
-      );
-      this.setState({ selectedResultIndex });
-      this.onSelectResultItem(searchResults[selectedResultIndex]);
-      e.preventDefault();
-    } else if (e.key === "Enter") {
-      if (searchResults.length) {
-        this.selectResultItem(searchResults[this.state.selectedResultIndex]);
-      }
-      this.closeSearch(e);
-      e.preventDefault();
-    } else if (e.key === "Tab") {
-      this.closeSearch(e);
-      e.preventDefault();
-    }
-  },
+    e.preventDefault();
+  };
 
   // Renderers
   buildSummaryMsg() {
-    if (this.state.symbolSearchEnabled) {
-      return L10N.getFormatStr(
-        "sourceSearch.resultsSummary1",
-        this.state.symbolSearchResults.length
-      );
-    }
-    const { searchResults: { count, index }, query } = this.props;
+    const { searchResults: { matchIndex, count, index }, query } = this.props;
 
     if (query.trim() == "") {
       return "";
@@ -487,167 +228,98 @@ const SearchBar = React.createClass({
       return L10N.getFormatStr("sourceSearch.resultsSummary1", count);
     }
 
-    return L10N.getFormatStr("editor.searchResults", index + 1, count);
-  },
+    return L10N.getFormatStr("editor.searchResults", matchIndex + 1, count);
+  }
 
-  buildPlaceHolder() {
-    const { symbolSearchEnabled, selectedSymbolType } = this.state;
-    if (symbolSearchEnabled) {
-      return L10N.getFormatStr(
-        `symbolSearch.search.${selectedSymbolType}Placeholder`
+  renderSearchModifiers = () => {
+    const { modifiers, toggleFileSearchModifier, query } = this.props;
+    const { doSearch } = this;
+
+    function SearchModBtn({ modVal, className, svgName, tooltip }) {
+      const preppedClass = classnames(className, {
+        active: modifiers && modifiers.get(modVal)
+      });
+      return (
+        <button
+          className={preppedClass}
+          onClick={() => {
+            toggleFileSearchModifier(modVal);
+            doSearch(query);
+          }}
+          title={tooltip}
+        >
+          <Svg name={svgName} />
+        </button>
       );
     }
 
-    return L10N.getStr("sourceSearch.search.placeholder");
-  },
-
-  renderSearchModifiers() {
-    if (!isEnabled("searchModifiers")) {
-      return;
-    }
-
-    const {
-      modifiers,
-      toggleFileSearchModifier,
-    } = this.props;
-    const { symbolSearchEnabled } = this.state;
-
-    function searchModBtn(modVal, className, svgName, tooltip) {
-      return dom.button(
-        {
-          className: classnames(className, {
-            active: !symbolSearchEnabled && modifiers && modifiers.get(modVal),
-            disabled: symbolSearchEnabled,
-          }),
-          onClick: () =>
-            !symbolSearchEnabled ? toggleFileSearchModifier(modVal) : null,
-          title: tooltip,
-        },
-        Svg(svgName)
-      );
-    }
-
-    return dom.div(
-      { className: "search-modifiers" },
-      searchModBtn(
-        "regexMatch",
-        "regex-match-btn",
-        "regex-match",
-        L10N.getStr("symbolSearch.searchModifier.regex")
-      ),
-      searchModBtn(
-        "caseSensitive",
-        "case-sensitive-btn",
-        "case-match",
-        L10N.getStr("symbolSearch.searchModifier.caseSensitive")
-      ),
-      searchModBtn(
-        "wholeWord",
-        "whole-word-btn",
-        "whole-word-match",
-        L10N.getStr("symbolSearch.searchModifier.wholeWord")
-      )
+    return (
+      <div className="search-modifiers">
+        <span className="search-type-name">
+          {L10N.getStr("symbolSearch.searchModifier.modifiersLabel")}
+        </span>
+        <SearchModBtn
+          modVal="regexMatch"
+          className="regex-match-btn"
+          svgName="regex-match"
+          tooltip={L10N.getStr("symbolSearch.searchModifier.regex")}
+        />
+        <SearchModBtn
+          modVal="caseSensitive"
+          className="case-sensitive-btn"
+          svgName="case-match"
+          tooltip={L10N.getStr("symbolSearch.searchModifier.caseSensitive")}
+        />
+        <SearchModBtn
+          modVal="wholeWord"
+          className="whole-word-btn"
+          svgName="whole-word-match"
+          tooltip={L10N.getStr("symbolSearch.searchModifier.wholeWord")}
+        />
+      </div>
     );
-  },
-
-  renderSearchTypeToggle() {
-    if (!isEnabled("symbolSearch")) {
-      return;
-    }
-    const { toggleSymbolSearch } = this;
-    const { symbolSearchEnabled, selectedSymbolType } = this.state;
-
-    function searchTypeBtn(searchType) {
-      return dom.button(
-        {
-          className: classnames("search-type-btn", {
-            active: symbolSearchEnabled && selectedSymbolType == searchType,
-          }),
-          onClick: e => {
-            if (selectedSymbolType == searchType) {
-              toggleSymbolSearch(e, { toggle: true, searchType });
-              return;
-            }
-            toggleSymbolSearch(e, { toggle: false, searchType });
-          },
-        },
-        searchType
-      );
-    }
-
-    return dom.section(
-      { className: "search-type-toggles" },
-      dom.h1({ className: "search-toggle-title" }, "Search for:"),
-      searchTypeBtn("functions"),
-      searchTypeBtn("variables")
-    );
-  },
-
-  renderBottomBar() {
-    if (!isEnabled("searchModifiers") || !isEnabled("symbolSearch")) {
-      return;
-    }
-
-    return dom.div(
-      { className: "search-bottom-bar" },
-      this.renderSearchTypeToggle(),
-      this.renderSearchModifiers()
-    );
-  },
-
-  renderResults() {
-    const {
-      symbolSearchEnabled,
-      symbolSearchResults,
-      selectedResultIndex,
-    } = this.state;
-    const { query } = this.props;
-    if (query == "" || !symbolSearchEnabled || !symbolSearchResults.length) {
-      return;
-    }
-
-    return ResultList({
-      items: symbolSearchResults,
-      selected: selectedResultIndex,
-      selectItem: this.selectResultItem,
-      ref: "resultList",
-    });
-  },
+  };
 
   render() {
-    const {
-      searchResults: { count },
-      query,
-    } = this.props;
+    const { searchResults: { count }, searchOn } = this.props;
 
-    if (!this.props.searchOn) {
-      return dom.div();
+    if (!searchOn) {
+      return <div />;
     }
 
-    return dom.div(
-      { className: "search-bar" },
-      SearchInput({
-        query,
-        count,
-        placeholder: this.buildPlaceHolder(),
-        summaryMsg: this.buildSummaryMsg(),
-        onChange: this.onChange,
-        onKeyUp: this.onKeyUp,
-        onKeyDown: this.onKeyDown,
-        handleClose: this.closeSearch,
-      }),
-      this.renderResults(),
-      this.renderBottomBar()
+    return (
+      <div className="search-bar">
+        <SearchInput
+          query={this.state.query}
+          count={count}
+          placeholder={L10N.getStr("sourceSearch.search.placeholder")}
+          summaryMsg={this.buildSummaryMsg()}
+          onChange={this.onChange}
+          onKeyDown={this.onKeyDown}
+          handleNext={e => this.traverseResults(e, false)}
+          handlePrev={e => this.traverseResults(e, true)}
+          handleClose={this.closeSearch}
+        />
+        <div className="search-bottom-bar">{this.renderSearchModifiers()}</div>
+      </div>
     );
-  },
-});
+  }
+}
 
-module.exports = connect(
+SearchBar.contextTypes = {
+  shortcuts: PropTypes.object
+};
+
+export default connect(
   state => {
     return {
-      searchOn: getFileSearchState(state),
-      query: getFileSearchQueryState(state),
-      modifiers: getFileSearchModifierState(state),
+      searchOn: getActiveSearch(state) === "file",
+      selectedSource: getSelectedSource(state),
+      selectedLocation: getSelectedLocation(state),
+      query: getFileSearchQuery(state),
+      modifiers: getFileSearchModifiers(state),
+      highlightedLineRange: getHighlightedLineRange(state),
+      searchResults: getFileSearchResults(state)
     };
   },
   dispatch => bindActionCreators(actions, dispatch)

@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
 .search-field {
   width: calc(100% - 1px);
@@ -11,11 +14,6 @@
 
 .search-field.big {
   height: 40px;
-  font-size: 14px;
-}
-
-.search-field.big input {
-  font-size: 14px;
 }
 
 .search-field i {
@@ -82,4 +80,31 @@
   line-height: 27px;
   padding-right: 10px;
   color: var(--theme-body-color-inactive);
+}
+
+.search-field .search-nav-buttons {
+  display: flex;
+  user-select: none;
+}
+
+.search-field .search-nav-buttons .nav-btn {
+  display: flex;
+  height: 100%;
+  background: transparent;
+  transition: all 0.25s ease-in-out;
+  border: 1px solid transparent;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.search-field .search-nav-buttons .nav-btn:hover {
+  background: var(--theme-toolbar-background-hover);
+}
+
+.search-field .search-nav-buttons .nav-btn:active path {
+  fill: var(--theme-comment-alt);
+}
+
+.search-field .search-nav-buttons .nav-btn path {
+  fill: var(--theme-comment);
 }

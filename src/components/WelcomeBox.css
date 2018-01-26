@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 .welcomebox {
   width: calc(100% - 1px);
 
@@ -10,13 +14,68 @@
   text-align: center;
   font-size: 1.25em;
   color: var(--theme-comment-alt);
-  background-color: var(--theme-tab-toolbar-background);
+  background-color: var(--theme-toolbar-background);
   font-weight: lighter;
-  z-index: 100;
+  z-index: 10;
+  user-select: none;
 }
 
-html .welcomebox .toggle-button-end {
-  bottom: 11px;
+.theme-dark .welcomebox {
+  background-color: var(--theme-body-background);
+}
+
+.alignlabel {
+  display: inline-block;
+}
+
+.welcomebox .normal-layout {
+  display: none;
+}
+
+.welcomebox .command-bar-button {
   position: absolute;
   top: auto;
+  offset-inline-end: 0;
+  offset-inline-start: auto;
+  bottom: 0;
+}
+
+.shortcutKeys {
+  text-align: right;
+  float: left;
+  font-family: Courier;
+}
+
+.shortcutKey {
+  display: inline-block;
+  margin-right: 10px;
+  font-family: Courier;
+}
+
+.shortcutFunction {
+  text-align: left;
+  float: left;
+  margin-left: 25px;
+}
+
+html .welcomebox .toggle-button-end.collapsed {
+  bottom: 1px;
+}
+
+@media (max-width: 430px) {
+  .welcomebox .small-size-layout {
+    display: inline-block;
+  }
+
+  .welcomebox .normal-layout {
+    display: none;
+  }
+
+  .shortcutFunction {
+    margin-left: 0;
+  }
+
+  .shortcutKey {
+    display: block;
+  }
 }

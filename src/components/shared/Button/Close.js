@@ -1,27 +1,27 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
+
 // @flow
-import { DOM as dom, PropTypes } from "react";
-import Svg from "../Svg";
+import React from "react";
 import "./Close.css";
 
-type CloseButtonType = {
-  handleClick: any,
+type Props = {
+  handleClick: Function,
   buttonClass?: string,
-  tooltip?: string,
+  tooltip?: string
 };
 
-function CloseButton({ handleClick, buttonClass, tooltip }: CloseButtonType) {
-  return dom.div(
-    {
-      className: buttonClass ? `close-btn ${buttonClass}` : "close-btn",
-      onClick: handleClick,
-      title: tooltip,
-    },
-    Svg("close")
+function CloseButton({ handleClick, buttonClass, tooltip }: Props) {
+  return (
+    <div
+      className={buttonClass ? `close-btn ${buttonClass}` : "close-btn"}
+      onClick={handleClick}
+      title={tooltip}
+    >
+      <img className="close" />
+    </div>
   );
 }
-
-CloseButton.propTypes = {
-  handleClick: PropTypes.func.isRequired,
-};
 
 export default CloseButton;
