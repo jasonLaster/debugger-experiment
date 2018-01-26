@@ -128,13 +128,10 @@ export function newSource(source: Source) {
     if (_source) {
       return;
     }
-
     dispatch({ type: "ADD_SOURCE", source });
-
     if (prefs.clientSourceMapsEnabled) {
       dispatch(loadSourceMap(source));
     }
-
     dispatch(checkSelectedSource(source.id));
     dispatch(checkPendingBreakpoints(source.id));
   };
