@@ -36,6 +36,24 @@ function isDocumentReady(selectedSource, selectedFrame) {
   );
 }
 
+function getIndentation(selectedSource: SourceRecord, line): number {
+  const selectedText = selectedSource.get("text");
+  if (!selectedText) {
+    return 0;
+  }
+
+  const selectedLine = selectedText.split("\n")[line];
+  if (!selectedLine) {
+    return 0;
+  }
+  const whitespace = selectedLine.match(/^\s*/);
+  if (!whitespace) {
+    return 0;
+  }
+
+  return whitespace[0].length;
+}
+
 export class DebugLine extends Component<Props> {
   debugExpression: null;
 
@@ -65,8 +83,11 @@ export class DebugLine extends Component<Props> {
     const { markTextClass, lineClass } = this.getTextClasses(why);
     doc.addLineClass(line, "line", lineClass);
 
+    const indentation = getIndentation(selectedSource, line);
+    const markColumn = Math.max(column, indentation);
+
     this.debugExpression = doc.markText(
-      { ch: column, line },
+      { ch: markColumn, line },
       { ch: null, line },
       { className: markTextClass }
     );
