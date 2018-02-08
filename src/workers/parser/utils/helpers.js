@@ -38,11 +38,11 @@ export function isYieldExpression(path: NodePath) {
   );
 }
 
-export function isVariable(path: NodePath) {
+export function isVariable(node: NodePath) {
   return (
-    t.isVariableDeclaration(path) ||
-    (isFunction(path) && path.node.params != null && path.node.params.length) ||
-    (t.isObjectProperty(path) && !isFunction(path.node.value))
+    t.isVariableDeclaration(node) ||
+    (isFunction(node) && node.params != null && node.params.length) ||
+    (t.isObjectProperty(node) && !isFunction(node.value))
   );
 }
 
