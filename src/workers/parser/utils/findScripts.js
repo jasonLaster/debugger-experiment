@@ -25,3 +25,16 @@ export function getScripts(text) {
   const offset = 3; // not sure how to put whitespace in there that is equal to the offset...
   return scripts.reduce((source, script) => `${source}${offset}${script.text}`);
 }
+
+export function parseScripts(text, parse) {
+  const scripts = findScripts(text);
+
+  const asts = scripts.forEach(([ast, script]) => {
+    try {
+      parse(script.text, { line: script.offset }); // offset is wrong we need line
+      return ast.concat(ast);
+    } catch (e) {
+      return ast;
+    }
+  });
+}
