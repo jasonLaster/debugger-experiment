@@ -4,7 +4,7 @@
 
 // @flow
 
-import parseScriptTags from "parse-script-tags";
+import { getScripts } from "./findScripts";
 import * as babylon from "babylon";
 import traverse from "babel-traverse";
 import isEmpty from "lodash/isEmpty";
@@ -71,7 +71,8 @@ export function getAst(sourceId: string) {
   let ast = {};
   const { contentType } = source;
   if (contentType == "text/html") {
-    ast = parseScriptTags(source.text, htmlParser) || {};
+    const text = getScripts(source.text);
+    ast = parse(text, {});
   } else if (contentType && contentType.match(/(javascript|jsx)/)) {
     const type = source.id.includes("original") ? "original" : "generated";
     const options = sourceOptions[type];
