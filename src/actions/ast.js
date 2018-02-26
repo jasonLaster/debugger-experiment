@@ -61,6 +61,11 @@ export function setSymbols(sourceId: SourceId) {
     dispatch({ type: "SET_SYMBOLS", source, symbols });
     dispatch(setEmptyLines(sourceId));
     dispatch(setSourceMetaData(sourceId));
+
+    if (isPaused()) {
+      const frames = getFrames();
+      dispatch(updateFrameDisplayNames(frames, getSymbols()));
+    }
   };
 }
 

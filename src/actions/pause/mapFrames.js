@@ -1,6 +1,7 @@
 // @flow
 
 import { getFrames } from "../../selectors";
+import { getClosestFunction } from "../../utils/ast";
 
 import type { Frame } from "../../types";
 import type { ThunkArgs } from "../types";
@@ -11,6 +12,23 @@ export function updateFrameLocation(frame: Frame, sourceMaps: any) {
     location: loc,
     generatedLocation: frame.generatedLocation || frame.location
   }));
+}
+
+function updateDisplayName(frame: Frame, symbols: Symbols) {
+  const originalLocation = frame.location;
+  const originalFunction = getClosestFunction(
+    symbols.functions,
+    originalLocation
+  );
+
+  const originalDisplayName = originalFunction.displayName;
+  return { ...frame, originalDisplayName };
+}
+
+export function updateDisplayNames(frames: Frame[], symbolsMap: Symbols) {
+  return frames.map(frame =>
+    updateDisplayName(frame, symbolsMap[frame.location.sourceId])
+  );
 }
 
 function updateFrameLocations(
@@ -42,7 +60,8 @@ export function mapFrames() {
       return;
     }
 
-    const mappedFrames = await updateFrameLocations(frames, sourceMaps);
+    let mappedFrames = await updateFrameLocations(frames, sourceMaps);
+    mappedFrames = updateDisplayNames(mappedFrames, symbols);
 
     dispatch({
       type: "MAP_FRAMES",
