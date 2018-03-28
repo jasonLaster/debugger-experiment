@@ -187,6 +187,11 @@ const contentTypeModeMap = {
   "text/html": { name: "htmlmixed" }
 };
 
+export function dropScheme(url: string) {
+  const { host } = parseURL(url);
+  return url.slice(url.indexOf(host || "") - 1);
+}
+
 export function getSourcePath(url: string) {
   if (!url) {
     return "";
