@@ -7,10 +7,11 @@ import { endTruncateStr } from "./utils";
 import { isPretty, getSourcePath } from "./source";
 
 import type { Location as BabelLocation } from "@babel/types";
+
 import type { SourcesMap } from "../reducers/sources";
-import type { Symbols } from "../reducers/ast";
 import type { QuickOpenType } from "../reducers/quick-open";
-import type { SymbolDeclaration } from "../workers/parser";
+import type { Symbols } from "../reducers/ast";
+import type { SymbolDeclaration, FunctionDeclaration } from "../workers/parser";
 
 export const MODIFIERS = {
   "@": "functions",
@@ -63,7 +64,9 @@ export type FormattedSymbolDeclarations = {|
   functions: Array<QuickOpenResult>
 |};
 
-export function formatSymbol(symbol: SymbolDeclaration): QuickOpenResult {
+export function formatSymbol(
+  symbol: SymbolDeclaration | FunctionDeclaration
+): QuickOpenResult {
   return {
     id: `${symbol.name}:${symbol.location.start.line}`,
     title: symbol.name,
@@ -81,8 +84,8 @@ export function formatSymbols(symbols: ?Symbols): FormattedSymbolDeclarations {
   const { variables, functions } = symbols;
 
   return {
-    variables: variables.map(formatSymbol),
-    functions: functions.map(formatSymbol)
+    variables: variables.map(variable => formatSymbol(variable)),
+    functions: functions.map(func => formatSymbol(func))
   };
 }
 
