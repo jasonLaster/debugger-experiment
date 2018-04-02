@@ -86,20 +86,20 @@ add_task(async function() {
       line: 5,
       column: 7,
       expression: "doThing",
-      result: "doThing(arg)",
+      result: "doThing(arg)"
     },
     {
       line: 5,
       column: 12,
       expression: "x",
-      result: "1",
+      result: "1"
     },
     {
       line: 8,
       column: 16,
       expression: "doThing",
-      result: "doThing(arg)",
-    },
+      result: "doThing(arg)"
+    }
   ]);
 
   await breakpointPreviews(dbg, "shadowed-vars", { line: 18, column: 6 }, [
@@ -111,37 +111,37 @@ add_task(async function() {
       line: 2,
       column: 9,
       expression: "aVar",
-      result: '"var3"',
+      result: '"var3"'
     },
     {
       line: 3,
       column: 9,
       expression: "_aLet2;",
-      result: '"let3"',
+      result: '"let3"'
     },
     {
       line: 4,
       column: 11,
       expression: "_aConst2;",
-      result: '"const3"',
+      result: '"const3"'
     },
     {
       line: 10,
       column: 11,
       expression: "aVar",
-      result: '"var3"',
+      result: '"var3"'
     },
     {
       line: 11,
       column: 11,
       expression: "_aLet2;",
-      result: '"let3"',
+      result: '"let3"'
     },
     {
       line: 12,
       column: 13,
       expression: "_aConst2;",
-      result: '"const3"',
+      result: '"const3"'
     },
 
     // These actually result in the values the user would expect.
@@ -149,20 +149,20 @@ add_task(async function() {
       line: 14,
       column: 13,
       expression: "aVar",
-      result: '"var3"',
+      result: '"var3"'
     },
     {
       line: 15,
       column: 13,
       expression: "_aLet2;",
-      result: '"let3"',
+      result: '"let3"'
     },
     {
       line: 16,
       column: 13,
       expression: "_aConst2;",
-      result: '"const3"',
-    },
+      result: '"const3"'
+    }
   ]);
 
   await breakpointPreviews(dbg, "imported-bindings", { line: 20, column: 2 }, [
@@ -170,67 +170,61 @@ add_task(async function() {
       line: 22,
       column: 16,
       expression: "_mod2.default;",
-      result: '"a-default"',
+      result: '"a-default"'
     },
     {
       line: 23,
       column: 16,
       expression: "_mod4.original;",
-      result: '"an-original"',
+      result: '"an-original"'
     },
     {
       line: 24,
       column: 16,
       expression: "_mod3.aNamed;",
-      result: '"a-named"',
+      result: '"a-named"'
     },
     {
       line: 25,
       column: 16,
       expression: "_mod4.original;",
-      result: '"an-original"',
+      result: '"an-original"'
     },
     {
       line: 26,
       column: 16,
       expression: "aNamespace",
-      fields: [
-        ['aNamed', 'a-named'],
-        ['default', 'a-default'],
-      ],
+      fields: [["aNamed", "a-named"], ["default", "a-default"]]
     },
     {
       line: 31,
       column: 20,
       expression: "_mod7.default;",
-      result: '"a-default2"',
+      result: '"a-default2"'
     },
     {
       line: 32,
       column: 20,
       expression: "_mod9.original;",
-      result: '"an-original2"',
+      result: '"an-original2"'
     },
     {
       line: 33,
       column: 20,
       expression: "_mod8.aNamed2;",
-      result: '"a-named2"',
+      result: '"a-named2"'
     },
     {
       line: 34,
       column: 20,
       expression: "_mod9.original;",
-      result: '"an-original2"',
+      result: '"an-original2"'
     },
     {
       line: 35,
       column: 20,
       expression: "aNamespace2",
-      fields: [
-        ['aNamed', 'a-named2'],
-        ['default', 'a-default2'],
-      ],
-    },
+      fields: [["aNamed", "a-named2"], ["default", "a-default2"]]
+    }
   ]);
 });

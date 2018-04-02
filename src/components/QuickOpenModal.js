@@ -30,10 +30,7 @@ import Modal from "./shared/Modal";
 import SearchInput from "./shared/SearchInput";
 import ResultList from "./shared/ResultList";
 
-import type {
-  FormattedSymbolDeclarations,
-  QuickOpenResult
-} from "../utils/quick-open";
+import type { FormattedSymbolDeclarations, QuickOpenResult } from "../utils/quick-open";
 
 import type { Location, SourceRecord } from "../types";
 import type { QuickOpenType } from "../reducers/quick-open";
@@ -118,8 +115,7 @@ export class QuickOpenModal extends Component<Props, State> {
 
   searchSources = (query: string) => {
     const { sources } = this.props;
-    const results =
-      query == "" ? sources : filter(sources, this.dropGoto(query));
+    const results = query == "" ? sources : filter(sources, this.dropGoto(query));
     return this.setState({ results });
   };
 
@@ -185,10 +181,7 @@ export class QuickOpenModal extends Component<Props, State> {
     }
   };
 
-  selectResultItem = (
-    e: SyntheticEvent<HTMLElement>,
-    item: ?QuickOpenResult
-  ) => {
+  selectResultItem = (e: SyntheticEvent<HTMLElement>, item: ?QuickOpenResult) => {
     if (item == null) {
       return;
     }
@@ -204,8 +197,7 @@ export class QuickOpenModal extends Component<Props, State> {
 
     if (this.isSymbolSearch()) {
       return this.gotoLocation({
-        line:
-          item.location && item.location.start ? item.location.start.line : 0
+        line: item.location && item.location.start ? item.location.start.line : 0
       });
     }
 
@@ -219,8 +211,7 @@ export class QuickOpenModal extends Component<Props, State> {
     }
 
     if (this.isVariableQuery()) {
-      const line =
-        item.location && item.location.start ? item.location.start.line : 0;
+      const line = item.location && item.location.start ? item.location.start.line : 0;
       return selectLocation({
         sourceId: selectedSource.get("id"),
         line,
@@ -363,9 +354,7 @@ export class QuickOpenModal extends Component<Props, State> {
     const { symbolsLoading } = this.props;
 
     if ((this.isFunctionQuery() || this.isVariableQuery()) && symbolsLoading) {
-      return (
-        <div className="loading-indicator">{L10N.getStr("loadingText")}</div>
-      );
+      return <div className="loading-indicator">{L10N.getStr("loadingText")}</div>;
     }
   };
 
@@ -392,9 +381,7 @@ export class QuickOpenModal extends Component<Props, State> {
           onKeyDown={this.onKeyDown}
           handleClose={this.closeModal}
           expanded={expanded}
-          selectedItemId={
-            expanded && items[selectedIndex] ? items[selectedIndex].id : ""
-          }
+          selectedItemId={expanded && items[selectedIndex] ? items[selectedIndex].id : ""}
         />
         {this.renderLoading()}
         {newResults && (

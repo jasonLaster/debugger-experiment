@@ -15,11 +15,7 @@ import {
   getFileSearchResults
 } from "../selectors";
 
-import {
-  closeActiveSearch,
-  clearHighlightLineRange,
-  setActiveSearch
-} from "./ui";
+import { closeActiveSearch, clearHighlightLineRange, setActiveSearch } from "./ui";
 type Editor = Object;
 type Match = Object;
 
@@ -71,13 +67,7 @@ export function searchContents(query: string, editor: Object) {
     const modifiers = getFileSearchModifiers(getState());
     const selectedSource = getSelectedSource(getState());
 
-    if (
-      !query ||
-      !editor ||
-      !selectedSource ||
-      !selectedSource.text ||
-      !modifiers
-    ) {
+    if (!query || !editor || !selectedSource || !selectedSource.text || !modifiers) {
       return;
     }
 

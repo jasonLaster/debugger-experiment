@@ -4,12 +4,13 @@ const spawn = require("child_process").spawn;
 const isWindows = /^win/.test(process.platform);
 const prettierCmd = path.resolve(
   __dirname,
-  `../node_modules/.bin/${isWindows ? "pretty-quick.cmd" : "pretty-quick"}`
+  `../node_modules/.bin/prettier`
 );
 
 const args = [
   "--trailing-comma=none",
   "--bracket-spacing=true",
+  "--print-width=90",
   "--write",
   "*.js",
   "*.json",

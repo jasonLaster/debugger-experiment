@@ -81,10 +81,7 @@ export function showSource(sourceId: string) {
   };
 }
 
-export function togglePaneCollapse(
-  position: panelPositionType,
-  paneCollapsed: boolean
-) {
+export function togglePaneCollapse(position: panelPositionType, paneCollapsed: boolean) {
   return ({ dispatch, getState }: ThunkArgs) => {
     const prevPaneCollapse = getPaneCollapse(getState(), position);
     if (prevPaneCollapse === paneCollapsed) {

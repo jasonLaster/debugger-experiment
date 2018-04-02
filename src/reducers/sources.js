@@ -140,10 +140,7 @@ function update(
         const url = action.source.url;
         const isBlackBoxed = action.value.isBlackBoxed;
         updateBlackBoxList(url, isBlackBoxed);
-        return state.setIn(
-          ["sources", action.source.id, "isBlackBoxed"],
-          isBlackBoxed
-        );
+        return state.setIn(["sources", action.source.id, "isBlackBoxed"], isBlackBoxed);
       }
       break;
 
@@ -268,10 +265,7 @@ export function getBlackBoxList() {
  * @memberof reducers/sources
  * @static
  */
-export function getNewSelectedSourceId(
-  state: OuterState,
-  availableTabs: any
-): string {
+export function getNewSelectedSourceId(state: OuterState, availableTabs: any): string {
   const selectedLocation = state.sources.selectedLocation;
   if (!selectedLocation) {
     return "";
@@ -301,10 +295,7 @@ export function getNewSelectedSourceId(
   const lastAvailbleTabIndex = availableTabs.size - 1;
   const newSelectedTabIndex = Math.min(leftNeighborIndex, lastAvailbleTabIndex);
   const availableTab = availableTabs.get(newSelectedTabIndex);
-  const tabSource = getSourceByUrlInSources(
-    state.sources.sources,
-    availableTab
-  );
+  const tabSource = getSourceByUrlInSources(state.sources.sources, availableTab);
 
   if (tabSource) {
     return tabSource.id;
@@ -366,24 +357,16 @@ function getSourceByUrlInSources(sources: SourcesMap, url: string) {
   return sources.find(source => source.url === url);
 }
 
-export function getSourceInSources(
-  sources: SourcesMap,
-  id: string
-): SourceRecord {
+export function getSourceInSources(sources: SourcesMap, id: string): SourceRecord {
   return sources.get(id);
 }
 
-export const getSources = createSelector(
-  getSourcesState,
-  sources => sources.sources
-);
+export const getSources = createSelector(getSourcesState, sources => sources.sources);
 
 export const getTabs = createSelector(getSourcesState, sources => sources.tabs);
 
-export const getSourceTabs = createSelector(
-  getTabs,
-  getSources,
-  (tabs, sources) => tabs.filter(tab => getSourceByUrlInSources(sources, tab))
+export const getSourceTabs = createSelector(getTabs, getSources, (tabs, sources) =>
+  tabs.filter(tab => getSourceByUrlInSources(sources, tab))
 );
 
 export const getSourcesForTabs = createSelector(

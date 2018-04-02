@@ -228,10 +228,7 @@ export function getSourceLineCount(source: Source) {
  * @static
  */
 
-export function getMode(
-  source: Source,
-  symbols?: SymbolDeclarations
-): { name: string } {
+export function getMode(source: Source, symbols?: SymbolDeclarations): { name: string } {
   const { contentType, text, isWasm, url } = source;
 
   if (!text || isWasm) {

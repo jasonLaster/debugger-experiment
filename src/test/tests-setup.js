@@ -9,10 +9,7 @@ import Adapter from "enzyme-adapter-react-16";
 
 import { startSourceMapWorker, stopSourceMapWorker } from "devtools-source-map";
 
-import {
-  startPrettyPrintWorker,
-  stopPrettyPrintWorker
-} from "../workers/pretty-print";
+import { startPrettyPrintWorker, stopPrettyPrintWorker } from "../workers/pretty-print";
 
 import {
   startParserWorker,
@@ -30,10 +27,7 @@ const envConfig = getConfig();
 const config = {
   ...envConfig,
   workers: {
-    sourceMapURL: path.join(
-      rootPath,
-      "node_modules/devtools-source-map/src/worker.js"
-    ),
+    sourceMapURL: path.join(rootPath, "node_modules/devtools-source-map/src/worker.js"),
     parserURL: path.join(rootPath, "src/workers/parser/worker.js"),
     prettyPrintURL: path.join(rootPath, "src/workers/pretty-print/worker.js"),
     searchURL: path.join(rootPath, "src/workers/search/worker.js")

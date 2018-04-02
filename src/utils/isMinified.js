@@ -47,8 +47,7 @@ export function isMinified(source: SourceRecord) {
     lineStartIndex = lineEndIndex + 1;
   }
 
-  const minified =
-    indentCount / lines * 100 < INDENT_COUNT_THRESHOLD || overCharLimit;
+  const minified = indentCount / lines * 100 < INDENT_COUNT_THRESHOLD || overCharLimit;
 
   _minifiedCache.set(source.id, minified);
   return minified;

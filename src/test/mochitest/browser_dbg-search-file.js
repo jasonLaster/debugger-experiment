@@ -14,10 +14,7 @@ function getFocusedEl(dbg) {
 
 add_task(async function() {
   const dbg = await initDebugger("doc-scripts.html");
-  const {
-    selectors: { getBreakpoints, getBreakpoint, getActiveSearch },
-    getState
-  } = dbg;
+  const { selectors: { getBreakpoints, getBreakpoint, getActiveSearch }, getState } = dbg;
   const source = findSource(dbg, "simple1.js");
 
   await selectSource(dbg, source.url);

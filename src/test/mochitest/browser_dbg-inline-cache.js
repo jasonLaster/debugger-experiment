@@ -40,7 +40,7 @@ function makeChanges() {
 }
 
 function getPageValue(tab) {
-  return ContentTask.spawn(tab.linkedBrowser, {}, function () {
+  return ContentTask.spawn(tab.linkedBrowser, {}, function() {
     return content.document.querySelector("script").textContent.trim();
   });
 }
@@ -49,10 +49,10 @@ async function reloadTabAndDebugger(tab, dbg) {
   let navigated = waitForDispatch(dbg, "NAVIGATE");
   let loaded = BrowserTestUtils.browserLoaded(tab.linkedBrowser);
   await reload(dbg, "inline-cache.html");
-  return Promise.all([ navigated, loaded ]);
+  return Promise.all([navigated, loaded]);
 }
 
-add_task(async function () {
+add_task(async function() {
   info("Load document with inline script");
   const tab = await addTab(SOURCE_URL);
   info("Open debugger");
@@ -68,8 +68,10 @@ add_task(async function () {
   await waitForLoadedSource(dbg, "inline-cache.html");
   let dbgValue = await findSource(dbg, "inline-cache.html");
   info(`Debugger text: ${dbgValue.text}`);
-  ok(dbgValue.text.includes(pageValue),
-     "Debugger loads from cache, gets value 1 like page");
+  ok(
+    dbgValue.text.includes(pageValue),
+    "Debugger loads from cache, gets value 1 like page"
+  );
 
   info("Disable HTTP cache for page");
   await toolbox.target.activeTab.reconfigure({ cacheDisabled: true });
@@ -82,8 +84,10 @@ add_task(async function () {
   await waitForLoadedSource(dbg, "inline-cache.html");
   dbgValue = await findSource(dbg, "inline-cache.html");
   info(`Debugger text: ${dbgValue.text}`);
-  ok(dbgValue.text.includes(pageValue),
-     "Debugger loads from network, gets value 2 like page");
+  ok(
+    dbgValue.text.includes(pageValue),
+    "Debugger loads from network, gets value 2 like page"
+  );
 
   makeChanges();
 
@@ -94,8 +98,10 @@ add_task(async function () {
   await waitForLoadedSource(dbg, "inline-cache.html");
   dbgValue = await findSource(dbg, "inline-cache.html");
   info(`Debugger text: ${dbgValue.text}`);
-  ok(dbgValue.text.includes(pageValue),
-     "Debugger loads from network, gets value 3 like page");
+  ok(
+    dbgValue.text.includes(pageValue),
+    "Debugger loads from network, gets value 3 like page"
+  );
 
   info("Enable HTTP cache for page");
   await toolbox.target.activeTab.reconfigure({ cacheDisabled: false });
@@ -112,8 +118,10 @@ add_task(async function () {
   await waitForLoadedSource(dbg, "inline-cache.html");
   dbgValue = await findSource(dbg, "inline-cache.html");
   info(`Debugger text: ${dbgValue.text}`);
-  ok(dbgValue.text.includes(pageValue),
-     "Debugger loads from cache, gets value 4 like page");
+  ok(
+    dbgValue.text.includes(pageValue),
+    "Debugger loads from cache, gets value 4 like page"
+  );
 
   makeChanges();
 
@@ -124,8 +132,10 @@ add_task(async function () {
   await waitForLoadedSource(dbg, "inline-cache.html");
   dbgValue = await findSource(dbg, "inline-cache.html");
   info(`Debugger text: ${dbgValue.text}`);
-  ok(dbgValue.text.includes(pageValue),
-     "Debugger loads from cache, gets value 5 like page");
+  ok(
+    dbgValue.text.includes(pageValue),
+    "Debugger loads from cache, gets value 5 like page"
+  );
 
   await toolbox.destroy();
   await removeTab(tab);

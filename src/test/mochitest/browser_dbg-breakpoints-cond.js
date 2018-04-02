@@ -17,10 +17,7 @@ function assertEditorBreakpoint(dbg, line, shouldExist) {
 
   ok(
     exists === shouldExist,
-    "Breakpoint " +
-      (shouldExist ? "exists" : "does not exist") +
-      " on line " +
-      line
+    "Breakpoint " + (shouldExist ? "exists" : "does not exist") + " on line " + line
   );
 }
 

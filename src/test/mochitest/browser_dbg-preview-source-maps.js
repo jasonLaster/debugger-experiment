@@ -37,11 +37,7 @@ function assertPreviewPopup(dbg, { field, value, expression }) {
 
   const preview = dbg.selectors.getPreview(dbg.getState());
 
-  is(
-    `${preview.result.preview.ownProperties[field].value}`,
-    value,
-    "Preview.result"
-  );
+  is(`${preview.result.preview.ownProperties[field].value}`, value, "Preview.result");
   is(preview.updating, false, "Preview.updating");
   is(preview.expression, expression, "Preview.expression");
 }

@@ -42,9 +42,7 @@ async function getReactProps(evaluate) {
 async function getImmutableProps(expression: string, evaluate) {
   const immutableEntries = await evaluate((exp => `${exp}.toJS()`)(expression));
 
-  const immutableType = await evaluate(
-    (exp => `${exp}.constructor.name`)(expression)
-  );
+  const immutableType = await evaluate((exp => `${exp}.constructor.name`)(expression));
 
   return {
     type: immutableType.result,
@@ -82,18 +80,13 @@ function isInvalidTarget(target: HTMLElement) {
 
   // exclude codemirror elements that are not tokens
   const invalidTarget =
-    (target.parentElement &&
-      !target.parentElement.closest(".CodeMirror-line")) ||
+    (target.parentElement && !target.parentElement.closest(".CodeMirror-line")) ||
     cursorPos.top == 0;
 
   return invalidTarget || invalidToken || invalidType;
 }
 
-export function getExtra(
-  expression: string,
-  result: Object,
-  selectedFrame: Frame
-) {
+export function getExtra(expression: string, result: Object, selectedFrame: Frame) {
   return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
     const extra = await getExtraProps(expression, result, expr =>
       client.evaluateInFrame(selectedFrame.id, expr)
@@ -181,18 +174,13 @@ export function setPreview(
             return;
           }
 
-          const { result } = await client.evaluateInFrame(
-            selectedFrame.id,
-            expression
-          );
+          const { result } = await client.evaluateInFrame(selectedFrame.id, expression);
 
           if (result === undefined) {
             return;
           }
 
-          const extra = await dispatch(
-            getExtra(expression, result, selectedFrame)
-          );
+          const extra = await dispatch(getExtra(expression, result, selectedFrame));
 
           return {
             expression,

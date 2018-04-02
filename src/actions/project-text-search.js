@@ -49,10 +49,7 @@ export function searchSources(query: string) {
     const sources = getSources(getState());
     const validSources = sources
       .valueSeq()
-      .filter(
-        source =>
-          !hasPrettySource(getState(), source.id) && !isThirdParty(source)
-      );
+      .filter(source => !hasPrettySource(getState(), source.id) && !isThirdParty(source));
     for (const source of validSources) {
       await dispatch(loadSourceText(source));
       await dispatch(searchSource(source.id, query));

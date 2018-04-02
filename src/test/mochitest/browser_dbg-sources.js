@@ -49,10 +49,7 @@ add_task(async function() {
   const selectedSource = getSelectedSource(getState()).get("url");
 
   ok(fourthNode.classList.contains("focused"), "4th node is focused");
-  ok(
-    selectedSource.includes("nested-source.js"),
-    "nested-source is selected"
-  );
+  ok(selectedSource.includes("nested-source.js"), "nested-source is selected");
 
   await waitForSelectedSource(dbg, "nested-source");
 
@@ -64,9 +61,5 @@ add_task(async function() {
   });
 
   await waitForSourceCount(dbg, 9);
-  is(
-    getLabel(dbg, 7),
-    "math.min.js",
-    "math.min.js - The dynamic script exists"
-  );
+  is(getLabel(dbg, 7), "math.min.js", "math.min.js - The dynamic script exists");
 });

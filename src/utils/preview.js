@@ -18,9 +18,7 @@ export function isImmutable(result: Grip) {
     return;
   }
 
-  return IMMUTABLE_FIELDS.every(field =>
-    Object.keys(ownProperties).includes(field)
-  );
+  return IMMUTABLE_FIELDS.every(field => Object.keys(ownProperties).includes(field));
 }
 
 export function isReactComponent(result: Grip) {

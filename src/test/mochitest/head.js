@@ -206,11 +206,7 @@ async function waitForSources(dbg, ...sources) {
   await Promise.all(
     sources.map(url => {
       if (!sourceExists(dbg, url)) {
-        return waitForState(
-          dbg,
-          () => sourceExists(dbg, url),
-          `source ${url} exists`
-        );
+        return waitForState(dbg, () => sourceExists(dbg, url), `source ${url} exists`);
       }
     })
   );
@@ -269,10 +265,7 @@ function waitForSelectedSource(dbg, url) {
 
       // wait for async work to be done
       const hasSymbols = dbg.selectors.hasSymbols(state, source);
-      const hasSourceMetaData = dbg.selectors.hasSourceMetaData(
-        state,
-        source.id
-      );
+      const hasSourceMetaData = dbg.selectors.hasSourceMetaData(state, source.id);
       const hasPausePoints = dbg.selectors.hasPausePoints(state, source.id);
       return hasSymbols && hasSourceMetaData && hasPausePoints;
     },
@@ -307,10 +300,7 @@ function getVisibleSelectedFrameLine(dbg) {
 function assertPausedLocation(dbg) {
   const { selectors: { getSelectedSource }, getState } = dbg;
 
-  ok(
-    isSelectedFrameSelected(dbg, getState()),
-    "top frame's source is selected"
-  );
+  ok(isSelectedFrameSelected(dbg, getState()), "top frame's source is selected");
 
   // Check the pause location
   const pauseLine = getVisibleSelectedFrameLine(dbg);
@@ -338,13 +328,9 @@ function assertDebugLine(dbg, line) {
     return;
   }
 
-  ok(
-    lineInfo.wrapClass.includes("new-debug-line"),
-    "Line is highlighted as paused"
-  );
+  ok(lineInfo.wrapClass.includes("new-debug-line"), "Line is highlighted as paused");
 
-  const debugLine =
-    findElement(dbg, "debugLine") || findElement(dbg, "debugErrorLine");
+  const debugLine = findElement(dbg, "debugLine") || findElement(dbg, "debugErrorLine");
 
   is(
     findAllElements(dbg, "debugLine").length +
@@ -379,21 +365,13 @@ function assertHighlightLocation(dbg, source, line) {
   source = findSource(dbg, source);
 
   // Check the selected source
-  is(
-    getSelectedSource(getState()).get("url"),
-    source.url,
-    "source url is correct"
-  );
+  is(getSelectedSource(getState()).get("url"), source.url, "source url is correct");
 
   // Check the highlight line
   const lineEl = findElement(dbg, "highlightLine");
   ok(lineEl, "Line is highlighted");
 
-  is(
-    findAllElements(dbg, "highlightLine").length,
-    1,
-    "Only 1 line is highlighted"
-  );
+  is(findAllElements(dbg, "highlightLine").length, 1, "Only 1 line is highlighted");
 
   ok(isVisibleInEditor(dbg, lineEl), "Highlighted line is visible");
   ok(
@@ -433,11 +411,7 @@ async function waitForLoadedScopes(dbg) {
 async function waitForPaused(dbg, url) {
   const { getSelectedScope } = dbg.selectors;
 
-  await waitForState(
-    dbg,
-    state => isPaused(dbg) && !!getSelectedScope(state),
-    "paused"
-  );
+  await waitForState(dbg, state => isPaused(dbg) && !!getSelectedScope(state), "paused");
 
   await waitForLoadedScopes(dbg);
   await waitForSelectedSource(dbg, url);
@@ -768,11 +742,7 @@ function removeBreakpoint(dbg, sourceId, line, column) {
  * @return {Promise}
  * @static
  */
-async function togglePauseOnExceptions(
-  dbg,
-  pauseOnExceptions,
-  ignoreCaughtExceptions
-) {
+async function togglePauseOnExceptions(dbg, pauseOnExceptions, ignoreCaughtExceptions) {
   const command = dbg.actions.pauseOnExceptions(
     pauseOnExceptions,
     ignoreCaughtExceptions
@@ -826,12 +796,8 @@ const cmdShift = isMac
 // On Mac, going to beginning/end only works with meta+left/right.  On
 // Windows, it only works with home/end.  On Linux, apparently, either
 // ctrl+left/right or home/end work.
-const endKey = isMac
-  ? { code: "VK_RIGHT", modifiers: cmdOrCtrl }
-  : { code: "VK_END" };
-const startKey = isMac
-  ? { code: "VK_LEFT", modifiers: cmdOrCtrl }
-  : { code: "VK_HOME" };
+const endKey = isMac ? { code: "VK_RIGHT", modifiers: cmdOrCtrl } : { code: "VK_END" };
+const startKey = isMac ? { code: "VK_LEFT", modifiers: cmdOrCtrl } : { code: "VK_HOME" };
 
 const keyMappings = {
   debugger: { code: "s", modifiers: shiftOrAlt },
@@ -939,15 +905,13 @@ const selectors = {
     `.expressions-list .expression-container:nth-child(${i}) .object-label`,
   expressionValue: i =>
     `.expressions-list .expression-container:nth-child(${i}) .object-delimiter + *`,
-  expressionClose: i =>
-    `.expressions-list .expression-container:nth-child(${i}) .close`,
+  expressionClose: i => `.expressions-list .expression-container:nth-child(${i}) .close`,
   expressionNodes: ".expressions-list .tree-node",
   scopesHeader: ".scopes-pane ._header",
   breakpointItem: i => `.breakpoints-list .breakpoint:nth-child(${i})`,
   scopes: ".scopes-list",
   scopeNode: i => `.scopes-list .tree-node:nth-child(${i}) .object-label`,
-  scopeValue: i =>
-    `.scopes-list .tree-node:nth-child(${i}) .object-delimiter + *`,
+  scopeValue: i => `.scopes-list .tree-node:nth-child(${i}) .object-delimiter + *`,
   frame: i => `.frames ul li:nth-child(${i})`,
   frames: ".frames ul li",
   gutter: i => `.CodeMirror-code *:nth-child(${i}) .CodeMirror-linenumber`,
@@ -978,8 +942,7 @@ const selectors = {
   popup: ".popover",
   tooltip: ".tooltip",
   previewPopup: ".preview-popup",
-  outlineItem: i =>
-    `.outline-list__element:nth-child(${i}) .function-signature`,
+  outlineItem: i => `.outline-list__element:nth-child(${i}) .function-signature`,
   outlineItems: ".outline-list__element",
   conditionalPanelInput: ".conditional-breakpoint-panel input"
 };
@@ -1031,11 +994,7 @@ async function clickElement(dbg, elementName, ...args) {
 }
 
 function clickElementWithSelector(dbg, selector) {
-  EventUtils.synthesizeMouseAtCenter(
-    findElementWithSelector(dbg, selector),
-    {},
-    dbg.win
-  );
+  EventUtils.synthesizeMouseAtCenter(findElementWithSelector(dbg, selector), {}, dbg.win);
 }
 
 function dblClickElement(dbg, elementName, ...args) {
@@ -1105,9 +1064,7 @@ function toggleObjectInspectorNode(node) {
   const objectInspector = node.closest(".object-inspector");
   const properties = objectInspector.querySelectorAll(".node").length;
   node.click();
-  return waitUntil(
-    () => objectInspector.querySelectorAll(".node").length !== properties
-  );
+  return waitUntil(() => objectInspector.querySelectorAll(".node").length !== properties);
 }
 
 function getCM(dbg) {
@@ -1163,8 +1120,7 @@ async function assertPreviewPopup(dbg, { field, value, expression }) {
   const previewEl = await waitForElement(dbg, "popup");
   const preview = dbg.selectors.getPreview(dbg.getState());
 
-  const properties =
-    preview.result.preview.ownProperties || preview.result.preview.items;
+  const properties = preview.result.preview.ownProperties || preview.result.preview.items;
   const property = properties[field];
 
   is(`${property.value || property}`, value, "Preview.result");

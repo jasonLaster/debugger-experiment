@@ -14,11 +14,7 @@ import * as I from "immutable";
 import makeRecord from "../utils/makeRecord";
 import { findEmptyLines } from "../utils/ast";
 
-import type {
-  AstLocation,
-  PausePoint,
-  SymbolDeclarations
-} from "../workers/parser";
+import type { AstLocation, PausePoint, SymbolDeclarations } from "../workers/parser";
 
 import type { Map } from "immutable";
 import type { Source } from "../types";
@@ -135,10 +131,7 @@ function update(
     }
 
     case "SET_SOURCE_METADATA": {
-      return state.setIn(
-        ["sourceMetaData", action.sourceId],
-        action.sourceMetaData
-      );
+      return state.setIn(["sourceMetaData", action.sourceId], action.sourceMetaData);
     }
 
     default: {

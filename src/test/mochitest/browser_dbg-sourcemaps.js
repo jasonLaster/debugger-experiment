@@ -18,10 +18,7 @@ function assertEditorBreakpoint(dbg, line, shouldExist) {
   const exists = !!getLineEl(dbg, line).querySelector(".new-breakpoint");
   ok(
     exists === shouldExist,
-    "Breakpoint " +
-      (shouldExist ? "exists" : "does not exist") +
-      " on line " +
-      line
+    "Breakpoint " + (shouldExist ? "exists" : "does not exist") + " on line " + line
   );
 }
 
@@ -57,7 +54,9 @@ add_task(async function() {
 
   await selectSource(dbg, entrySrc);
   ok(
-    getCM(dbg).getValue().includes("window.keepMeAlive"),
+    getCM(dbg)
+      .getValue()
+      .includes("window.keepMeAlive"),
     "Original source text loaded correctly"
   );
 

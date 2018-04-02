@@ -132,44 +132,34 @@ add_task(async function() {
     ["aVar", '"var3"']
   ]);
 
-  await breakpointScopes(
-    dbg,
-    "this-arguments-bindings",
-    { line: 4, column: 4 },
-    [
-      "Block",
-      ["<this>", '"this-value"'],
-      ["arrow", "undefined"],
-      "fn",
-      ["arg", '"arg-value"'],
-      ["arguments", "Arguments"],
-      "root",
-      "fn()",
-      "Module",
-      "root()"
-    ]
-  );
+  await breakpointScopes(dbg, "this-arguments-bindings", { line: 4, column: 4 }, [
+    "Block",
+    ["<this>", '"this-value"'],
+    ["arrow", "undefined"],
+    "fn",
+    ["arg", '"arg-value"'],
+    ["arguments", "Arguments"],
+    "root",
+    "fn()",
+    "Module",
+    "root()"
+  ]);
 
   // No '<this>' binding here because Babel does not currently general
   // the current mappings for 'this' bindings.
-  await breakpointScopes(
-    dbg,
-    "this-arguments-bindings",
-    { line: 8, column: 6 },
-    [
-      "arrow",
-      ["argArrow", "(unmapped)"],
-      "Block",
-      "arrow()",
-      "fn",
-      ["arg", '"arg-value"'],
-      ["arguments", "Arguments"],
-      "root",
-      "fn()",
-      "Module",
-      "root()"
-    ]
-  );
+  await breakpointScopes(dbg, "this-arguments-bindings", { line: 8, column: 6 }, [
+    "arrow",
+    ["argArrow", "(unmapped)"],
+    "Block",
+    "arrow()",
+    "fn",
+    ["arg", '"arg-value"'],
+    ["arguments", "Arguments"],
+    "root",
+    "fn()",
+    "Module",
+    "root()"
+  ]);
 
   // Babel 6's imports aren't fully mapped, so they show as unavailable.
   // The call-based ones work, but the single-identifier ones do not.
@@ -279,7 +269,7 @@ add_task(async function() {
     // very well and ones at the end of the file map especially badly.
     ["aDefault", "(unmapped)"],
     ["root", "(optimized away)"],
-    ["val", "(optimized away)"],
+    ["val", "(optimized away)"]
   ]);
 
   await breakpointScopes(dbg, "non-modules", { line: 7, column: 2 }, []);

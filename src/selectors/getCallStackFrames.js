@@ -2,11 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-import {
-  getSources,
-  getSelectedSource,
-  getSourceInSources
-} from "../reducers/sources";
+import { getSources, getSelectedSource, getSourceInSources } from "../reducers/sources";
 import { getFrames } from "../reducers/pause";
 import { annotateFrames } from "../utils/pause/frames";
 import { isOriginalId } from "devtools-source-map";
@@ -16,9 +12,7 @@ import type { SourcesMap } from "../reducers/sources";
 import { createSelector } from "reselect";
 
 function getLocation(frame, isGeneratedSource) {
-  return isGeneratedSource
-    ? frame.generatedLocation || frame.location
-    : frame.location;
+  return isGeneratedSource ? frame.generatedLocation || frame.location : frame.location;
 }
 
 function getSourceForFrame(sources, frame, isGeneratedSource) {
@@ -27,8 +21,7 @@ function getSourceForFrame(sources, frame, isGeneratedSource) {
 }
 
 function appendSource(sources, frame, selectedSource) {
-  const isGeneratedSource =
-    selectedSource && !isOriginalId(selectedSource.get("id"));
+  const isGeneratedSource = selectedSource && !isOriginalId(selectedSource.get("id"));
   return {
     ...frame,
     location: getLocation(frame, isGeneratedSource),

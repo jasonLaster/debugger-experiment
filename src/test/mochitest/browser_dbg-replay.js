@@ -45,10 +45,7 @@ async function clickResume(dbg) {
 function assertHistoryPosition(dbg, position) {
   const { selectors: { getHistoryPosition, getHistoryFrame }, getState } = dbg;
 
-  ok(
-    getHistoryPosition(getState()) === position - 1,
-    "has correct position in history"
-  );
+  ok(getHistoryPosition(getState()) === position - 1, "has correct position in history");
 }
 
 /**

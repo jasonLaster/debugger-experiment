@@ -9,11 +9,7 @@ import * as firefox from "./firefox";
 import { prefs } from "../utils/prefs";
 import { setupHelper } from "../utils/dbg";
 
-import {
-  bootstrapApp,
-  bootstrapStore,
-  bootstrapWorkers
-} from "../utils/bootstrap";
+import { bootstrapApp, bootstrapStore, bootstrapWorkers } from "../utils/bootstrap";
 
 function loadFromPrefs(actions: Object) {
   const { pauseOnExceptions, ignoreCaughtExceptions } = prefs;
@@ -22,10 +18,7 @@ function loadFromPrefs(actions: Object) {
   }
 }
 
-async function onConnect(
-  connection: Object,
-  { services, toolboxActions }: Object
-) {
+async function onConnect(connection: Object, { services, toolboxActions }: Object) {
   // NOTE: the landing page does not connect to a JS process
   if (!connection) {
     return;

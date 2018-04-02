@@ -135,9 +135,7 @@ function update(
 // https://github.com/devtools-html/debugger.html/blob/master/src/reducers/sources.js#L179-L185
 type OuterState = { ui: Record<UIState> };
 
-export function getSelectedPrimaryPaneTab(
-  state: OuterState
-): SelectedPrimaryPaneTabType {
+export function getSelectedPrimaryPaneTab(state: OuterState): SelectedPrimaryPaneTabType {
   return state.ui.get("selectedPrimaryPaneTab");
 }
 
@@ -157,10 +155,7 @@ export function getShownSource(state: OuterState): boolean {
   return state.ui.get("shownSource");
 }
 
-export function getPaneCollapse(
-  state: OuterState,
-  position: panelPositionType
-): boolean {
+export function getPaneCollapse(state: OuterState, position: panelPositionType): boolean {
   if (position == "start") {
     return state.ui.get("startPanelCollapsed");
   }

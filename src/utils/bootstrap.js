@@ -7,19 +7,11 @@ import { bindActionCreators, combineReducers } from "redux";
 import ReactDOM from "react-dom";
 const { Provider } = require("react-redux");
 
-import {
-  getValue,
-  isFirefoxPanel,
-  isDevelopment,
-  isTesting
-} from "devtools-config";
+import { getValue, isFirefoxPanel, isDevelopment, isTesting } from "devtools-config";
 import { startSourceMapWorker, stopSourceMapWorker } from "devtools-source-map";
 import { startSearchWorker, stopSearchWorker } from "../workers/search";
 
-import {
-  startPrettyPrintWorker,
-  stopPrettyPrintWorker
-} from "../workers/pretty-print";
+import { startPrettyPrintWorker, stopPrettyPrintWorker } from "../workers/pretty-print";
 import { startParserWorker, stopParserWorker } from "../workers/parser";
 import configureStore from "../actions/utils/create-store";
 import reducers from "../reducers";
@@ -52,10 +44,7 @@ export function bootstrapStore(client, { services, toolboxActions }) {
   const store = createStore(combineReducers(reducers));
   store.subscribe(() => updatePrefs(store.getState()));
 
-  const actions = bindActionCreators(
-    require("../actions").default,
-    store.dispatch
-  );
+  const actions = bindActionCreators(require("../actions").default, store.dispatch);
 
   return { store, actions, selectors };
 }

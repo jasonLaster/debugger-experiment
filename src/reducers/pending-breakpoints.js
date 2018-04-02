@@ -12,10 +12,7 @@
 import * as I from "immutable";
 import makeRecord from "../utils/makeRecord";
 
-import {
-  createPendingBreakpoint,
-  makePendingLocationId
-} from "../utils/breakpoint";
+import { createPendingBreakpoint, makePendingLocationId } from "../utils/breakpoint";
 
 import { prefs } from "../utils/prefs";
 
@@ -29,9 +26,7 @@ export type PendingBreakpointsState = {
   pendingBreakpoints: PendingBreakpointsMap
 };
 
-export function initialPendingBreakpointsState(): Record<
-  PendingBreakpointsState
-> {
+export function initialPendingBreakpointsState(): Record<PendingBreakpointsState> {
   return makeRecord(
     ({
       pendingBreakpoints: restorePendingBreakpoints()
@@ -161,8 +156,7 @@ export function getPendingBreakpointsForSource(
   state: OuterState,
   sourceUrl: String
 ): PendingBreakpointsMap {
-  const pendingBreakpoints =
-    state.pendingBreakpoints.pendingBreakpoints || I.Map();
+  const pendingBreakpoints = state.pendingBreakpoints.pendingBreakpoints || I.Map();
   return pendingBreakpoints.filter(
     pendingBreakpoint => pendingBreakpoint.location.sourceUrl === sourceUrl
   );

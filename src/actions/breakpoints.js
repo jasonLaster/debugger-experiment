@@ -42,10 +42,7 @@ type addBreakpointOptions = {
  * @param {String} $1.sourceId String  value
  * @param {PendingBreakpoint} $1.location PendingBreakpoint  value
  */
-export function syncBreakpoint(
-  sourceId: SourceId,
-  pendingBreakpoint: PendingBreakpoint
-) {
+export function syncBreakpoint(sourceId: SourceId, pendingBreakpoint: PendingBreakpoint) {
   return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
     const { breakpoint, previousLocation } = await syncClientBreakpoint(
       getState,
@@ -84,12 +81,7 @@ export function addBreakpoint(
       ({
         type: "ADD_BREAKPOINT",
         breakpoint,
-        [PROMISE]: addBreakpointPromise(
-          getState,
-          client,
-          sourceMaps,
-          breakpoint
-        )
+        [PROMISE]: addBreakpointPromise(getState, client, sourceMaps, breakpoint)
       }: Action)
     );
   };
@@ -290,11 +282,7 @@ export function removeBreakpoints(breakpoints: BreakpointsMap) {
 export function remapBreakpoints(sourceId: string) {
   return async ({ dispatch, getState, sourceMaps }: ThunkArgs) => {
     const breakpoints = getBreakpoints(getState());
-    const newBreakpoints = await remapLocations(
-      breakpoints,
-      sourceId,
-      sourceMaps
-    );
+    const newBreakpoints = await remapLocations(breakpoints, sourceId, sourceMaps);
 
     return dispatch(
       ({
@@ -408,9 +396,7 @@ export function addOrToggleDisabledBreakpoint(line: ?number, column?: number) {
 
     if (bp) {
       // NOTE: it's possible the breakpoint has slid to a column
-      return dispatch(
-        toggleDisabledBreakpoint(line, column || bp.location.column)
-      );
+      return dispatch(toggleDisabledBreakpoint(line, column || bp.location.column));
     }
 
     return dispatch(

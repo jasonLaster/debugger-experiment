@@ -14,7 +14,7 @@ add_task(async function() {
   // `selectSourceURL` will set a pending request to load this source
   // and highlight a specific line.
 
-  await selectSource(dbg, sourceUrl, 66)
+  await selectSource(dbg, sourceUrl, 66);
 
   // TODO: revisit highlighting lines when the debugger opens
   // assertHighlightLocation(dbg, "long.js", 66);

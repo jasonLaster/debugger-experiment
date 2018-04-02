@@ -101,10 +101,7 @@ const emptyPauseState = {
   previousLocation: null
 };
 
-function update(
-  state: PauseState = createPauseState(),
-  action: Action
-): PauseState {
+function update(state: PauseState = createPauseState(), action: Action): PauseState {
   switch (action.type) {
     case "PAUSED": {
       const { selectedFrameId, frames, loadedObjects, why } = action;

@@ -22,10 +22,7 @@ type SourcesList = List<SourceRecord>;
  * @returns Immutable.list
  */
 
-export function getHiddenTabs(
-  sourceTabs: SourcesList,
-  sourceTabEls: Array<any>
-) {
+export function getHiddenTabs(sourceTabs: SourcesList, sourceTabEls: Array<any>) {
   sourceTabEls = [].slice.call(sourceTabEls);
   function getTopOffset() {
     const topOffsets = sourceTabEls.map(t => t.getBoundingClientRect().top);
@@ -50,9 +47,7 @@ export function getSourceAnnotation(
   sourceMetaData: SourceMetaDataType
 ) {
   const framework =
-    sourceMetaData && sourceMetaData.framework
-      ? sourceMetaData.framework
-      : false;
+    sourceMetaData && sourceMetaData.framework ? sourceMetaData.framework : false;
 
   if (framework) {
     return <img className={framework.toLowerCase()} />;

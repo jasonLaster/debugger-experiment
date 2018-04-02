@@ -23,26 +23,21 @@ export function findBestMatchExpression(
 
   const members = memberExpressions.filter(({ computed }) => !computed);
 
-  return []
-    .concat(identifiers, members, literals)
-    .reduce((found, expression) => {
-      const overlaps =
-        expression.location.start.line == line &&
-        expression.location.start.column <= column &&
-        expression.location.end.column >= column;
+  return [].concat(identifiers, members, literals).reduce((found, expression) => {
+    const overlaps =
+      expression.location.start.line == line &&
+      expression.location.start.column <= column &&
+      expression.location.end.column >= column;
 
-      if (overlaps) {
-        return expression;
-      }
+    if (overlaps) {
+      return expression;
+    }
 
-      return found;
-    }, null);
+    return found;
+  }, null);
 }
 
-export function findEmptyLines(
-  selectedSource: Source,
-  pausePoints: PausePoint[]
-) {
+export function findEmptyLines(selectedSource: Source, pausePoints: PausePoint[]) {
   if (!pausePoints || pausePoints.length == 0 || !selectedSource) {
     return [];
   }
@@ -60,8 +55,7 @@ export function findEmptyLines(
 
 export function containsPosition(a: AstLocation, b: AstPosition) {
   const startsBefore =
-    a.start.line < b.line ||
-    (a.start.line === b.line && a.start.column <= b.column);
+    a.start.line < b.line || (a.start.line === b.line && a.start.column <= b.column);
   const endsAfter =
     a.end.line > b.line || (a.end.line === b.line && a.end.column >= b.column);
 

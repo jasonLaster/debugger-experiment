@@ -38,9 +38,7 @@ export type ProjectTextSearchState = {
   status: string
 };
 
-export function initialProjectTextSearchState(): Record<
-  ProjectTextSearchState
-> {
+export function initialProjectTextSearchState(): Record<ProjectTextSearchState> {
   return makeRecord(
     ({
       query: "",

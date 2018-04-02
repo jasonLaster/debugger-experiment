@@ -28,11 +28,7 @@ import type {
 
 import type { MatchedLocations } from "../reducers/file-search";
 
-import type {
-  SymbolDeclarations,
-  AstLocation,
-  PausePoint
-} from "../workers/parser";
+import type { SymbolDeclarations, AstLocation, PausePoint } from "../workers/parser";
 
 import type { SourceMetaDataType } from "../reducers/ast.js";
 

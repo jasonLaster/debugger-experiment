@@ -2,19 +2,11 @@
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
 function assertEnabled(dbg) {
-  is(
-    dbg.selectors.getQuickOpenEnabled(dbg.getState()),
-    true,
-    "quickOpen enabled"
-  );
+  is(dbg.selectors.getQuickOpenEnabled(dbg.getState()), true, "quickOpen enabled");
 }
 
 function assertDisabled(dbg) {
-  is(
-    dbg.selectors.getQuickOpenEnabled(dbg.getState()),
-    false,
-    "quickOpen disabled"
-  );
+  is(dbg.selectors.getQuickOpenEnabled(dbg.getState()), false, "quickOpen disabled");
 }
 
 function assertLine(dbg, lineNumber) {

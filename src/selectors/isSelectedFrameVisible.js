@@ -24,8 +24,5 @@ export function isSelectedFrameVisible(state) {
     return false;
   }
 
-  return (
-    visibleSourceId(selectedLocation) ===
-    visibleSourceId(selectedFrame.location)
-  );
+  return visibleSourceId(selectedLocation) === visibleSourceId(selectedFrame.location);
 }

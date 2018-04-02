@@ -120,9 +120,7 @@ export function formatShortcutResults(): Array<QuickOpenResult> {
   ];
 }
 
-export function formatSources(
-  sources: RelativeSource[]
-): Array<QuickOpenResult> {
+export function formatSources(sources: RelativeSource[]): Array<QuickOpenResult> {
   return sources
     .filter(source => !isPretty(source))
     .map(source => formatSourcesForList(source))

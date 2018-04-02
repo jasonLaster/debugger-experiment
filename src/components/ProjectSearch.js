@@ -100,19 +100,13 @@ export class ProjectSearch extends Component<Props, State> {
   componentDidMount() {
     const { shortcuts } = this.context;
 
-    shortcuts.on(
-      L10N.getStr("projectTextSearch.key"),
-      this.toggleProjectTextSearch
-    );
+    shortcuts.on(L10N.getStr("projectTextSearch.key"), this.toggleProjectTextSearch);
     shortcuts.on("Enter", this.onEnterPress);
   }
 
   componentWillUnmount() {
     const { shortcuts } = this.context;
-    shortcuts.off(
-      L10N.getStr("projectTextSearch.key"),
-      this.toggleProjectTextSearch
-    );
+    shortcuts.off(L10N.getStr("projectTextSearch.key"), this.toggleProjectTextSearch);
     shortcuts.off("Enter", this.onEnterPress);
   }
 

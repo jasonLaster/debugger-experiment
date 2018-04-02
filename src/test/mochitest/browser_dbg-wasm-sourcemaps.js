@@ -31,9 +31,5 @@ add_task(async function() {
   const firstFrameTitle = frames[0].querySelector(".title").textContent;
   is(firstFrameTitle, "(wasmcall)", "It shall be a wasm call");
   const firstFrameLocation = frames[0].querySelector(".location").textContent;
-  is(
-    firstFrameLocation.includes("average.c"),
-    true,
-    "It shall be to avarage.c source"
-  );
+  is(firstFrameLocation.includes("average.c"), true, "It shall be to avarage.c source");
 });

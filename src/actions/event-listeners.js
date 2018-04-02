@@ -111,10 +111,7 @@ async function _getEventListeners(threadClient) {
     if (fetchedDefinitions.has(listener.function.actor)) {
       definitionSite = fetchedDefinitions.get(listener.function.actor);
     } else if (listener.function.class == "Function") {
-      definitionSite = await _getDefinitionSite(
-        threadClient,
-        listener.function
-      );
+      definitionSite = await _getDefinitionSite(threadClient, listener.function);
       if (!definitionSite) {
         // We don"t know where this listener comes from so don"t show it in
         // the UI as breaking on it doesn"t work (bug 942899).

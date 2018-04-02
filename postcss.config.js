@@ -6,10 +6,7 @@ var mapUrl = require("postcss-url-mapper");
 const debug = require("debug")("launchpad");
 
 function mapUrlProduction(url) {
-  const newUrl = url.replace(
-    /\/images\//,
-    "chrome://devtools/skin/images/debugger/"
-  );
+  const newUrl = url.replace(/\/images\//, "chrome://devtools/skin/images/debugger/");
   debug("map url", { url, newUrl });
   return newUrl;
 }

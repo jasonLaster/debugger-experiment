@@ -4,12 +4,7 @@
 
 // @flow
 
-import {
-  getSource,
-  hasSymbols,
-  getSelectedLocation,
-  isPaused
-} from "../selectors";
+import { getSource, hasSymbols, getSelectedLocation, isPaused } from "../selectors";
 
 import { mapFrames } from "./pause";
 import { setInScopeLines } from "./ast/setInScopeLines";
@@ -50,12 +45,7 @@ export function setSourceMetaData(sourceId: SourceId) {
 export function setSymbols(sourceId: SourceId) {
   return async ({ dispatch, getState }: ThunkArgs) => {
     const source = getSource(getState(), sourceId);
-    if (
-      !source ||
-      !source.text ||
-      source.isWasm ||
-      hasSymbols(getState(), source)
-    ) {
+    if (!source || !source.text || source.isWasm || hasSymbols(getState(), source)) {
       return;
     }
 

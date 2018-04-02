@@ -3,10 +3,7 @@
 requestLongerTimeout(2);
 
 async function waitForBreakpointCount(dbg, count) {
-  return waitForState(
-    dbg,
-    state => dbg.selectors.getBreakpoints(state).size === count
-  );
+  return waitForState(dbg, state => dbg.selectors.getBreakpoints(state).size === count);
 }
 
 add_task(async function() {
@@ -20,7 +17,9 @@ add_task(async function() {
 
   await selectSource(dbg, entrySrc);
   ok(
-    getCM(dbg).getValue().includes("window.keepMeAlive"),
+    getCM(dbg)
+      .getValue()
+      .includes("window.keepMeAlive"),
     "Original source text loaded correctly"
   );
 

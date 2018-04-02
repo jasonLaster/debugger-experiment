@@ -41,9 +41,8 @@ export function openWorkerToolbox(worker: Worker) {
 export function evaluateInConsole(inputString: string) {
   return async ({ client, getState }: ThunkArgs) => {
     const frameId = getSelectedFrameId(getState());
-    client.evaluate(
-      `console.log("${inputString}"); console.log(${inputString})`,
-      { frameId }
-    );
+    client.evaluate(`console.log("${inputString}"); console.log(${inputString})`, {
+      frameId
+    });
   };
 }

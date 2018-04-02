@@ -9,7 +9,9 @@
 
 // There are shutdown issues for which multiple rejections are left uncaught.
 // See bug 1018184 for resolving these issues.
-const { PromiseTestUtils } = scopedCuImport("resource://testing-common/PromiseTestUtils.jsm");
+const { PromiseTestUtils } = scopedCuImport(
+  "resource://testing-common/PromiseTestUtils.jsm"
+);
 PromiseTestUtils.whitelistRejectionsGlobally(/File closed/);
 PromiseTestUtils.whitelistRejectionsGlobally(/NS_ERROR_FAILURE/);
 
@@ -56,14 +58,8 @@ add_task(async function() {
 
   gProcess = await initChromeDebugger();
 
-  ok(
-    gProcess._dbgProcess,
-    "The remote debugger process wasn't created properly!"
-  );
-  ok(
-    gProcess._dbgProcess.exitCode == null,
-    "The remote debugger process isn't running!"
-  );
+  ok(gProcess._dbgProcess, "The remote debugger process wasn't created properly!");
+  ok(gProcess._dbgProcess.exitCode == null, "The remote debugger process isn't running!");
   is(
     typeof gProcess._dbgProcess.pid,
     "number",
@@ -75,10 +71,7 @@ add_task(async function() {
   info("process name: " + gProcess._dbgProcess.processName);
   info("process sig: " + gProcess._dbgProcess.processSignature);
 
-  ok(
-    gProcess._dbgProfilePath,
-    "The remote debugger profile wasn't created properly!"
-  );
+  ok(gProcess._dbgProfilePath, "The remote debugger profile wasn't created properly!");
 
   is(
     gProcess._dbgProfilePath,

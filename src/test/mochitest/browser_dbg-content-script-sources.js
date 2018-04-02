@@ -8,10 +8,7 @@ async function selectContentScriptSources(dbg) {
   // Select a source.
   await selectSource(dbg, "content_script.js");
 
-  ok(
-    findElementWithSelector(dbg, ".sources-list .focused"),
-    "Source is focused"
-  );
+  ok(findElementWithSelector(dbg, ".sources-list .focused"), "Source is focused");
 }
 
 async function installAndStartExtension() {
@@ -66,10 +63,7 @@ add_task(async function() {
     await waitForPaused(dbg);
     await waitForSelectedSource(dbg, "content_script.js");
 
-    ok(
-      findElementWithSelector(dbg, ".sources-list .focused"),
-      "Source is focused"
-    );
+    ok(findElementWithSelector(dbg, ".sources-list .focused"), "Source is focused");
     assertPausedLocation(dbg);
     assertDebugLine(dbg, 2);
     await resume(dbg);
