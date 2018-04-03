@@ -247,7 +247,7 @@ export default connect(
       getFunctionText: line =>
         findFunctionText(
           line,
-          selectedSource.toJS(),
+          selectedSource,
           getSymbols(state, selectedSource)
         ),
       getFunctionLocation: line =>

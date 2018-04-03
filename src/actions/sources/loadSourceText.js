@@ -23,7 +23,7 @@ const loadSourceHistogram = Services.telemetry.getHistogramById(
 async function loadSource(source: SourceRecord, { sourceMaps, client }) {
   const id = source.get("id");
   if (isOriginalId(id)) {
-    return await sourceMaps.getOriginalSourceText(source.toJS());
+    return await sourceMaps.getOriginalSourceText(source);
   }
 
   const response = await client.sourceContents(id);
@@ -68,10 +68,10 @@ export function loadSourceText(source: SourceRecord) {
       return;
     }
 
-    const newSource = getSource(getState(), source.get("id")).toJS();
+    const newSource = getSource(getState(), source.id);
 
     if (isOriginalId(newSource.id) && !newSource.isWasm) {
-      const generatedSource = getGeneratedSource(getState(), source.toJS());
+      const generatedSource = getGeneratedSource(getState(), source);
       await dispatch(loadSourceText(generatedSource));
     }
 

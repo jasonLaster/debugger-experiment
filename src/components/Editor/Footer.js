@@ -81,7 +81,7 @@ class SourceFooter extends PureComponent<Props> {
 
     return (
       <button
-        onClick={() => toggleBlackBox(selectedSource.toJS())}
+        onClick={() => toggleBlackBox(selectedSource)}
         className={classnames("action", type, {
           active: sourceLoaded,
           blackboxed: blackboxed
@@ -202,8 +202,8 @@ class SourceFooter extends PureComponent<Props> {
 export default connect(
   state => {
     const selectedSource = getSelectedSource(state);
-    const selectedId = selectedSource.get("id");
-    const source = selectedSource.toJS();
+    const selectedId = selectedSource.id;
+    const source = selectedSource;
     return {
       selectedSource,
       mappedSource: getGeneratedSource(state, source),

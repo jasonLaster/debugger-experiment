@@ -65,7 +65,7 @@ function isCurrentlyPausedAtBreakpoint(frame, why, breakpoint) {
 }
 
 function getBreakpointFilename(source) {
-  return source && source.toJS ? getFilename(source.toJS()) : "";
+  return getFilename(source);
 }
 
 function renderSourceLocation(source, line, column) {

@@ -211,15 +211,12 @@ export function jumpToMappedLocation(location: Location) {
     if (isOriginalId(location.sourceId)) {
       pairedLocation = await getGeneratedLocation(
         getState(),
-        source.toJS(),
+        source,
         location,
         sourceMaps
       );
     } else {
-      pairedLocation = await sourceMaps.getOriginalLocation(
-        location,
-        source.toJS()
-      );
+      pairedLocation = await sourceMaps.getOriginalLocation(location, source);
     }
 
     return dispatch(selectLocation({ ...pairedLocation }));

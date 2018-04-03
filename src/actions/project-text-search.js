@@ -68,10 +68,11 @@ export function searchSource(sourceId: string, query: string) {
       return;
     }
 
-    const matches = await findSourceMatches(sourceRecord.toJS(), query);
+    const matches = await findSourceMatches(sourceRecord, query);
     if (!matches.length) {
       return;
     }
+
     dispatch({
       type: "ADD_SEARCH_RESULT",
       result: {

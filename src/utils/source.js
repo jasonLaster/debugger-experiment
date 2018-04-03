@@ -143,6 +143,10 @@ export function getFormattedSourceId(id: string) {
  * @static
  */
 export function getFilename(source: Source) {
+  if (!source) {
+    return "";
+  }
+
   const { url, id } = source;
   if (!url) {
     return getFormattedSourceId(id);

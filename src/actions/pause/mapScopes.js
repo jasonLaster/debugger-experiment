@@ -68,7 +68,7 @@ export function mapScopes(scopes: Promise<Scope>, frame: Frame) {
 
         try {
           return await buildMappedScopes(
-            sourceRecord.toJS(),
+            sourceRecord,
             frame,
             await scopes,
             sourceMaps,

@@ -155,8 +155,7 @@ class Tab extends PureComponent<Props> {
       source,
       sourceMetaData
     } = this.props;
-    const src = source.toJS();
-    const filename = getFilename(src);
+    const filename = getFilename(source);
     const sourceId = source.id;
     const active =
       selectedSource &&

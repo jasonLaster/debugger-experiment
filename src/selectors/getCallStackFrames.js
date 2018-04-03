@@ -32,7 +32,7 @@ function appendSource(sources, frame, selectedSource) {
   return {
     ...frame,
     location: getLocation(frame, isGeneratedSource),
-    source: getSourceForFrame(sources, frame, isGeneratedSource).toJS()
+    source: getSourceForFrame(sources, frame, isGeneratedSource)
   };
 }
 

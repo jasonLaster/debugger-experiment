@@ -122,7 +122,7 @@ class Tabs extends PureComponent<Props, State> {
 
   renderDropdownSource = (source: SourceRecord) => {
     const { selectSpecificSource } = this.props;
-    const filename = getFilename(source.toJS());
+    const filename = getFilename(source);
 
     const onClick = () => selectSpecificSource(source.id);
     return (

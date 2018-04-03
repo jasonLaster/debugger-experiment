@@ -566,7 +566,7 @@ function findSource(dbg, url, { silent } = { silent: false }) {
     throw new Error(`Unable to find source: ${url}`);
   }
 
-  return source.toJS();
+  return source;
 }
 
 function sourceExists(dbg, url) {

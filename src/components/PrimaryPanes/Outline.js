@@ -215,14 +215,14 @@ export default connect(
   state => {
     const selectedSource = getSelectedSource(state);
     return {
-      symbols: getSymbols(state, selectedSource && selectedSource.toJS()),
+      symbols: getSymbols(state, selectedSource),
       selectedSource,
       selectedLocation: getSelectedLocation(state),
       getFunctionText: line =>
         findFunctionText(
           line,
-          selectedSource.toJS(),
-          getSymbols(state, selectedSource.toJS())
+          selectedSource,
+          getSymbols(state, selectedSource)
         )
     };
   },

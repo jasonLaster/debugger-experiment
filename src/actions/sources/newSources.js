@@ -59,8 +59,7 @@ function loadSourceMaps(sources) {
  */
 function loadSourceMap(sourceId: SourceId) {
   return async function({ dispatch, getState, sourceMaps }: ThunkArgs) {
-    const source = getSource(getState(), sourceId).toJS();
-
+    const source = getSource(getState(), sourceId);
     if (!isGeneratedId(sourceId) || !source.sourceMapURL) {
       return;
     }
@@ -76,7 +75,7 @@ function loadSourceMap(sourceId: SourceId) {
       // If this source doesn't have a sourcemap, enable it for pretty printing
       dispatch({
         type: "UPDATE_SOURCE",
-        source: { ...source, sourceMapURL: "" }
+        source: { ...source.toJS(), sourceMapURL: "" }
       });
       return;
     }
@@ -89,8 +88,7 @@ function loadSourceMap(sourceId: SourceId) {
 // select it.
 function checkSelectedSource(sourceId: string) {
   return async ({ dispatch, getState }: ThunkArgs) => {
-    const source = getSource(getState(), sourceId).toJS();
-
+    const source = getSource(getState(), sourceId);
     const pendingLocation = getPendingSelectedLocation(getState());
 
     if (!pendingLocation || !pendingLocation.url || !source.url) {
