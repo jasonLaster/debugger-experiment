@@ -54,20 +54,6 @@ type Props = {
   openConditionalPanel: number => void
 };
 
-function isCurrentlyPausedAtBreakpoint(
-  frame: Frame,
-  why: Why,
-  breakpoint: LocalBreakpoint
-) {
-  if (!frame || !isInterrupted(why)) {
-    return false;
-  }
-
-  const bpId = makeLocationId(breakpoint.location);
-  const pausedId = makeLocationId(frame.location);
-  return bpId === pausedId;
-}
-
 function getBreakpointFilename(source: Source) {
   return source ? getFilename(source) : "";
 }
@@ -99,11 +85,19 @@ class Breakpoints extends Component<Props> {
     this.props.removeBreakpoint(breakpoint.location);
   }
 
-  renderBreakpoint(breakpoint) {
+  renderEmpty() {
+    return <div className="pane-info">{L10N.getStr("breakpoints.none")}</div>;
+  }
+
+  renderBreakpoint(breakpoint, source) {
+    const { frame, why } = this.props;
     return (
       <BreakpointItem
         key={breakpoint.locationId}
         breakpoint={breakpoint}
+        source={source}
+        frame={frame}
+        why={why}
         onClick={() => this.selectBreakpoint(breakpoint)}
         onContextMenu={e =>
           showContextMenu({ ...this.props, breakpoint, contextMenuEvent: e })
@@ -114,30 +108,23 @@ class Breakpoints extends Component<Props> {
     );
   }
 
-  renderEmpty() {
-    return <div className="pane-info">{L10N.getStr("breakpoints.none")}</div>;
+  renderBreakpointGroup(source) {
+    const { breakpoints } = this.props;
+
+    const filename = getFilename(source);
+    const sourceBreakpoints = getBreakpointsForSource(source, breakpoints);
+
+    return [
+      <div className="breakpoint-heading" title={filename} key={filename}>
+        {filename}
+      </div>,
+      ...sourceBreakpoints.map(bp => this.renderBreakpoint(bp))
+    ];
   }
 
   renderBreakpoints() {
-    const { breakpoints } = this.props;
-
-    const groupedBreakpoints = groupBy(
-      sortBy([...breakpoints.valueSeq()], bp => bp.location.line),
-      bp => getBreakpointFilename(bp.source)
-    );
-
-    return [
-      ...Object.keys(groupedBreakpoints).map(filename => {
-        return [
-          <div className="breakpoint-heading" title={filename} key={filename}>
-            {filename}
-          </div>,
-          ...groupedBreakpoints[filename]
-            .filter(bp => !bp.hidden && bp.text)
-            .map((bp, i) => this.renderBreakpoint(bp))
-        ];
-      })
-    ];
+    const { sources } = this.props;
+    return sources.valueSeq().map(this.renderBreakpointGroup);
   }
 
   render() {
@@ -151,13 +138,10 @@ class Breakpoints extends Component<Props> {
   }
 }
 
-function updateLocation(sources, frame, why, bp): LocalBreakpoint {
-  const source = getSourceInSources(sources, bp.location.sourceId);
-  const isCurrentlyPaused = isCurrentlyPausedAtBreakpoint(frame, why, bp);
-  const locationId = makeLocationId(bp.location);
-  const localBP = { ...bp, locationId, isCurrentlyPaused, source };
-
-  return localBP;
+function getBreakpointsForSource(source, breakpoints) {
+  return breakpoints.filter(
+    breakpoint => breakpoint.location.sourceId == source.id
+  );
 }
 
 const _getBreakpoints = createSelector(
@@ -165,13 +149,30 @@ const _getBreakpoints = createSelector(
   getSources,
   getTopFrame,
   getPauseReason,
-  (breakpoints, sources, frame, why) =>
-    breakpoints
-      .map(bp => updateLocation(sources, frame, why, bp))
-      .filter(bp => bp.source && !bp.source.isBlackBoxed)
+  (breakpoints, sources, frame, why) => {
+    return breakpoints.filter(
+      breakpoint => breakpoint.text && !breakpoint.hidden
+    );
+  }
+);
+
+const getBreakpointSources = createSelector(
+  getBreakpoints,
+  getSources,
+  (breakpoints, sources) => {
+    const bpSourceIds = breakpoints.map(bp => bp.location.sourceId).uniq();
+    return bpSourceIds
+      .map(sourceId => sources.get(sourceId))
+      .filter(source => !source.isBlackBoxed);
+  }
 );
 
 export default connect(
-  (state, props) => ({ breakpoints: _getBreakpoints(state) }),
+  (state, props) => ({
+    breakpoints: _getBreakpoints(state),
+    sources: getBreakpointSources(state),
+    frame: getTopFrame(state),
+    why: getPauseReason(state)
+  }),
   dispatch => bindActionCreators(actions, dispatch)
 )(Breakpoints);

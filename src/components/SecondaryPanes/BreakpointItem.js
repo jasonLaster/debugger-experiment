@@ -3,7 +3,7 @@
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
 // @flow
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import ReactDOM from "react-dom";
 import classnames from "classnames";
 
@@ -23,6 +23,20 @@ type Props = {
   onCloseClick: Function
 };
 
+function isCurrentlyPausedAtBreakpoint(
+  frame: Frame,
+  why: Why,
+  breakpoint: LocalBreakpoint
+) {
+  if (!frame || !isInterrupted(why)) {
+    return false;
+  }
+
+  const bpId = makeLocationId(breakpoint.location);
+  const pausedId = makeLocationId(frame.location);
+  return bpId === pausedId;
+}
+
 function getBreakpointLocation(source, line, column) {
   const isWasm = source && source.isWasm;
   const columnVal = features.columnBreakpoints && column ? `:${column}` : "";
@@ -33,7 +47,7 @@ function getBreakpointLocation(source, line, column) {
   return bpLocation;
 }
 
-class BreakpointItem extends Component<Props> {
+class BreakpointItem extends PureComponent<Props> {
   editor: SourceEditor;
 
   componentDidMount() {
@@ -47,20 +61,6 @@ class BreakpointItem extends Component<Props> {
     if (this.editor) {
       this.editor.destroy();
     }
-  }
-
-  shouldComponentUpdate(nextProps: Props) {
-    const prevBreakpoint = this.props.breakpoint;
-    const nextBreakpoint = nextProps.breakpoint;
-
-    return (
-      !prevBreakpoint ||
-      (prevBreakpoint.text != nextBreakpoint.text ||
-        prevBreakpoint.disabled != nextBreakpoint.disabled ||
-        prevBreakpoint.condition != nextBreakpoint.condition ||
-        prevBreakpoint.hidden != nextBreakpoint.hidden ||
-        prevBreakpoint.isCurrentlyPaused != nextBreakpoint.isCurrentlyPaused)
-    );
   }
 
   setupEditor() {
