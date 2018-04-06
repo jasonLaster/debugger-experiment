@@ -413,13 +413,4 @@ export const getSelectedSource = createSelector(
   }
 );
 
-export const getSelectedSourceText = createSelector(
-  getSelectedSource,
-  getSourcesState,
-  (selectedSource, sources) => {
-    const id = selectedSource.id;
-    return id ? sources.sourcesText.get(id) : null;
-  }
-);
-
 export default update;
