@@ -15,6 +15,7 @@ import {
   getBreakpoints,
   getBreakpointsDisabled,
   getBreakpointsLoading,
+  getSelectedFrame,
   getIsWaitingOnBreak,
   getShouldPauseOnExceptions,
   getShouldIgnoreCaughtExceptions,
@@ -316,7 +317,7 @@ class SecondaryPanes extends Component<Props, State> {
   }
 
   getEndItems() {
-    const { extra, workers } = this.props;
+    const { extra, workers, hasFrames } = this.props;
 
     let items: Array<AccordionPaneItem> = [];
 
@@ -330,11 +331,11 @@ class SecondaryPanes extends Component<Props, State> {
 
     items.push(this.getWatchItem());
 
-    if (extra && extra.react) {
-      items.push(this.getComponentItem());
-    }
+    if (hasFrames) {
+      if (extra && extra.react) {
+        items.push(this.getComponentItem());
+      }
 
-    if (this.props.hasFrames) {
       items = [...items, this.getScopeItem()];
     }
 
@@ -393,7 +394,7 @@ SecondaryPanes.contextTypes = {
 export default connect(
   state => ({
     extra: getExtra(state),
-    hasFrames: !!getTopFrame(state),
+    hasFrames: !!getTopFrame(state) && getSelectedFrame(state),
     breakpoints: getBreakpoints(state),
     breakpointsDisabled: getBreakpointsDisabled(state),
     breakpointsLoading: getBreakpointsLoading(state),
