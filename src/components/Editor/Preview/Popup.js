@@ -8,7 +8,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Reps from "devtools-reps";
-const { REPS: { Rep }, MODE, ObjectInspector, ObjectInspectorUtils } = Reps;
+const {
+  REPS: { Rep },
+  MODE,
+  ObjectInspector,
+  ObjectInspectorUtils
+} = Reps;
 
 const {
   createNode,
@@ -86,6 +91,7 @@ export class Popup extends Component<Props> {
   }
 
   componentWillUnmount() {
+    console.log(`popup componentWillUnmount`, this.marker);
     if (this.marker) {
       this.marker.clear();
     }
