@@ -56,6 +56,13 @@
   background-color: var(--theme-highlight-yellow);
 }
 
+.jump-selection,
+.debug-expression.jump-selection {
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .theme-dark .preview-selection,
 .theme-dark .debug-expression.preview-selection {
   background-color: #743884;

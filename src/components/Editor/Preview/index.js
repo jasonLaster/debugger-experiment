@@ -30,7 +30,8 @@ type Props = {
   clearPreview: () => void,
   preview: PreviewType,
   selectedFrameVisible: boolean,
-  updatePreview: (any, any) => void
+  updatePreview: (any, any) => void,
+  jumpToCall: (any, any) => void
 };
 
 type State = {
@@ -63,18 +64,24 @@ class Preview extends PureComponent<Props, State> {
     codeMirror.off("scroll", this.onScroll);
   }
 
+  meta = null;
   onMouseOver = e => {
-    const { target } = e;
+    const { target, metaKey } = e;
+    this.meta = metaKey;
     this.props.updatePreview(target, this.props.editor);
   };
 
-  onMouseUp = () => {
+  onMouseUp = e => {
     this.setState({ selecting: false });
     return true;
   };
 
-  onMouseDown = () => {
+  onMouseDown = e => {
+    const { currentTarget, metaKey } = e;
+
     this.setState({ selecting: true });
+    this.props.jumpToCall(currentTarget, this.props.editor);
+
     return true;
   };
 
@@ -112,6 +119,7 @@ class Preview extends PureComponent<Props, State> {
         editorRef={this.props.editorRef}
         range={editorRange}
         expression={expression}
+        jump={this.meta}
         popoverPos={cursorPos}
         extra={extra}
         onClose={e => this.onClose(e)}
@@ -124,6 +132,7 @@ const {
   addExpression,
   setPopupObjectProperties,
   updatePreview,
+  jumpToCall,
   clearPreview
 } = actions;
 
@@ -136,6 +145,7 @@ export default connect(
     addExpression,
     setPopupObjectProperties,
     updatePreview,
-    clearPreview
+    clearPreview,
+    jumpToCall
   }
 )(Preview);

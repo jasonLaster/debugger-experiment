@@ -87,8 +87,8 @@ export class Popup extends Component<Props> {
     if (!value || !value.type == "object") {
       return;
     }
-
-    this.marker = markText(editor, "preview-selection", range);
+    const className = this.props.jump ? "jump-selection" : "preview-selection";
+    this.marker = markText(editor, className, range);
   }
 
   componentWillUnmount() {
@@ -101,7 +101,7 @@ export class Popup extends Component<Props> {
     const { expression, value, extra } = this.props;
 
     let rootValue = value;
-    if (extra.immutable) {
+    if (extra && extra.immutable) {
       rootValue = extra.immutable.entries;
     }
 
@@ -189,12 +189,12 @@ export class Popup extends Component<Props> {
     }
 
     let header = null;
-    if (extra.immutable) {
+    if (extra && extra.immutable) {
       header = this.renderImmutable(extra.immutable);
       roots = roots.filter(r => r.type != NODE_TYPES.PROTOTYPE);
     }
 
-    if (extra.react) {
+    if (extra && extra.react) {
       header = this.renderReact(extra.react);
       roots = roots.filter(r => ["state", "props"].includes(r.name));
     }
@@ -273,6 +273,10 @@ export class Popup extends Component<Props> {
     const type = this.getPreviewType(value);
 
     if (value && value.type === "object" && !this.getChildren()) {
+      return null;
+    }
+
+    if (this.props.jump) {
       return null;
     }
 

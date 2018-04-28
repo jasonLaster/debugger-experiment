@@ -235,7 +235,7 @@ class CommandBar extends Component<Props> {
       debugBtn(this.props.rewind, "rewind", "active", "Rewind Execution"),
 
       debugBtn(
-        () => this.props.resume,
+        this.props.resume,
         "resume",
         "active",
         L10N.getFormatStr("resumeButtonTooltip", formatKey("resume"))

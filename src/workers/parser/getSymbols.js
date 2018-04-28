@@ -54,7 +54,8 @@ export type CallDeclaration = SymbolDeclaration & {
 
 export type MemberDeclaration = SymbolDeclaration & {
   computed: Boolean,
-  expression: string
+  expression: string,
+  call: Boolean
 };
 
 export type IdentifierDeclaration = {
@@ -179,7 +180,8 @@ function extractSymbol(path: SimplePath, symbols) {
       name: path.node.property.name,
       location: { start, end },
       expression: getSnippet(path),
-      computed: path.node.computed
+      computed: path.node.computed,
+      call: t.isCallExpression(path.parent)
     });
   }
 

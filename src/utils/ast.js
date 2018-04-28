@@ -24,7 +24,7 @@ export function findBestMatchExpression(
   const { memberExpressions, identifiers, literals } = symbols;
   const members = memberExpressions.filter(({ computed }) => !computed);
 
-  return []
+  const match = []
     .concat(identifiers, members, literals)
     .reduce((found, expression) => {
       const overlaps =
@@ -38,6 +38,8 @@ export function findBestMatchExpression(
 
       return found;
     }, null);
+
+  return match;
 }
 
 export function findEmptyLines(

@@ -9,6 +9,7 @@ import { getTokenLocation } from "../utils/editor";
 import { isGeneratedId } from "devtools-source-map";
 import { PROMISE } from "./utils/middleware/promise";
 import { getExpressionFromCoords } from "../utils/editor/get-expression";
+import { continueToHere } from "./pause";
 
 import {
   getPreview,
@@ -58,10 +59,6 @@ export function updatePreview(target: HTMLElement, editor: any) {
     const cursorPos = target.getBoundingClientRect();
     const preview = getPreview(getState());
 
-    if (getCanRewind(getState())) {
-      return;
-    }
-
     if (preview) {
       // Return early if we are currently showing another preview or
       // if we are mousing over the same token as before
@@ -107,6 +104,15 @@ export function updatePreview(target: HTMLElement, editor: any) {
     }
 
     dispatch(setPreview(expression, location, tokenPos, cursorPos));
+  };
+}
+
+export function jumpToCall() {
+  return ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
+    const preview = getPreview(getState());
+    const location = preview.location.start;
+    dispatch(clearPreview());
+    dispatch(continueToHere(location.line, location.column));
   };
 }
 
