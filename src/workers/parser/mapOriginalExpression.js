@@ -34,17 +34,9 @@ function locationKey(start: ColumnPosition): string {
   return `${start.line}:${start.column}`;
 }
 
-export default function mapOriginalExpression(
-  expression: string,
-  mappings: {
-    [string]: string | null
-  }
-): string {
-  const ast = parseScript(expression);
+function getReplacements(ast, mappings) {
   const scopes = buildScopeList(ast, "");
-
   const nodes = new Map();
-
   const replacements = new Map();
 
   // The ref-only global bindings are the ones that are accessed, but not
@@ -80,6 +72,18 @@ export default function mapOriginalExpression(
       replacements.set(locationKey({ line, column }), node);
     }
   }
+
+  return replacements;
+}
+
+export default function mapOriginalExpression(
+  expression: string,
+  mappings: {
+    [string]: string | null
+  }
+): string {
+  const ast = parseScript(expression);
+  const replacements = getReplacements(ast, mappings);
 
   if (replacements.size === 0) {
     // Avoid the extra code generation work and also avoid potentially
