@@ -21,13 +21,12 @@ const loadSourceHistogram = Services.telemetry.getHistogramById(
 );
 
 async function loadSource(source: SourceRecord, { sourceMaps, client }) {
-  const id = source.get("id");
+  const id = source.id;
   if (isOriginalId(id)) {
     return await sourceMaps.getOriginalSourceText(source.toJS());
   }
 
   const response = await client.sourceContents(id);
-
   return {
     id,
     text: response.source,
@@ -41,7 +40,7 @@ async function loadSource(source: SourceRecord, { sourceMaps, client }) {
  */
 export function loadSourceText(source: SourceRecord) {
   return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
-    const id = source.get("id");
+    const id = source.id;
 
     // Fetch the source text only once.
     if (requests.has(id)) {
@@ -70,7 +69,7 @@ export function loadSourceText(source: SourceRecord) {
       return;
     }
 
-    const newSource = getSource(getState(), source.get("id")).toJS();
+    const newSource = getSource(getState(), source.id).toJS();
 
     if (isOriginalId(newSource.id) && !newSource.isWasm) {
       const generatedSource = getGeneratedSource(getState(), source.toJS());

@@ -56,7 +56,7 @@ export function shouldPrettyPrint(source: SourceRecord) {
   const _isPretty = isPretty(source);
   const _isJavaScript = isJavaScript(source);
   const isOriginal = isOriginalId(source.id);
-  const hasSourceMap = source.get("sourceMapURL");
+  const hasSourceMap = source.sourceMapURL;
 
   if (_isPretty || isOriginal || hasSourceMap || !_isJavaScript) {
     return false;
@@ -315,11 +315,11 @@ export function getMode(
 }
 
 export function isLoaded(source: SourceRecord) {
-  return source.get("loadedState") === "loaded";
+  return source.loadedState === "loaded";
 }
 
 export function isLoading(source: SourceRecord) {
-  return source.get("loadedState") === "loading";
+  return source.loadedState === "loading";
 }
 
 export function getTextAtPosition(source: Source, location: Location) {

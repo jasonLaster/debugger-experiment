@@ -60,7 +60,6 @@ export function setSymbols(sourceId: SourceId) {
     ) {
       return;
     }
-
     await dispatch(
       ({
         type: "SET_SYMBOLS",
