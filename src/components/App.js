@@ -241,36 +241,42 @@ class App extends Component<Props, State> {
     const primaryInitialSize = horizontal ? "250px" : "150px";
 
     return (
-      <SplitBox
-        style={{ width: "100vw" }}
-        initialHeight={400}
-        initialWidth={300}
-        minSize={30}
-        maxSize={maxSize}
-        splitterSize={1}
-        vert={horizontal}
-        startPanel={
-          <SplitBox
-            style={{ width: "100vw" }}
-            initialSize={primaryInitialSize}
-            minSize={30}
-            maxSize="85%"
-            splitterSize={1}
-            startPanelCollapsed={startPanelCollapsed}
-            startPanel={<PrimaryPanes horizontal={horizontal} />}
-            endPanel={this.renderEditorPane()}
-          />
-        }
-        endPanelControl={true}
-        endPanel={
-          <SecondaryPanes
-            horizontal={horizontal}
-            toggleShortcutsModal={() => this.toggleShortcutsModal()}
-          />
-        }
-        endPanelCollapsed={endPanelCollapsed}
-      />
+      <div style={{ maxWidth: "400px", margin: "auto" }}>
+        <PrimaryPanes horizontal={horizontal} />{" "}
+      </div>
     );
+    //
+    // return (
+    //   <SplitBox
+    //     style={{ width: "100vw" }}
+    //     initialHeight={400}
+    //     initialWidth={300}
+    //     minSize={30}
+    //     maxSize={maxSize}
+    //     splitterSize={1}
+    //     vert={horizontal}
+    //     startPanel={
+    //       <SplitBox
+    //         style={{ width: "100vw" }}
+    //         initialSize={primaryInitialSize}
+    //         minSize={30}
+    //         maxSize="85%"
+    //         splitterSize={1}
+    //         startPanelCollapsed={startPanelCollapsed}
+    //         startPanel={<PrimaryPanes horizontal={horizontal} />}
+    //         endPanel={this.renderEditorPane()}
+    //       />
+    //     }
+    //     endPanelControl={true}
+    //     endPanel={
+    //       <SecondaryPanes
+    //         horizontal={horizontal}
+    //         toggleShortcutsModal={() => this.toggleShortcutsModal()}
+    //       />
+    //     }
+    //     endPanelCollapsed={endPanelCollapsed}
+    //   />
+    // );
   };
 
   renderShortcutsModal() {

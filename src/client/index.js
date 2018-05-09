@@ -40,7 +40,7 @@ async function onConnect(
     toolboxActions
   });
 
-  const workers = bootstrapWorkers();
+  const workers = {}; //bootstrapWorkers();
   await firefox.onConnect(connection, actions);
   await loadFromPrefs(actions);
 
