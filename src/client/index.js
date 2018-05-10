@@ -34,13 +34,15 @@ async function onConnect(
     return;
   }
 
+  const workers = bootstrapWorkers();
+  services = { sourceMaps: workers.sourceMaps };
+
   const commands = firefox.clientCommands;
   const { store, actions, selectors } = bootstrapStore(commands, {
     services,
     toolboxActions
   });
 
-  const workers = bootstrapWorkers();
   await firefox.onConnect(connection, actions);
   await loadFromPrefs(actions);
 

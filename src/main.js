@@ -57,7 +57,7 @@ if (isFirefoxPanel()) {
 
   bootstrap(React, ReactDOM).then(connection => {
     onConnect(connection, {
-      services: { sourceMaps: require("devtools-source-map") },
+      services: {},
       toolboxActions: {}
     });
   });

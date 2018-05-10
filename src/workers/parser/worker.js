@@ -18,7 +18,7 @@ import mapOriginalExpression from "./mapOriginalExpression";
 import { workerUtils } from "devtools-utils";
 const { workerHandler } = workerUtils;
 
-self.onmessage = workerHandler({
+export const handlers = {
   findOutOfScopeLocations,
   getSymbols,
   getScopes,
@@ -33,4 +33,4 @@ self.onmessage = workerHandler({
   getFramework,
   getPausePoints,
   mapOriginalExpression
-});
+};

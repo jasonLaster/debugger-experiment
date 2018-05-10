@@ -61,4 +61,4 @@ function invertMappings(mappings: Mappings) {
   });
 }
 
-self.onmessage = workerHandler({ prettyPrint });
+export const handlers = { prettyPrint };

@@ -233,6 +233,17 @@ class App extends Component<Props, State> {
     }));
   }
 
+  renderPane = () => {
+    const horizontal = this.isHorizontal();
+
+    return (
+      <div style={{ maxWidth: "400px", margin: "auto" }}>
+        {/* <PrimaryPanes horizontal={horizontal} /> */}
+        {this.renderEditorPane()}
+      </div>
+    );
+  };
+
   renderLayout = () => {
     const { startPanelCollapsed, endPanelCollapsed } = this.props;
     const horizontal = this.isHorizontal();
@@ -293,7 +304,8 @@ class App extends Component<Props, State> {
     const { quickOpenEnabled } = this.props;
     return (
       <div className="debugger">
-        {this.renderLayout()}
+        {/* {this.renderLayout()} */}
+        {this.renderPane()}
         {quickOpenEnabled === true && (
           <QuickOpenModal
             shortcutsModalEnabled={this.state.shortcutsModalEnabled}

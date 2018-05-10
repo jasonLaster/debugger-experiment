@@ -2,12 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at <http://mozilla.org/MPL/2.0/>. */
 
-import { workerUtils } from "devtools-utils";
-const { WorkerDispatcher } = workerUtils;
+// import { workerUtils } from "devtools-utils";
+// const { WorkerDispatcher } = workerUtils;
 
-const dispatcher = new WorkerDispatcher();
-export const start = dispatcher.start.bind(dispatcher);
-export const stop = dispatcher.stop.bind(dispatcher);
+import { handlers } from "./worker";
+//
+// const dispatcher = new WorkerDispatcher();
+// export const start = dispatcher.start.bind(dispatcher);
+// export const stop = dispatcher.stop.bind(dispatcher);
+//
 
-export const getMatches = dispatcher.task("getMatches");
-export const findSourceMatches = dispatcher.task("findSourceMatches");
+function task(name) {
+  return async (...args) =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(handlers[name](...args)));
+    });
+}
+
+export const getMatches = task("getMatches");
+export const findSourceMatches = task("findSourceMatches");

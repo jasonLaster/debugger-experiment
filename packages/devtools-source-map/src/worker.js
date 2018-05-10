@@ -22,7 +22,7 @@ const {
 
 // The interface is implemented in source-map to be
 // easier to unit test.
-self.onmessage = workerHandler({
+export const handlers = {
   getOriginalURLs,
   getGeneratedRanges,
   getGeneratedLocation,
@@ -33,4 +33,4 @@ self.onmessage = workerHandler({
   hasMappedSource,
   applySourceMap,
   clearSourceMaps
-});
+};

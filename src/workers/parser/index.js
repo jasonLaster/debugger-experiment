@@ -4,33 +4,36 @@
 
 // @flow
 
-import { workerUtils } from "devtools-utils";
-const { WorkerDispatcher } = workerUtils;
+// import { workerUtils } from "devtools-utils";
+// const { WorkerDispatcher } = workerUtils;
 
-const dispatcher = new WorkerDispatcher();
-export const start = dispatcher.start.bind(dispatcher);
-export const stop = dispatcher.stop.bind(dispatcher);
+import { handlers } from "./worker";
 
-export const getClosestExpression = dispatcher.task("getClosestExpression");
-export const getSymbols = dispatcher.task("getSymbols");
-export const getScopes = dispatcher.task("getScopes");
-export const findOutOfScopeLocations = dispatcher.task(
-  "findOutOfScopeLocations"
-);
-export const clearSymbols = dispatcher.task("clearSymbols");
-export const clearScopes = dispatcher.task("clearScopes");
-export const clearASTs = dispatcher.task("clearASTs");
-export const getNextStep = dispatcher.task("getNextStep");
-export const hasSource = dispatcher.task("hasSource");
-export const setSource = dispatcher.task("setSource");
-export const clearSources = dispatcher.task("clearSources");
-export const hasSyntaxError = dispatcher.task("hasSyntaxError");
-export const mapOriginalExpression = dispatcher.task("mapOriginalExpression");
-export const getFramework = dispatcher.task("getFramework");
-export const getPausePoints = dispatcher.task("getPausePoints");
-export const replaceOriginalVariableName = dispatcher.task(
-  "replaceOriginalVariableName"
-);
+function task(name) {
+  return async (...args) =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(handlers[name](...args)));
+    });
+}
+
+// const dispatcher = new WorkerDispatcher();
+// export const start = dispatcher.start.bind(dispatcher);
+// export const stop = dispatcher.stop.bind(dispatcher);
+
+export const getSymbols = task("getSymbols");
+export const getScopes = task("getScopes");
+export const findOutOfScopeLocations = task("findOutOfScopeLocations");
+export const clearSymbols = task("clearSymbols");
+export const clearScopes = task("clearScopes");
+export const clearASTs = task("clearASTs");
+export const getNextStep = task("getNextStep");
+export const hasSource = task("hasSource");
+export const setSource = task("setSource");
+export const clearSources = task("clearSources");
+export const hasSyntaxError = task("hasSyntaxError");
+export const mapOriginalExpression = task("mapOriginalExpression");
+export const getFramework = task("getFramework");
+export const getPausePoints = task("getPausePoints");
 
 export type {
   SourceScope,

@@ -11,28 +11,25 @@ const {
   isOriginalId
 } = require("./utils");
 
-const {
-  workerUtils: { WorkerDispatcher }
-} = require("devtools-utils");
+import { handlers } from "./worker";
 
-const dispatcher = new WorkerDispatcher();
+function task(name) {
+  return async (...args) =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(handlers[name](...args)));
+    });
+}
 
-const getOriginalURLs = dispatcher.task("getOriginalURLs");
-const getGeneratedRanges = dispatcher.task("getGeneratedRanges", {
-  queue: true
-});
-const getGeneratedLocation = dispatcher.task("getGeneratedLocation", {
-  queue: true
-});
-const getAllGeneratedLocations = dispatcher.task("getAllGeneratedLocations", {
-  queue: true
-});
-const getOriginalLocation = dispatcher.task("getOriginalLocation");
-const getLocationScopes = dispatcher.task("getLocationScopes");
-const getOriginalSourceText = dispatcher.task("getOriginalSourceText");
-const applySourceMap = dispatcher.task("applySourceMap");
-const clearSourceMaps = dispatcher.task("clearSourceMaps");
-const hasMappedSource = dispatcher.task("hasMappedSource");
+const getOriginalURLs = task("getOriginalURLs");
+const getGeneratedRanges = task("getGeneratedRanges");
+const getGeneratedLocation = task("getGeneratedLocation");
+const getAllGeneratedLocations = task("getAllGeneratedLocations");
+const getOriginalLocation = task("getOriginalLocation");
+const getLocationScopes = task("getLocationScopes");
+const getOriginalSourceText = task("getOriginalSourceText");
+const applySourceMap = task("applySourceMap");
+const clearSourceMaps = task("clearSourceMaps");
+const hasMappedSource = task("hasMappedSource");
 
 module.exports = {
   originalToGeneratedId,
@@ -48,7 +45,5 @@ module.exports = {
   getLocationScopes,
   getOriginalSourceText,
   applySourceMap,
-  clearSourceMaps,
-  startSourceMapWorker: dispatcher.start.bind(dispatcher),
-  stopSourceMapWorker: dispatcher.stop.bind(dispatcher)
+  clearSourceMaps
 };

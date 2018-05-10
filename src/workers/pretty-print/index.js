@@ -4,17 +4,21 @@
 
 // @flow
 
-import { workerUtils } from "devtools-utils";
-const { WorkerDispatcher } = workerUtils;
 import { isJavaScript } from "../../utils/source";
 import assert from "../../utils/assert";
 
 import type { SourceRecord } from "../../types";
 
-const dispatcher = new WorkerDispatcher();
-export const start = dispatcher.start.bind(dispatcher);
-export const stop = dispatcher.stop.bind(dispatcher);
-const _prettyPrint = dispatcher.task("prettyPrint");
+import { handlers } from "./worker";
+
+function task(name) {
+  return async (...args) =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(handlers[name](...args)));
+    });
+}
+
+const _prettyPrint = task("prettyPrint");
 
 type PrettyPrintOpts = {
   source: SourceRecord,

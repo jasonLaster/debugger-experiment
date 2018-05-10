@@ -7,4 +7,4 @@ import { findSourceMatches } from "./project-search";
 import { workerUtils } from "devtools-utils";
 const { workerHandler } = workerUtils;
 
-self.onmessage = workerHandler({ getMatches, findSourceMatches });
+export const handlers = { getMatches, findSourceMatches };

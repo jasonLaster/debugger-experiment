@@ -18,8 +18,12 @@ function WorkerDispatcher() {
 }
 
 WorkerDispatcher.prototype = {
-  start(url) {
-    this.worker = new Worker(url);
+  start(obj) {
+    this.worker = {
+      postMessage(...args) {
+        setTimeout(() => obj.call(...args));
+      }
+    };
     this.worker.onerror = () => {
       console.error(`Error in worker ${url}`);
     };

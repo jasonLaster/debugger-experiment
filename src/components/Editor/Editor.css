@@ -40,8 +40,8 @@
  */
 .editor-wrapper {
   position: absolute;
-  height: calc(100% - var(--editor-header-height));
-  width: calc(100% - 1px);
+  height: 500px;
+  width: 500px;
   top: var(--editor-header-height);
   left: 0px;
   --editor-footer-height: 24px;

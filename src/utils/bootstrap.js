@@ -61,27 +61,15 @@ export function bootstrapWorkers() {
   const workerPath = isDevelopment()
     ? "assets/build"
     : "resource://devtools/client/debugger/new/dist";
+  const sourceMaps = require("devtools-source-map");
+  const prettyPrint = require("../workers/pretty-print");
+  const parser = require("../workers/parser");
+  const search = require("../workers/search");
 
-  if (isDevelopment()) {
-    // When used in Firefox, the toolbox manages the source map worker.
-    startSourceMapWorker(`${workerPath}/source-map-worker.js`);
-  }
-
-  prettyPrint.start(`${workerPath}/pretty-print-worker.js`);
-  parser.start(`${workerPath}/parser-worker.js`);
-  search.start(`${workerPath}/search-worker.js`);
-  return { prettyPrint, parser, search };
+  return { sourceMaps, prettyPrint, parser, search };
 }
 
-export function teardownWorkers() {
-  if (!isFirefoxPanel()) {
-    // When used in Firefox, the toolbox manages the source map worker.
-    stopSourceMapWorker();
-  }
-  prettyPrint.stop();
-  parser.stop();
-  search.stop();
-}
+export function teardownWorkers() {}
 
 export function bootstrapApp(store: any) {
   if (isFirefoxPanel()) {
