@@ -131,7 +131,13 @@ function update(
     }
 
     case "ADD_EXTRA": {
-      return { ...state, extra: action.extra };
+      if (action.extra.react) {
+        const { react } = action.extra;
+        const selectedComponentIndex = react.componentStack.length - 1;
+        return { ...state, extra: action.extra, selectedComponentIndex };
+      } else {
+        return { ...state, extra: action.extra };
+      }
     }
 
     case "ADD_SCOPES": {

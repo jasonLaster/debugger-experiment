@@ -36,7 +36,7 @@ import Accordion from "../shared/Accordion";
 import CommandBar from "./CommandBar";
 import UtilsBar from "./UtilsBar";
 import FrameworkComponent from "./FrameworkComponent";
-import ReactComponentStack from "./ReactComponentStack";
+import ComponentStack from "./ComponentStack";
 
 import Scopes from "./Scopes";
 
@@ -195,7 +195,8 @@ class SecondaryPanes extends Component<Props, State> {
   getComponentStackItem() {
     return {
       header: L10N.getStr("components.header"),
-      component: <ReactComponentStack />,
+      className: "component-stack-pane",
+      component: <ComponentStack />,
       opened: prefs.componentStackVisible,
       onToggle: opened => {
         prefs.componentStackVisible = opened;

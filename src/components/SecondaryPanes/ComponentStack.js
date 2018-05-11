@@ -10,7 +10,7 @@ import classNames from "classnames";
 
 import { getExtra, getSelectedComponentIndex } from "../../selectors";
 
-import "./Frames/Frames.css";
+import "./ComponentStack.css";
 
 type Props = {
   extra: Object,
@@ -18,12 +18,18 @@ type Props = {
   selectComponent: Function
 };
 
-class ReactComponentStack extends PureComponent<Props> {
-  onMouseDown(e: SyntheticKeyboardEvent<HTMLElement>, componentIndex: number) {
+class ComponentStack extends PureComponent<Props> {
+  async onMouseDown(
+    e: SyntheticKeyboardEvent<HTMLElement>,
+    componentIndex: number,
+    render
+  ) {
     if (e.nativeEvent.which == 3) {
       return;
     }
     this.props.selectComponent(componentIndex);
+    await this.props.selectLocation(render.originalLocation);
+    this.props.continueToHere(render.originalLocation.line, true);
   }
 
   render() {
@@ -40,9 +46,9 @@ class ReactComponentStack extends PureComponent<Props> {
                   selected: this.props.selectedComponentIndex === index
                 })}
                 key={index}
-                onMouseDown={e => this.onMouseDown(e, index)}
+                onMouseDown={e => this.onMouseDown(e, index, component.render)}
               >
-                {component}
+                {component.name}
               </li>
             ))}
         </ul>
@@ -56,4 +62,4 @@ const mapStateToProps = state => ({
   selectedComponentIndex: getSelectedComponentIndex(state)
 });
 
-export default connect(mapStateToProps, actions)(ReactComponentStack);
+export default connect(mapStateToProps, actions)(ComponentStack);

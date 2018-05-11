@@ -4,35 +4,62 @@
 
 // @flow
 
-import { inComponent, getSelectedFrame } from "../../selectors";
+import { inComponent, getSelectedFrame, getSourceByURL } from "../../selectors";
 import { isImmutable } from "../../utils/preview";
 
 import type { ThunkArgs } from "../types";
 
-async function getReactProps(evaluate, displayName) {
-  const componentNames = await evaluate(
-    `
-    if(this.hasOwnProperty('_reactInternalFiber')) {
-      let componentNames = [];
-      let componentNode = this._reactInternalFiber;
-      while(componentNode) {
-        componentNames.push(componentNode.type.name);
-        componentNode = componentNode._debugOwner
+async function getReactProps(evaluate, client, state, sourceMaps, displayName) {
+  function getStack() {}
+
+  const stack = await evaluate(`
+    if (this.hasOwnProperty("_reactInternalFiber")) {
+      let stack = [];
+      let node = this._reactInternalFiber;
+      while (node) {
+        stack.push({
+          name: node.type.name,
+          render: node.type.prototype.render
+        });
+        node = node._debugOwner;
       }
-      componentNames;
-    }
-    else {
+      stack;
+    } else {
       [this._reactInternalInstance.getName()];
     }
-    `
-  );
+  `);
+  const items = stack.result.preview && stack.result.preview.items;
+  let nodes = await Promise.all(items.map(item => client.getProperties(item)));
 
-  const items =
-    componentNames.result.preview && componentNames.result.preview.items;
+  nodes = await Promise.all(
+    nodes.map(async node => {
+      const properties = node.ownProperties;
+      const { name, render } = properties;
+      const location = render.value.location;
+      const source = getSourceByURL(state, location.url);
+      const generatedLocation = {
+        sourceId: source && source.id,
+        line: location.line,
+        column: undefined
+      };
+
+      const originalLocation = await sourceMaps.getOriginalLocation(
+        generatedLocation
+      );
+
+      return {
+        name: name.value,
+        render: {
+          generatedLocation,
+          originalLocation
+        }
+      };
+    })
+  );
 
   let extra = { displayName };
   if (items) {
-    extra = { displayName, componentStack: items };
+    extra = { displayName, componentStack: nodes };
   }
 
   return extra;
@@ -51,13 +78,27 @@ async function getImmutableProps(expression: string, evaluate) {
   };
 }
 
-async function getExtraProps(getState, expression, result, evaluate) {
+async function getExtraProps(
+  getState,
+  client,
+  state,
+  sourceMaps,
+  expression,
+  result,
+  evaluate
+) {
   const props = {};
 
   const component = inComponent(getState());
 
   if (component) {
-    props.react = await getReactProps(evaluate, component);
+    props.react = await getReactProps(
+      evaluate,
+      client,
+      state,
+      sourceMaps,
+      component
+    );
   }
 
   if (isImmutable(result)) {
@@ -85,8 +126,14 @@ export function getExtra(expression: string, result: Object) {
       return;
     }
 
-    const extra = await getExtraProps(getState, expression, result, expr =>
-      client.evaluateInFrame(expr, selectedFrame.id)
+    const extra = await getExtraProps(
+      getState,
+      client,
+      getState(),
+      sourceMaps,
+      expression,
+      result,
+      expr => client.evaluateInFrame(expr, selectedFrame.id)
     );
 
     return extra;

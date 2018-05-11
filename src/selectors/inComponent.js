@@ -31,9 +31,13 @@ export function inComponent(state: State) {
   }
 
   const inReactFile = sourceMetaData.framework == "React";
+  const name =
+    closestClass.parent.type == "MemberExpression"
+      ? closestClass.parent.property.name
+      : closestClass.parent.name;
+
   const isComponent =
-    closestClass.parent &&
-    ["Component", "PureComponent"].includes(closestClass.parent.name);
+    closestClass.parent && ["Component", "PureComponent"].includes(name);
 
   if (inReactFile && isComponent) {
     return closestClass.name;

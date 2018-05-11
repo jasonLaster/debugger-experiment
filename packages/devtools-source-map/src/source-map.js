@@ -166,7 +166,7 @@ async function getOriginalLocation(location: Location): Promise<Location> {
   }
 
   const { source: sourceUrl, line, column } = map.originalPositionFor({
-    line: location.line,
+    line: location.line + 1,
     column: location.column == null ? 0 : location.column
   });
 
