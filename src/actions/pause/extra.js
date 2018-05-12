@@ -9,30 +9,51 @@ import { isImmutable } from "../../utils/preview";
 
 import type { ThunkArgs } from "../types";
 
-async function getReactProps(evaluate, displayName) {
-  const componentNames = await evaluate(
-    `
+function getChildren(evaulate: Function) {
+  return evaulate(`
+    if (this._reactInternalInstance) {
+      []
+    } else {
+      this._reactInternalFiber.child.memoizedProps.children
+        .filter(Boolean)
+        .map(child => ({ name: child.type && child.type.name, child, class: child.type }))
+    }
+  `);
+}
+
+function getAncestors(evaluate: Function) {
+  return evaluate(`
     if(this.hasOwnProperty('_reactInternalFiber')) {
-      let componentNames = [];
-      let componentNode = this._reactInternalFiber;
-      while(componentNode) {
-        componentNames.push(componentNode.type.name);
-        componentNode = componentNode._debugOwner
+      let ancestors = [];
+      let node = this._reactInternalFiber;
+      while(node) {
+        ancestors.push({ name: node.type.name, node });
+        node = node._debugOwner
       }
-      componentNames;
+      ancestors;
     }
     else {
       [this._reactInternalInstance.getName()];
     }
-    `
-  );
+  `);
+}
 
-  const items =
-    componentNames.result.preview && componentNames.result.preview.items;
+type ExtraReact = {
+  displayName: string,
+  children?: Object[],
+  ancestors?: Object[]
+};
+
+async function getReactProps(evaluate, displayName): ExtraReact {
+  const ancestors = await getAncestors(evaluate);
+  const children = await getChildren(evaluate);
 
   let extra = { displayName };
-  if (items) {
-    extra = { displayName, componentStack: items };
+  if (children) {
+    extra.children = children;
+  }
+  if (ancestors) {
+    extra.ancestors = ancestors;
   }
 
   return extra;
