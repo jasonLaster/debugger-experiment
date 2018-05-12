@@ -231,7 +231,7 @@ function start() {
   copySVGs(config);
   copyTests(config);
   copyWasmParser(config);
-  writeReadme(path.join(mcPath, "devtools/client/debugger/new/README.mozilla"));
+  // writeReadme(path.join(mcPath, "devtools/client/debugger/new/README.mozilla"));
 
   const debuggerPath = "devtools/client/debugger/new"
 
