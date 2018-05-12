@@ -205,10 +205,11 @@ class SecondaryPanes extends Component<Props, State> {
 
   getComponentItem() {
     const {
-      extra: { react }
+      extra: { react },
+      hasFrames
     } = this.props;
 
-    if (!react) {
+    if (!react && hasFrames) {
       return null;
     }
 

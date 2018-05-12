@@ -9,56 +9,6 @@ import { isImmutable } from "../../utils/preview";
 
 import type { ThunkArgs } from "../types";
 
-function getChildren(evaulate: Function) {
-  return evaulate(`
-    if (this._reactInternalInstance) {
-      []
-    } else {
-      this._reactInternalFiber.child.memoizedProps.children
-        .filter(Boolean)
-        .map(child => ({ name: child.type && child.type.name, child, class: child.type }))
-    }
-  `);
-}
-
-function getAncestors(evaluate: Function) {
-  return evaluate(`
-    if(this.hasOwnProperty('_reactInternalFiber')) {
-      let ancestors = [];
-      let node = this._reactInternalFiber;
-      while(node) {
-        ancestors.push({ name: node.type.name, node });
-        node = node._debugOwner
-      }
-      ancestors;
-    }
-    else {
-      [this._reactInternalInstance.getName()];
-    }
-  `);
-}
-
-type ExtraReact = {
-  displayName: string,
-  children?: Object[],
-  ancestors?: Object[]
-};
-
-async function getReactProps(evaluate, displayName): ExtraReact {
-  const ancestors = await getAncestors(evaluate);
-  const children = await getChildren(evaluate);
-
-  let extra = { displayName };
-  if (children) {
-    extra.children = children;
-  }
-  if (ancestors) {
-    extra.ancestors = ancestors;
-  }
-
-  return extra;
-}
-
 async function getImmutableProps(expression: string, evaluate) {
   const immutableEntries = await evaluate((exp => `${exp}.toJS()`)(expression));
 
@@ -76,9 +26,8 @@ async function getExtraProps(getState, expression, result, evaluate) {
   const props = {};
 
   const component = inComponent(getState());
-
   if (component) {
-    props.react = await getReactProps(evaluate, component);
+    props.react = { displayName: component };
   }
 
   if (isImmutable(result)) {

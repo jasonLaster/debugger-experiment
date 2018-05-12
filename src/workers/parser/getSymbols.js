@@ -16,7 +16,8 @@ import {
   getObjectExpressionValue,
   getVariableNames,
   getComments,
-  getSpecifiers
+  getSpecifiers,
+  getCode
 } from "./utils/helpers";
 
 import { inferClassName } from "./utils/inferClassName";
@@ -143,9 +144,15 @@ function extractSymbol(path: SimplePath, symbols) {
   }
 
   if (t.isClassDeclaration(path)) {
+    const { name, loc, superClass } = path.node;
     symbols.classes.push({
       name: path.node.id.name,
-      parent: path.node.superClass,
+      parent: {
+        name: t.isMemberExpression(superClass)
+          ? getCode(superClass)
+          : superClass.name,
+        location: superClass.loc
+      },
       location: path.node.loc
     });
   }
