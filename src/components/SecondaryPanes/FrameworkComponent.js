@@ -38,7 +38,7 @@ class FrameworkComponent extends PureComponent<Props> {
     }
   }
 
-  renderReactComponent() {
+  render() {
     const { selectedFrame, popupObjectProperties } = this.props;
     const expression = "this;";
     const value = selectedFrame.this;
@@ -73,15 +73,6 @@ class FrameworkComponent extends PureComponent<Props> {
         />
       </div>
     );
-  }
-
-  render() {
-    const { selectedFrame } = this.props;
-    if (selectedFrame && isReactComponent(selectedFrame.this)) {
-      return this.renderReactComponent();
-    }
-
-    return null;
   }
 }
 
