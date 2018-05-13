@@ -32,7 +32,7 @@ function update(
       return state.setIn(["ancestors", action.this.actor], action.ancestors);
     }
     case "SET_COMPONENT_CHILDREN": {
-      return state.setIn(["children", action.this.actor], action.ancestors);
+      return state.setIn(["children", action.this.actor], action.children);
     }
 
     default: {
@@ -43,15 +43,16 @@ function update(
 
 export function getComponentAncestors(
   state: OuterState,
-  objectId: string
+  context: Object
 ): boolean {
-  return state.components.getIn("ancestors", objectId);
+  return state.components.getIn(["ancestors", context.actor]);
 }
 
 export function getComponentChildren(
   state: OuterState,
-  objectId: string
+  context: Object
 ): boolean {
-  return state.components.getIn("children", objectId);
+  return state.components.getIn(["children", context.actor]);
 }
+
 export default update;

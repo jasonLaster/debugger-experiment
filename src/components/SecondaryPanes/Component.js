@@ -25,22 +25,26 @@ type Props = {
   popupObjectProperties: Object
 };
 
-class FrameworkComponent extends PureComponent<Props> {
+class ComponentPane extends PureComponent<Props> {
   async componentWillMount() {
     const expression = "this;";
-    const { selectedFrame, setPopupObjectProperties } = this.props;
-    const value = selectedFrame.this;
-
-    const root = createNode({ name: expression, contents: { value } });
-    const properties = await loadItemProperties(root, createObjectClient);
-    if (properties) {
-      setPopupObjectProperties(value, properties);
-    }
+    // const { selectedFrame, setPopupObjectProperties } = this.props;
+    // const value = selectedFrame.this;
+    //
+    // const root = createNode({ name: expression, contents: { value } });
+    // const properties = await loadItemProperties(root, createObjectClient);
+    // if (properties) {
+    //   setPopupObjectProperties(value, properties);
+    // }
   }
 
   render() {
     const { selectedFrame, popupObjectProperties } = this.props;
     const expression = "this;";
+    if (!selectedFrame) {
+      return null;
+    }
+
     const value = selectedFrame.this;
     const root = {
       name: expression,
@@ -81,4 +85,4 @@ const mapStateToProps = state => ({
   popupObjectProperties: getAllPopupObjectProperties(state)
 });
 
-export default connect(mapStateToProps, actions)(FrameworkComponent);
+export default connect(mapStateToProps, actions)(ComponentPane);

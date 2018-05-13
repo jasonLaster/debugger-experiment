@@ -23,7 +23,7 @@ import { loadSourceText } from "../sources/loadSourceText";
 import { togglePaneCollapse } from "../ui";
 import { command } from "./commands";
 import { fetchExtra } from "./extra";
-import { fetchComponentAncestors } from "./components";
+import { fetchComponentTree } from "./components";
 
 import { shouldStep } from "../../utils/pause";
 
@@ -92,7 +92,7 @@ export function paused(pauseInfo: Pause) {
 
     const extra = getExtra(getState());
     if (extra && extra.react) {
-      await dispatch(fetchComponentAncestors());
+      await dispatch(fetchComponentTree());
     }
 
     // Run after fetching scoping data so that it may make use of the sourcemap

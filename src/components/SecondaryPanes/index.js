@@ -35,8 +35,8 @@ import Workers from "./Workers";
 import Accordion from "../shared/Accordion";
 import CommandBar from "./CommandBar";
 import UtilsBar from "./UtilsBar";
-import FrameworkComponent from "./FrameworkComponent";
-import ReactComponentStack from "./ReactComponentStack";
+import ComponentPane from "./Component";
+import ComponentTree from "./ComponentTree";
 
 import Scopes from "./Scopes";
 
@@ -192,10 +192,10 @@ class SecondaryPanes extends Component<Props, State> {
     };
   }
 
-  getComponentStackItem() {
+  getComponentTreeItem() {
     return {
       header: L10N.getStr("components.header"),
-      component: <ReactComponentStack />,
+      component: <ComponentTree />,
       opened: prefs.componentStackVisible,
       onToggle: opened => {
         prefs.componentStackVisible = opened;
@@ -209,14 +209,10 @@ class SecondaryPanes extends Component<Props, State> {
       hasFrames
     } = this.props;
 
-    if (!react && hasFrames) {
-      return null;
-    }
-
     return {
       header: react.displayName,
       className: "component-pane",
-      component: <FrameworkComponent />,
+      component: <ComponentPane />,
       opened: prefs.componentVisible,
       onToggle: opened => {
         prefs.componentVisible = opened;
@@ -292,7 +288,7 @@ class SecondaryPanes extends Component<Props, State> {
   }
 
   getStartItems() {
-    const { extra, workers } = this.props;
+    const { extra, workers, hasFrames } = this.props;
 
     const items: Array<AccordionPaneItem> = [];
     if (this.props.horizontal) {
@@ -309,13 +305,11 @@ class SecondaryPanes extends Component<Props, State> {
       items.push(this.getCallStackItem());
 
       if (this.props.horizontal) {
-        if (extra && extra.react) {
-          if (
-            features.componentStack &&
-            extra.react.componentStack.length > 1
-          ) {
-            items.push(this.getComponentStackItem());
+        if (extra && extra.react && hasFrames) {
+          if (features.componentStack) {
+            items.push(this.getComponentTreeItem());
           }
+
           items.push(this.getComponentItem());
         }
 
@@ -354,6 +348,10 @@ class SecondaryPanes extends Component<Props, State> {
     items.push(this.getWatchItem());
 
     if (extra && extra.react) {
+      if (features.componentStack) {
+        items.push(this.getComponentTreeItem());
+      }
+
       items.push(this.getComponentItem());
     }
 

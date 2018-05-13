@@ -6,12 +6,20 @@ import type { ThunkArgs } from "../types";
 
 function getChildren(evaulate: Function) {
   return evaulate(`
-    if (this._reactInternalInstance) {
-      []
+    if(this.hasOwnProperty('_reactInternalFiber')) {
+      if (!this._reactInternalFiber.child) {
+        []
+      } else {
+        this._reactInternalFiber.child.memoizedProps.children
+          .filter(Boolean)
+          .map(child => ({
+            name: (child.type && child.type.name) || "",
+            child,
+            class: child.type
+          }))
+      }
     } else {
-      this._reactInternalFiber.child.memoizedProps.children
-        .filter(Boolean)
-        .map(child => ({ name: child.type && child.type.name, child, class: child.type }))
+      []
     }
   `);
 }
@@ -22,7 +30,7 @@ function getAncestors(evaluate: Function) {
       let ancestors = [];
       let node = this._reactInternalFiber;
       while(node) {
-        ancestors.push({ name: node.type.name, node, class: node.type });
+        ancestors.push({ name: node.type.name || "", node, class: node.type });
         node = node._debugOwner
       }
       ancestors;
@@ -33,24 +41,13 @@ function getAncestors(evaluate: Function) {
   `);
 }
 
-//
-// async function getReactProps(evaluate, displayName): ExtraReact {
-//   const ancestors = await getAncestors(evaluate);
-//   const children = await getChildren(evaluate);
-//
-//   let extra = { displayName };
-//   if (children) {
-//     extra.children = children;
-//   }
-//   if (ancestors) {
-//     extra.ancestors = ancestors;
-//   }
-//
-//   return extra;
-// }
-
 async function loadArrayItems(client, arrayGrip) {
-  if (!arrayGrip || !arrayGrip.result.preview.items) {
+  if (
+    !arrayGrip ||
+    !arrayGrip.result.preview ||
+    !arrayGrip.result.preview.items
+  ) {
+    console.log(`> bad array`, arrayGrip);
     return;
   }
   const items = arrayGrip.result.preview.items;
@@ -100,17 +97,19 @@ export function fetchComponentChildren() {
       client.evaluateInFrame(expr, selectedFrame.id)
     );
 
-    if (!childrenGrip || !childrenGrip.result.preview.items) {
-      return;
-    }
-
-    const children = await client.getProperties(
-      childrenGrip.result.preview.items
-    );
+    const children = await loadArrayItems(client, childrenGrip);
 
     dispatch({
       type: "SET_COMPONENT_CHILDREN",
-      children
+      children,
+      this: selectedFrame.this
     });
+  };
+}
+
+export function fetchComponentTree() {
+  return async ({ dispatch }: ThunkArgs) => {
+    await dispatch(fetchComponentChildren());
+    await dispatch(fetchComponentAncestors());
   };
 }
