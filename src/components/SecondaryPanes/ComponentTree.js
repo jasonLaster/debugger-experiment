@@ -6,7 +6,7 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import actions from "../../actions";
-import classNames from "classnames";
+import classnames from "classnames";
 
 import {
   getExtra,
@@ -17,6 +17,8 @@ import {
 } from "../../selectors";
 import ManagedTree from "../shared/ManagedTree";
 
+import "./ComponentTree.css";
+
 type Props = {
   extra: Object,
   selectedComponentIndex: number,
@@ -26,6 +28,7 @@ type Props = {
 };
 
 class ComponentTree extends PureComponent<Props> {
+  childrenNodes = {};
   onMouseDown(e: SyntheticKeyboardEvent<HTMLElement>, componentIndex: number) {
     if (e.nativeEvent.which == 3) {
       return;
@@ -33,66 +36,17 @@ class ComponentTree extends PureComponent<Props> {
     this.props.selectComponent(componentIndex);
   }
 
-  renderAncestors() {
-    const { ancestors, children } = this.props;
-    if (!ancestors) {
-      return null;
-    }
-
-    return (
-      <ul>
-        {ancestors
-          .slice()
-          .reverse()
-          .map(({ name }, index) => (
-            <li
-              className={classNames("frame", {
-                selected: this.props.selectedComponentIndex === index
-              })}
-              key={index}
-              onMouseDown={e => this.onMouseDown(e, index)}
-            >
-              {name}
-            </li>
-          ))}
-      </ul>
-    );
-  }
-
-  renderChildren() {
-    const { children } = this.props;
-    if (!children) {
-      return null;
-    }
-
-    return (
-      <ul style={{ borderTop: "1px solid #999" }}>
-        {children.slice().map(({ name, class: klass }, index) => (
-          <li
-            key={index}
-            className={classNames("frame", {
-              selected: this.props.selectedComponentIndex === index
-            })}
-            key={index}
-            onMouseDown={e => this.onMouseDown(e, index)}
-          >
-            {name || klass}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
   getRoots = () => {
     const { ancestors } = this.props;
-    return ancestors.map(ancestor => {
-      const name = ancestor.name || ancestor.class;
-      return {
-        name,
-        path: name,
-        contents: ancestor
-      };
-    });
+    const root = ancestors[0];
+
+    return [
+      {
+        name: root.name,
+        path: root.name,
+        contents: root
+      }
+    ];
   };
 
   getChildren = parent => {
@@ -106,18 +60,58 @@ class ComponentTree extends PureComponent<Props> {
       return [];
     }
 
-    return _children
-      .filter(child => !ancestors.map(({ id }) => id).includes(child.id))
-      .map((child, index) => {
-        const name = child.name || child.class;
-        return {
-          name,
-          path: `${parent.path}/${name}-${index}`,
-          contents: child,
-          parent
-        };
-      });
+    if (this.childrenNodes[parent.contents.id]) {
+      return this.childrenNodes[parent.contents.id];
+    }
+
+    this.childrenNodes[parent.contents.id] = _children.map((child, index) => {
+      const name = child.name || child.class;
+      return {
+        name,
+        path: `${parent.path}/${name}-${index}`,
+        contents: child,
+        parent
+      };
+    });
+
+    return this.childrenNodes[parent.contents.id];
   };
+
+  selectComponent = (event, item) => {
+    if (item && item.contents.class && item.contents.class.location) {
+      this.props.selectVisibleLocation(item.contents.class.location);
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
+  renderItem = (item, depth, focused, _, expanded, { setExpanded }) => {
+    const arrow = item.contents.hasChildren ? (
+      <img
+        className={classnames("arrow", {
+          expanded: expanded
+        })}
+      />
+    ) : (
+      <i className="no-arrow" />
+    );
+
+    return (
+      <div
+        className={classnames("node", { focused })}
+        key={item.path}
+        onClick={e => {}}
+        onContextMenu={e => {}}
+      >
+        {arrow}
+        <span className="label" onClick={e => this.selectComponent(e, item)}>
+          {" "}
+          {item.name}{" "}
+        </span>
+      </div>
+    );
+  };
+
   renderTree() {
     const { ancestors } = this.props;
     if (!ancestors || ancestors.length == 0) {
@@ -135,24 +129,24 @@ class ComponentTree extends PureComponent<Props> {
       itemHeight: 21,
       key: "full",
       listItems: [],
-      onCollapse: () => {},
+      onCollapse: item => {
+        console.log(`on collapse`, item);
+      },
       onExpand: item => {
         console.log(`on expand`, item);
         this.props.fetchComponentChildren(item.contents.id);
       },
-      onFocus: () => {},
-      renderItem: (item, depth, c, d) => {
-        return (
-          <div style={{ paddingLeft: `${depth * 15}px` }}> {item.name}</div>
-        );
-      }
+      onFocus: item => {
+        console.log(`on focus`, item);
+      },
+      renderItem: this.renderItem
     };
 
     return <ManagedTree {...treeProps} />;
   }
 
   render() {
-    return <div className="pane frames">{this.renderTree()}</div>;
+    return <div className="pane component-tree">{this.renderTree()}</div>;
   }
 }
 

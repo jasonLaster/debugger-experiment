@@ -87,7 +87,8 @@ export function fetchComponentTree() {
     if (!ancestors || ancestors.length == 0) {
       return;
     }
-    const ancestor = ancestors[ancestors.length - 1];
-    await dispatch(fetchComponentChildren(ancestor.id));
+    await Promise.all(
+      ancestors.map(ancestor => dispatch(fetchComponentChildren(ancestor.id)))
+    );
   };
 }

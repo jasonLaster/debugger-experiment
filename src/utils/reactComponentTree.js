@@ -82,7 +82,8 @@ export default () => {
     return {
       id: node._debugID,
       name: node.type.name || node.type || "",
-      class: node.type
+      class: node.type,
+      hasChildren: !!node.child
     };
   }
 

@@ -183,6 +183,40 @@ async function getOriginalLocation(location: Location): Promise<Location> {
   };
 }
 
+async function getNextOriginalLocation(location: Location) {
+  if (!isGeneratedId(location.sourceId)) {
+    return location;
+  }
+
+  const map = await getSourceMap(location.sourceId);
+  if (!map) {
+    return location;
+  }
+
+  let match;
+  let offset = 0;
+  while (!match || !match.source) {
+    match = map.originalPositionFor({
+      line: location.line + offset++,
+      column: location.column == null ? 0 : location.column,
+      bias: SourceMapConsumer.LEAST_UPPER_BOUND
+    });
+  }
+
+  const { source: sourceUrl, line, column } = match;
+  if (sourceUrl == null) {
+    // No url means the location didn't map.
+    return location;
+  }
+
+  return {
+    sourceId: generatedToOriginalId(location.sourceId, sourceUrl),
+    sourceUrl,
+    line,
+    column
+  };
+}
+
 async function getOriginalSourceText(originalSource: Source) {
   assert(isOriginalId(originalSource.id), "Source is not an original source");
 
@@ -236,5 +270,6 @@ module.exports = {
   getOriginalSourceText,
   applySourceMap,
   clearSourceMaps,
-  hasMappedSource
+  hasMappedSource,
+  getNextOriginalLocation
 };

@@ -18,7 +18,8 @@ export function initialComponentsState() {
   return makeRecord(
     ({
       ancestors: null,
-      children: {}
+      children: {},
+      paths: null
     }: ASTState)
   )();
 }

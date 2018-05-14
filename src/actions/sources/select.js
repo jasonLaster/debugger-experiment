@@ -9,7 +9,7 @@
  * @module actions/sources
  */
 
-import { isOriginalId } from "devtools-source-map";
+import { isOriginalId, isGeneratedId } from "devtools-source-map";
 
 import { setOutOfScopeLocations, setSymbols } from "../ast";
 import { closeActiveSearch } from "../ui";
@@ -193,6 +193,32 @@ export function selectSpecificSource(sourceId: string) {
   return async ({ dispatch }: ThunkArgs) => {
     const location = createLocation({ sourceId });
     return await dispatch(selectSpecificLocation(location));
+  };
+}
+
+export function selectVisibleLocation(clientLocation: Location) {
+  return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
+    const selectedSource = getSelectedSource(getState());
+    const locationSource = getSourceByURL(getState(), clientLocation.url);
+    const location = { ...clientLocation, sourceId: locationSource.id };
+
+    if (
+      (isOriginalId(selectedSource.id) && isOriginalId(location.sourceId)) ||
+      (isGeneratedId(selectedSource.id) && isGeneratedId(location.sourceId))
+    ) {
+      return dispatch(selectLocation(location));
+    }
+    if (isOriginalId(selectedSource.id)) {
+      return dispatch(
+        selectLocation(await sourceMaps.getNextOriginalLocation(location))
+      );
+    }
+
+    if (isGeneratedId(selectedSource.id)) {
+      return dispatch(
+        selectLocation(await sourceMaps.getGeneratedLocation(location))
+      );
+    }
   };
 }
 

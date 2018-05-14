@@ -25,7 +25,7 @@ function shouldRenderRootsInReps(roots: Array<Node>): boolean {
   const name = root && root.name;
   return (
     (name === null || typeof name === "undefined") &&
-    (nodeIsPrimitive(root) || nodeIsError(root))
+    (root && (nodeIsPrimitive(root) || nodeIsError(root)))
   );
 }
 
