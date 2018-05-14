@@ -1,44 +1,17 @@
 // @flow
 
 import { getSelectedFrame } from "../../selectors";
-
+import reactComponentTree from "../../utils/reactComponentTree";
 import type { ThunkArgs } from "../types";
 
-function getChildren(evaulate: Function) {
+function getChildren(id: number, evaulate: Function) {
   return evaulate(`
-    if(this.hasOwnProperty('_reactInternalFiber')) {
-      if (!this._reactInternalFiber.child) {
-        []
-      } else {
-        this._reactInternalFiber.child.memoizedProps.children
-          .filter(Boolean)
-          .map(child => ({
-            name: (child.type && child.type.name) || "",
-            child,
-            class: child.type
-          }))
-      }
-    } else {
-      []
-    }
+    (${reactComponentTree})().getChildrenFromId(this, ${id})
   `);
 }
 
 function getAncestors(evaluate: Function) {
-  return evaluate(`
-    if(this.hasOwnProperty('_reactInternalFiber')) {
-      let ancestors = [];
-      let node = this._reactInternalFiber;
-      while(node) {
-        ancestors.push({ name: node.type.name || "", node, class: node.type });
-        node = node._debugOwner
-      }
-      ancestors;
-    }
-    else {
-      [this._reactInternalInstance.getName()];
-    }
-  `);
+  return evaluate(`(${reactComponentTree})().getAncestors(this)`);
 }
 
 async function loadArrayItems(client, arrayGrip) {
@@ -80,20 +53,21 @@ export function fetchComponentAncestors() {
 
     dispatch({
       type: "SET_COMPONENT_ANCESTORS",
-      ancestors,
-      this: selectedFrame.this
+      ancestors
     });
+
+    return ancestors;
   };
 }
 
-export function fetchComponentChildren() {
+export function fetchComponentChildren(id: number) {
   return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
     const selectedFrame = getSelectedFrame(getState());
     if (!selectedFrame) {
       return;
     }
 
-    const childrenGrip = await getChildren(expr =>
+    const childrenGrip = await getChildren(id, expr =>
       client.evaluateInFrame(expr, selectedFrame.id)
     );
 
@@ -102,14 +76,18 @@ export function fetchComponentChildren() {
     dispatch({
       type: "SET_COMPONENT_CHILDREN",
       children,
-      this: selectedFrame.this
+      id: id
     });
   };
 }
 
 export function fetchComponentTree() {
   return async ({ dispatch }: ThunkArgs) => {
-    await dispatch(fetchComponentChildren());
-    await dispatch(fetchComponentAncestors());
+    const ancestors = await dispatch(fetchComponentAncestors());
+    if (!ancestors || ancestors.length == 0) {
+      return;
+    }
+    const ancestor = ancestors[ancestors.length - 1];
+    await dispatch(fetchComponentChildren(ancestor.id));
   };
 }

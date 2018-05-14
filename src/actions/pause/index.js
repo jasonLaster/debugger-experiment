@@ -31,3 +31,5 @@ export { pauseOnExceptions } from "./pauseOnExceptions";
 export { selectComponent } from "./selectComponent";
 export { selectFrame } from "./selectFrame";
 export { toggleSkipPausing } from "./skipPausing";
+
+export { fetchComponentChildren } from "./components";

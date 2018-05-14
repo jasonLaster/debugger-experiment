@@ -15,8 +15,7 @@ import {
   getComponentAncestors,
   getSelectedFrame
 } from "../../selectors";
-
-import "./Frames/Frames.css";
+import ManagedTree from "../shared/ManagedTree";
 
 type Props = {
   extra: Object,
@@ -84,26 +83,85 @@ class ComponentTree extends PureComponent<Props> {
     );
   }
 
+  getRoots = () => {
+    const { ancestors } = this.props;
+    return ancestors.map(ancestor => {
+      const name = ancestor.name || ancestor.class;
+      return {
+        name,
+        path: name,
+        contents: ancestor
+      };
+    });
+  };
+
+  getChildren = parent => {
+    const { children, ancestors } = this.props;
+    if (!children) {
+      return [];
+    }
+
+    const _children = children[parent.contents.id];
+    if (!_children) {
+      return [];
+    }
+
+    return _children
+      .filter(child => !ancestors.map(({ id }) => id).includes(child.id))
+      .map((child, index) => {
+        const name = child.name || child.class;
+        return {
+          name,
+          path: `${parent.path}/${name}-${index}`,
+          contents: child,
+          parent
+        };
+      });
+  };
+  renderTree() {
+    const { ancestors } = this.props;
+    if (!ancestors || ancestors.length == 0) {
+      return <div>empty</div>;
+    }
+
+    const treeProps = {
+      autoExpandAll: false,
+      autoExpandDepth: 0,
+      getChildren: this.getChildren,
+      getParent: item => item.parent,
+      getPath: item => item.path,
+      getRoots: this.getRoots,
+      highlightItems: [],
+      itemHeight: 21,
+      key: "full",
+      listItems: [],
+      onCollapse: () => {},
+      onExpand: item => {
+        console.log(`on expand`, item);
+        this.props.fetchComponentChildren(item.contents.id);
+      },
+      onFocus: () => {},
+      renderItem: (item, depth, c, d) => {
+        return (
+          <div style={{ paddingLeft: `${depth * 15}px` }}> {item.name}</div>
+        );
+      }
+    };
+
+    return <ManagedTree {...treeProps} />;
+  }
+
   render() {
-    return (
-      <div className="pane frames">
-        {this.renderAncestors()}
-        {this.renderChildren()}
-      </div>
-    );
+    return <div className="pane frames">{this.renderTree()}</div>;
   }
 }
 
 const mapStateToProps = state => {
-  const selectedFrame = getSelectedFrame(state);
-  if (!selectedFrame) {
-    return {};
-  }
   return {
     extra: getExtra(state),
     selectedComponentIndex: getSelectedComponentIndex(state),
-    children: getComponentChildren(state, selectedFrame.this),
-    ancestors: getComponentAncestors(state, selectedFrame.this)
+    children: getComponentChildren(state),
+    ancestors: getComponentAncestors(state)
   };
 };
 

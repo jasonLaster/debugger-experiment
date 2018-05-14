@@ -184,7 +184,7 @@ class SecondaryPanes extends Component<Props, State> {
     return {
       header: L10N.getStr("scopes.header"),
       className: "scopes-pane",
-      component: <Scopes />,
+      component: <div />,
       opened: prefs.scopesVisible,
       onToggle: opened => {
         prefs.scopesVisible = opened;

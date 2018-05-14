@@ -17,8 +17,8 @@ import type { Record } from "../utils/makeRecord";
 export function initialComponentsState() {
   return makeRecord(
     ({
-      ancestors: I.Map(),
-      children: I.Map()
+      ancestors: null,
+      children: {}
     }: ASTState)
   )();
 }
@@ -29,10 +29,15 @@ function update(
 ): Record<ASTState> {
   switch (action.type) {
     case "SET_COMPONENT_ANCESTORS": {
-      return state.setIn(["ancestors", action.this.actor], action.ancestors);
+      return state.set("ancestors", action.ancestors);
     }
     case "SET_COMPONENT_CHILDREN": {
-      return state.setIn(["children", action.this.actor], action.children);
+      return state.set(
+        "children",
+        Object.assign({}, state.get("children"), {
+          [action.id]: action.children
+        })
+      );
     }
 
     default: {
@@ -41,18 +46,12 @@ function update(
   }
 }
 
-export function getComponentAncestors(
-  state: OuterState,
-  context: Object
-): boolean {
-  return state.components.getIn(["ancestors", context.actor]);
+export function getComponentAncestors(state: OuterState): boolean {
+  return state.components.ancestors;
 }
 
-export function getComponentChildren(
-  state: OuterState,
-  context: Object
-): boolean {
-  return state.components.getIn(["children", context.actor]);
+export function getComponentChildren(state: OuterState): boolean {
+  return state.components.children;
 }
 
 export default update;
