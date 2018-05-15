@@ -104,16 +104,57 @@ export default class FrameComponent extends Component<FrameComponentProps> {
     this.props.selectFrame(frame);
   }
 
-  render() {
+  renderComponent() {
     const {
       frame,
       selectedFrame,
       hideLocation,
+      shouldMapDisplayName,
+      selectVisibleLocation,
+      selectComponent,
+      selectedComponentId
+    } = this.props;
+
+    const selected = selectedComponentId && selectedComponentId === frame.id;
+    const className = classNames("frame", {
+      selected
+    });
+    return (
+      <li
+        key={frame.id}
+        className={className}
+        onMouseDown={e => {
+          selectVisibleLocation(frame.location);
+          selectComponent(frame.id);
+        }}
+        onKeyUp={e => {}}
+        onContextMenu={e => {}}
+        tabIndex={0}
+      >
+        <div className="title">{frame.displayName}</div>
+        <div className="location">
+          {frame.component} <Svg name={"react"} className="annotation-logo" />
+        </div>
+      </li>
+    );
+  }
+
+  render() {
+    const {
+      frame,
+      selectedFrame,
+      selectedComponentId,
+      hideLocation,
       shouldMapDisplayName
     } = this.props;
 
+    if (frame.component) {
+      return this.renderComponent();
+    }
+
     const className = classNames("frame", {
-      selected: selectedFrame && selectedFrame.id === frame.id
+      selected:
+        !selectedComponentId && selectedFrame && selectedFrame.id === frame.id
     });
     return (
       <li

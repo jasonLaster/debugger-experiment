@@ -19,7 +19,7 @@ export function initialComponentsState() {
     ({
       ancestors: null,
       children: {},
-      paths: null
+      selectedComponentId: null
     }: ASTState)
   )();
 }
@@ -29,9 +29,18 @@ function update(
   action: Action
 ): Record<ASTState> {
   switch (action.type) {
+    case "SELECT_COMPONENT": {
+      return state.set("selectedComponentId", action.id);
+    }
     case "SET_COMPONENT_ANCESTORS": {
       return state.set("ancestors", action.ancestors);
     }
+    case "SELECT_FRAME": {
+      return state.set("selectedComponentId", null);
+    }
+    case "RESUME":
+      return state.set("ancestors", null).set("selectedComponentId", null);
+
     case "SET_COMPONENT_CHILDREN": {
       return state.set(
         "children",
@@ -53,6 +62,16 @@ export function getComponentAncestors(state: OuterState): boolean {
 
 export function getComponentChildren(state: OuterState): boolean {
   return state.components.children;
+}
+
+export function getSelectedComponentId(state: OuterState) {
+  return state.components.selectedComponentId;
+}
+
+export function getSelectedComponent(state: OuterState) {
+  return (getComponentAncestors(state) || []).find(
+    ancestor => ancestor.id == state.components.selectedComponentId
+  );
 }
 
 export default update;

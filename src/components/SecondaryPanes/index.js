@@ -20,7 +20,8 @@ import {
   getShouldPauseOnExceptions,
   getShouldPauseOnCaughtExceptions,
   getWorkers,
-  getExtra
+  getExtra,
+  getSelectedComponent
 } from "../../selectors";
 
 import Svg from "../shared/Svg";
@@ -206,11 +207,12 @@ class SecondaryPanes extends Component<Props, State> {
   getComponentItem() {
     const {
       extra: { react },
+      selectedComponent,
       hasFrames
     } = this.props;
 
     return {
-      header: react.displayName,
+      header: selectedComponent ? selectedComponent.name : react.displayName,
       className: "component-pane",
       component: <ComponentPane />,
       opened: prefs.componentVisible,
@@ -306,9 +308,9 @@ class SecondaryPanes extends Component<Props, State> {
 
       if (this.props.horizontal) {
         if (extra && extra.react && hasFrames) {
-          if (features.componentStack) {
-            items.push(this.getComponentTreeItem());
-          }
+          // if (features.componentStack) {
+          //   items.push(this.getComponentTreeItem());
+          // }
 
           items.push(this.getComponentItem());
         }
@@ -348,9 +350,9 @@ class SecondaryPanes extends Component<Props, State> {
     items.push(this.getWatchItem());
 
     if (extra && extra.react) {
-      if (features.componentStack) {
-        items.push(this.getComponentTreeItem());
-      }
+      // if (features.componentStack) {
+      //   items.push(this.getComponentTreeItem());
+      // }
 
       items.push(this.getComponentItem());
     }
@@ -414,6 +416,7 @@ SecondaryPanes.contextTypes = {
 const mapStateToProps = state => ({
   expressions: getExpressions(state),
   extra: getExtra(state),
+  selectedComponent: getSelectedComponent(state),
   hasFrames: !!getTopFrame(state),
   breakpoints: getBreakpoints(state),
   breakpointsDisabled: getBreakpointsDisabled(state),

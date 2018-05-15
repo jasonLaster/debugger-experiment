@@ -21,6 +21,7 @@ import { copyToTheClipboard } from "../../../utils/clipboard";
 import {
   getFrameworkGroupingState,
   getSelectedFrame,
+  getSelectedComponentId,
   isPaused as getIsPaused,
   getCallStackFrames,
   getPauseReason
@@ -64,11 +65,17 @@ class Frames extends Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps, nextState): boolean {
-    const { frames, selectedFrame, frameworkGroupingOn } = this.props;
+    const {
+      frames,
+      selectedFrame,
+      frameworkGroupingOn,
+      selectedComponentId
+    } = this.props;
     const { showAllFrames } = this.state;
     return (
       frames !== nextProps.frames ||
       selectedFrame !== nextProps.selectedFrame ||
+      selectedComponentId !== nextProps.selectedComponentId ||
       showAllFrames !== nextState.showAllFrames ||
       frameworkGroupingOn !== nextProps.frameworkGroupingOn
     );
@@ -113,7 +120,10 @@ class Frames extends Component<Props, State> {
       selectFrame,
       selectedFrame,
       toggleBlackBox,
-      frameworkGroupingOn
+      frameworkGroupingOn,
+      selectVisibleLocation,
+      selectedComponentId,
+      selectComponent
     } = this.props;
 
     const framesOrGroups = this.truncateFrames(this.collapseFrames(frames));
@@ -130,7 +140,10 @@ class Frames extends Component<Props, State> {
                 copyStackTrace={this.copyStackTrace}
                 frameworkGroupingOn={frameworkGroupingOn}
                 selectFrame={selectFrame}
+                selectComponent={selectComponent}
+                selectVisibleLocation={selectVisibleLocation}
                 selectedFrame={selectedFrame}
+                selectedComponentId={selectedComponentId}
                 toggleBlackBox={toggleBlackBox}
                 key={String(frameOrGroup.id)}
               />
@@ -198,6 +211,7 @@ const mapStateToProps = state => ({
   why: getPauseReason(state),
   frameworkGroupingOn: getFrameworkGroupingState(state),
   selectedFrame: getSelectedFrame(state),
+  selectedComponentId: getSelectedComponentId(state),
   pause: getIsPaused(state)
 });
 

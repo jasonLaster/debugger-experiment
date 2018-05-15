@@ -9,7 +9,11 @@ import actions from "../../actions";
 
 import { createObjectClient } from "../../client/firefox";
 
-import { getSelectedFrame, getAllPopupObjectProperties } from "../../selectors";
+import {
+  getSelectedFrame,
+  getAllPopupObjectProperties,
+  getSelectedComponent
+} from "../../selectors";
 
 import { ObjectInspector, ObjectInspectorUtils } from "devtools-reps";
 import { isReactComponent } from "../../utils/preview";
@@ -28,24 +32,48 @@ type Props = {
 class ComponentPane extends PureComponent<Props> {
   async componentWillMount() {
     const expression = "this;";
-    // const { selectedFrame, setPopupObjectProperties } = this.props;
-    // const value = selectedFrame.this;
-    //
-    // const root = createNode({ name: expression, contents: { value } });
-    // const properties = await loadItemProperties(root, createObjectClient);
-    // if (properties) {
-    //   setPopupObjectProperties(value, properties);
-    // }
+    const { selectedFrame, setPopupObjectProperties } = this.props;
+    const value = selectedFrame.this;
+
+    const root = createNode({ name: expression, contents: { value } });
+    const properties = await loadItemProperties(root, createObjectClient);
+    if (properties) {
+      setPopupObjectProperties(value, properties);
+    }
   }
 
-  render() {
-    const { selectedFrame, popupObjectProperties } = this.props;
-    const expression = "this;";
-    if (!selectedFrame) {
+  async componentDidUpdate() {
+    const { selectedComponent, setPopupObjectProperties } = this.props;
+
+    if (!selectedComponent) {
+      return;
+    }
+    const value = selectedComponent.node;
+    const expression = "component";
+    const root = createNode({ name: expression, contents: { value } });
+    const properties = await loadItemProperties(root, createObjectClient);
+
+    if (properties) {
+      setPopupObjectProperties(value, properties);
+    }
+  }
+
+  renderFrame() {
+    const {
+      selectedFrame,
+      selectedComponent,
+      popupObjectProperties
+    } = this.props;
+
+    if (!selectedFrame && !selectedComponent) {
       return null;
     }
 
-    const value = selectedFrame.this;
+    const expression = selectedComponent ? "component" : "this;";
+    const value = selectedComponent
+      ? selectedComponent.node
+      : selectedFrame.this;
+
     const root = {
       name: expression,
       path: expression,
@@ -62,7 +90,14 @@ class ComponentPane extends PureComponent<Props> {
       loadedProperties: new Map([[root.path, loadedRootProperties]])
     });
 
+    // if (selectedComponent) {
+    //   roots = roots.filter(r =>
+    //     ["memoizedState", "memoizedProps"].includes(r.name)
+    //   );
+    //   // roots = { props: newRoots.memoizedProps, state: newRoots.memoizedState };
+    // } else {
     roots = roots.filter(r => ["state", "props"].includes(r.name));
+    // }
 
     return (
       <div className="pane framework-component">
@@ -78,10 +113,40 @@ class ComponentPane extends PureComponent<Props> {
       </div>
     );
   }
+
+  renderComponent() {
+    const { selectedComponent, popupObjectProperties } = this.props;
+
+    return (
+      <div className="pane framework-component">
+        <ObjectInspector
+          roots={roots}
+          autoExpandAll={false}
+          autoExpandDepth={0}
+          disableWrap={true}
+          focusable={false}
+          dimTopLevelWindow={true}
+          createObjectClient={grip => createObjectClient(grip)}
+        />
+      </div>
+    );
+  }
+
+  render() {
+    const { selectedFrame, selectedComponent } = this.props;
+    //
+    // if (selectedComponent) {
+    //   return this.renderComponent();
+    // }
+    if (selectedFrame || selectedComponent) {
+      return this.renderFrame();
+    }
+  }
 }
 
 const mapStateToProps = state => ({
   selectedFrame: getSelectedFrame(state),
+  selectedComponent: getSelectedComponent(state),
   popupObjectProperties: getAllPopupObjectProperties(state)
 });
 

@@ -92,3 +92,10 @@ export function fetchComponentTree() {
     );
   };
 }
+
+export function selectComponent(id) {
+  return {
+    type: "SELECT_COMPONENT",
+    id
+  };
+}

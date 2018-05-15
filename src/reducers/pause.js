@@ -56,7 +56,6 @@ export type PauseState = {
     }
   },
   selectedFrameId: ?string,
-  selectedComponentIndex: ?number,
   loadedObjects: Object,
   shouldPauseOnExceptions: boolean,
   shouldPauseOnCaughtExceptions: boolean,
@@ -429,10 +428,6 @@ export function getSelectedScopeMappings(
 
 export function getSelectedFrameId(state: OuterState) {
   return state.pause.selectedFrameId;
-}
-
-export function getSelectedComponentIndex(state: OuterState) {
-  return state.pause.selectedComponentIndex;
 }
 
 export function getTopFrame(state: OuterState) {

@@ -83,7 +83,8 @@ export default () => {
       id: node._debugID,
       name: node.type.name || node.type || "",
       class: node.type,
-      hasChildren: !!node.child
+      hasChildren: !!node.child,
+      node: { props: node.memoizedProps, state: node.memoizedState }
     };
   }
 
