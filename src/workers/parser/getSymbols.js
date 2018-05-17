@@ -494,12 +494,12 @@ export function clearSymbols() {
 }
 
 export function getSymbols(sourceId: string): SymbolDeclarations {
-  if (symbolDeclarations.has(sourceId)) {
-    const symbols = symbolDeclarations.get(sourceId);
-    if (symbols) {
-      return symbols;
-    }
-  }
+  // if (symbolDeclarations.has(sourceId)) {
+  //   const symbols = symbolDeclarations.get(sourceId);
+  //   if (symbols) {
+  //     return symbols;
+  //   }
+  // }
 
   const symbols = extractSymbols(sourceId);
 

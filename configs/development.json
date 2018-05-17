@@ -27,7 +27,7 @@
   },
 
   "development": {
-    "serverPort": 8000,
+    "serverPort": 3003,
     "examplesPort": 7999
   }
 }

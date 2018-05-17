@@ -304,8 +304,8 @@ class App extends Component<Props, State> {
     const { quickOpenEnabled } = this.props;
     return (
       <div className="debugger">
-        {/* {this.renderLayout()} */}
-        {this.renderPane()}
+        {this.renderLayout()}
+        {/* {this.renderPane()} */}
         {quickOpenEnabled === true && (
           <QuickOpenModal
             shortcutsModalEnabled={this.state.shortcutsModalEnabled}

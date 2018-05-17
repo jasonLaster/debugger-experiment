@@ -28,12 +28,13 @@ const webpackConfig = {
   entry: {
     // We always generate the debugger bundle, but we will only copy the CSS
     // artifact over to mozilla-central.
-    debugger: getEntry("src/main.js"),
-    "parser-worker": getEntry("src/workers/parser/worker.js"),
-    "pretty-print-worker": getEntry("src/workers/pretty-print/worker.js"),
-    "search-worker": getEntry("src/workers/search/worker.js"),
-    "source-map-worker": getEntry("packages/devtools-source-map/src/worker.js"),
-    "source-map-index": getEntry("packages/devtools-source-map/src/index.js")
+    // debugger: getEntry("src/main.js"),
+    examples: getEntry("src/examples/index.js")
+    // "parser-worker": getEntry("src/workers/parser/worker.js"),
+    // "pretty-print-worker": getEntry("src/workers/pretty-print/worker.js"),
+    // "search-worker": getEntry("src/workers/search/worker.js"),
+    // "source-map-worker": getEntry("packages/devtools-source-map/src/worker.js"),
+    // "source-map-index": getEntry("packages/devtools-source-map/src/index.js")
   },
 
   output: {

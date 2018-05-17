@@ -129,10 +129,13 @@ class Preview extends PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = state => ({
-  preview: getPreview(state),
-  selectedSource: getSelectedSource(state)
-});
+const mapStateToProps = state => {
+  const preview = getPreview(state);
+  return {
+    preview,
+    selectedSource: getSelectedSource(state)
+  };
+};
 
 const {
   addExpression,

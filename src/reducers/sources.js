@@ -409,7 +409,8 @@ export const getSelectedSource = createSelector(
       return;
     }
 
-    return sources.get(selectedLocation.sourceId);
+    const id = selectedLocation.sourceId;
+    return sources.get(id);
   }
 );
 

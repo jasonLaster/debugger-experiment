@@ -10,10 +10,12 @@
 import { handlers } from "./worker";
 
 function task(name) {
-  return async (...args) =>
-    new Promise(resolve => {
-      setTimeout(() => resolve(handlers[name](...args)));
-    });
+  // return async (...args) =>
+  //   new Promise(resolve => {
+  //     setTimeout(() => resolve(handlers[name](...args)));
+  //   });
+
+  return (...args) => handlers[name](...args);
 }
 
 // const dispatcher = new WorkerDispatcher();

@@ -103,9 +103,9 @@ export function parseScript(text: string, opts?: Object) {
 }
 
 export function getAst(sourceId: string) {
-  if (ASTs.has(sourceId)) {
-    return ASTs.get(sourceId);
-  }
+  // if (ASTs.has(sourceId)) {
+  //   return ASTs.get(sourceId);
+  // }
 
   const source = getSource(sourceId);
 

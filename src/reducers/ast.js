@@ -79,6 +79,7 @@ function update(
   state: Record<ASTState> = initialASTState(),
   action: Action
 ): Record<ASTState> {
+  var x = 3;
   switch (action.type) {
     case "SET_SYMBOLS": {
       const { sourceId } = action;
