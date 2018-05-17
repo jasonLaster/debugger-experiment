@@ -193,17 +193,6 @@ class SecondaryPanes extends Component<Props, State> {
     };
   }
 
-  getComponentTreeItem() {
-    return {
-      header: L10N.getStr("components.header"),
-      component: <ComponentTree />,
-      opened: prefs.componentStackVisible,
-      onToggle: opened => {
-        prefs.componentStackVisible = opened;
-      }
-    };
-  }
-
   getComponentItem() {
     const {
       extra: { react },
@@ -308,10 +297,6 @@ class SecondaryPanes extends Component<Props, State> {
 
       if (this.props.horizontal) {
         if (extra && extra.react && hasFrames) {
-          // if (features.componentStack) {
-          //   items.push(this.getComponentTreeItem());
-          // }
-
           items.push(this.getComponentItem());
         }
 
@@ -350,10 +335,6 @@ class SecondaryPanes extends Component<Props, State> {
     items.push(this.getWatchItem());
 
     if (extra && extra.react) {
-      // if (features.componentStack) {
-      //   items.push(this.getComponentTreeItem());
-      // }
-
       items.push(this.getComponentItem());
     }
 

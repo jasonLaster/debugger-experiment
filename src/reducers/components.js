@@ -41,15 +41,6 @@ function update(
     case "RESUME":
       return state.set("ancestors", null).set("selectedComponentId", null);
 
-    case "SET_COMPONENT_CHILDREN": {
-      return state.set(
-        "children",
-        Object.assign({}, state.get("children"), {
-          [action.id]: action.children
-        })
-      );
-    }
-
     default: {
       return state;
     }
@@ -58,10 +49,6 @@ function update(
 
 export function getComponentAncestors(state: OuterState): boolean {
   return state.components.ancestors;
-}
-
-export function getComponentChildren(state: OuterState): boolean {
-  return state.components.children;
 }
 
 export function getSelectedComponentId(state: OuterState) {

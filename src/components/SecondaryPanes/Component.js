@@ -26,6 +26,7 @@ const { loadItemProperties } = ObjectInspectorUtils.loadProperties;
 type Props = {
   setPopupObjectProperties: (Object, Object) => void,
   selectedFrame: Frame,
+  selectedComponent: Object,
   popupObjectProperties: Object
 };
 
@@ -90,32 +91,7 @@ class ComponentPane extends PureComponent<Props> {
       loadedProperties: new Map([[root.path, loadedRootProperties]])
     });
 
-    // if (selectedComponent) {
-    //   roots = roots.filter(r =>
-    //     ["memoizedState", "memoizedProps"].includes(r.name)
-    //   );
-    //   // roots = { props: newRoots.memoizedProps, state: newRoots.memoizedState };
-    // } else {
     roots = roots.filter(r => ["state", "props"].includes(r.name));
-    // }
-
-    return (
-      <div className="pane framework-component">
-        <ObjectInspector
-          roots={roots}
-          autoExpandAll={false}
-          autoExpandDepth={0}
-          disableWrap={true}
-          focusable={false}
-          dimTopLevelWindow={true}
-          createObjectClient={grip => createObjectClient(grip)}
-        />
-      </div>
-    );
-  }
-
-  renderComponent() {
-    const { selectedComponent, popupObjectProperties } = this.props;
 
     return (
       <div className="pane framework-component">
@@ -134,10 +110,6 @@ class ComponentPane extends PureComponent<Props> {
 
   render() {
     const { selectedFrame, selectedComponent } = this.props;
-    //
-    // if (selectedComponent) {
-    //   return this.renderComponent();
-    // }
     if (selectedFrame || selectedComponent) {
       return this.renderFrame();
     }

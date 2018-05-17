@@ -60,40 +60,7 @@ export function fetchComponentAncestors() {
   };
 }
 
-export function fetchComponentChildren(id: number) {
-  return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
-    const selectedFrame = getSelectedFrame(getState());
-    if (!selectedFrame) {
-      return;
-    }
-
-    const childrenGrip = await getChildren(id, expr =>
-      client.evaluateInFrame(expr, selectedFrame.id)
-    );
-
-    const children = await loadArrayItems(client, childrenGrip);
-
-    dispatch({
-      type: "SET_COMPONENT_CHILDREN",
-      children,
-      id: id
-    });
-  };
-}
-
-export function fetchComponentTree() {
-  return async ({ dispatch }: ThunkArgs) => {
-    const ancestors = await dispatch(fetchComponentAncestors());
-    if (!ancestors || ancestors.length == 0) {
-      return;
-    }
-    await Promise.all(
-      ancestors.map(ancestor => dispatch(fetchComponentChildren(ancestor.id)))
-    );
-  };
-}
-
-export function selectComponent(id) {
+export function selectComponent(id: number) {
   return {
     type: "SELECT_COMPONENT",
     id
