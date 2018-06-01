@@ -75,6 +75,10 @@ class Preview extends PureComponent<Props, State> {
     this.updateHighlight(prevProps);
   }
 
+  componentDidCatch(error, errorInfo) {
+    console.log("Preview", error, errorInfo);
+  }
+
   updateListeners(prevProps: ?Props) {
     const { isPaused } = this.props;
 

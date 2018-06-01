@@ -99,6 +99,10 @@ class SecondaryPanes extends Component<Props, State> {
     };
   }
 
+  componentDidCatch(error, errorInfo) {
+    console.log("SecondaryPanes", error, errorInfo);
+  }
+
   onExpressionAdded = () => {
     this.setState({ showExpressionsInput: false });
   };

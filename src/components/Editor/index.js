@@ -127,6 +127,10 @@ class Editor extends PureComponent<Props, State> {
     this.scrollToLocation(nextProps);
   }
 
+  componentDidCatch(error, errorInfo) {
+    console.log("Editor", error, errorInfo);
+  }
+
   setupEditor() {
     const editor = createEditor();
 

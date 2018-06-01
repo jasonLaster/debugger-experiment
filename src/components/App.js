@@ -140,7 +140,6 @@ class App extends Component<Props, State> {
   componentDidCatch(error, errorInfo) {
     // TODO:  Add telemetry to send this information to us for analysis
     console.log("App: ", error, errorInfo);
-    this.setState({ error, errorInfo });
   }
 
   onEscape = (_, e) => {
