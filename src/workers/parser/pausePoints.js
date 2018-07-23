@@ -36,7 +36,8 @@ const inStepExpression = parent =>
   t.isArrayExpression(parent) ||
   t.isObjectProperty(parent) ||
   t.isCallExpression(parent) ||
-  t.isJSXElement(parent);
+  t.isJSXElement(parent) ||
+  t.isSequenceExpression(parent);
 
 const inExpression = (parent, grandParent) =>
   inStepExpression(parent) ||
@@ -50,6 +51,29 @@ function getStartLine(node) {
   return node.loc.start.line;
 }
 
+// Finds the first call item in a step expression so that we can step
+// to the beginning of the list and either step in or over. e.g. [], x(), { }
+function isFirstCall(node, parentNode, grandParentNode) {
+  let children = [];
+  if (t.isArrayExpression(parentNode)) {
+    children = parentNode.elements;
+  }
+
+  if (t.isObjectProperty(parentNode)) {
+    children = grandParentNode.properties.map(({ value }) => value);
+  }
+
+  if (t.isSequenceExpression(parentNode)) {
+    children = parentNode.expressions;
+  }
+
+  if (t.isCallExpression(parentNode)) {
+    children = parentNode.arguments;
+  }
+
+  return children.find(child => isCall(child)) === node;
+}
+
 export function getPausePoints(sourceId: string) {
   const state = {};
   traverseAst(sourceId, { enter: onEnter }, state);
@@ -61,6 +85,7 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
   const parent = ancestors[ancestors.length - 1];
   const parentNode = parent && parent.node;
   const grandParent = ancestors[ancestors.length - 2];
+  const grandParentNode = grandParent && grandParent.node;
   const startLocation = node.loc.start;
 
   if (
@@ -69,7 +94,6 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
     isExport(node) ||
     t.isDebuggerStatement(node) ||
     t.isThrowStatement(node) ||
-    t.isExpressionStatement(node) ||
     t.isBreakStatement(node) ||
     t.isContinueStatement(node)
   ) {
@@ -90,7 +114,7 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
     return;
   }
 
-  if (t.isBlockStatement(node)) {
+  if (t.isBlockStatement(node) || t.isArrayExpression(node)) {
     return addEmptyPoint(state, startLocation);
   }
 
@@ -108,13 +132,14 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
   }
 
   if (isAssignment(node)) {
-    // We only want to pause at literal assignments `var a = foo()`
+    // step at assignments unless the right side is a call or default assignment
+    // e.g. `var a = b()`,  `a = b(c = 2)`
     const value = node.right || node.init;
-
-    if (isCall(value) || t.isFunction(parentNode)) {
-      return addEmptyPoint(state, startLocation);
-    }
-    return addStopPoint(state, startLocation);
+    const defaultAssignment = t.isFunction(parentNode);
+    return addPoint(state, startLocation, {
+      break: !defaultAssignment,
+      step: !isCall(value) && !defaultAssignment
+    });
   }
 
   if (isCall(node)) {
@@ -126,13 +151,17 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
       location = node.callee.property.loc.start;
     }
 
-    // NOTE: we do not want to land inside an expression e.g. [], {}, call
-    const step = !inExpression(parent.node, grandParent && grandParent.node);
+    // NOTE: We want to skip all nested calls in expressions except for the
+    // first call in arrays and objects expression e.g. [], {}, call
+    const step =
+      isFirstCall(node, parentNode, grandParentNode) ||
+      !inExpression(parentNode, grandParentNode);
 
     // NOTE: we add a point at the beginning of the expression
     // and each of the calls because the engine does not support
     // column-based member expression calls.
     addPoint(state, startLocation, { break: true, step });
+
     if (location && !isEqual(location, startLocation)) {
       addPoint(state, location, { break: true, step });
     }
