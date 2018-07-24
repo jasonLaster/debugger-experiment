@@ -19,7 +19,7 @@ cases(
 
     setSource(source);
     const nodes = getPausePoints(source.id);
-    // console.log(formatPausePoints(source.text, nodes));
+    console.log(formatPausePoints(source.text, nodes));
     expect(formatPausePoints(source.text, nodes)).toMatchSnapshot();
   },
   [
@@ -29,7 +29,7 @@ cases(
     { name: "statements", file: "statements" },
     { name: "modules", file: "modules", original: true },
     { name: "jsx", file: "jsx", original: true },
-    { name: "func", file: "func", original: true },
+    { name: "func", file: "func", original: true, only: true },
     { name: "decorators", file: "decorators", original: true },
     { name: "html", file: "parseScriptTags", type: "html" }
   ]

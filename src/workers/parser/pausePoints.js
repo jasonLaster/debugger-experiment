@@ -4,9 +4,10 @@
 
 // @flow
 
-import { traverseAst } from "./utils/ast";
+import { traverseAst, hasNode, findNode } from "./utils/ast";
 import * as t from "@babel/types";
 import isEqual from "lodash/isEqual";
+import createSimplePath from "./utils/simple-path";
 
 import type { BabelNode } from "@babel/types";
 import type { SimplePath } from "./utils/simple-path";
@@ -53,61 +54,41 @@ function getStartLine(node) {
 
 // Finds the first call item in a step expression so that we can step
 // to the beginning of the list and either step in or over. e.g. [], x(), { }
-function isFirstCall(node, parentNode, grandParentNode) {
-  let children = [];
-  if (t.isArrayExpression(parentNode)) {
-    children = parentNode.elements;
-  }
-
-  if (t.isObjectProperty(parentNode)) {
-    children = grandParentNode.properties.map(({ value }) => value);
-  }
-
-  if (t.isSequenceExpression(parentNode)) {
-    children = parentNode.expressions;
-  }
-
-  if (t.isCallExpression(parentNode)) {
-    children = parentNode.arguments;
-  }
-
-  return children.find(child => isCall(child)) === node;
+function isFirstCall(path) {
+  const containingPath = path.closest(inStepExpression);
+  const foundNode = findNode(containingPath, isCall);
+  return foundNode === path.node;
 }
 
 // Check to see if the node is a step expression and if any of its children
 // expressions include calls. e.g. [ a() ], { a: a() }
-function hasCall(node) {
-  let children = [];
-  if (t.isArrayExpression(node)) {
-    children = node.elements;
-  }
-
-  if (t.isObjectExpression(node)) {
-    children = node.properties.map(({ value }) => value);
-  }
-
-  if (t.isSequenceExpression(node)) {
-    children = node.expressions;
-  }
-
-  if (t.isCallExpression(node)) {
-    children = node.arguments;
-  }
-
-  return children.find(child => isCall(child));
+function hasCall(rootNode) {
+  return hasNode(rootNode, node => isCall(node));
 }
 
 export function getPausePoints(sourceId: string) {
   const state = {};
-  traverseAst(sourceId, { enter: onEnter }, state);
+  traverseAst(
+    sourceId,
+    {
+      enter: (node: Node, ancestors: TraversalAncestors) => {
+        const path = createSimplePath(ancestors);
+        if (path) {
+          findPausePoint(path, state);
+        }
+      }
+    },
+    state
+  );
   return state;
 }
 
 /* eslint-disable complexity */
-function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
-  const parent = ancestors[ancestors.length - 1];
-  const parentNode = parent && parent.node;
-  const grandParent = ancestors[ancestors.length - 2];
+function findPausePoint(path: SimplePath, state) {
+  const node = path.node;
+  const parent = path.parentPath;
+  const parentNode = path.parent;
+  const grandParent = parent && parent.parentPath;
   const grandParentNode = grandParent && grandParent.node;
   const startLocation = node.loc.start;
 
@@ -155,7 +136,9 @@ function onEnter(node: BabelNode, ancestors: SimplePath[], state) {
     const value = node.right || node.init;
     const defaultAssignment =
       t.isFunction(parentNode) && parent.key === "params";
+
     const includesCall = isCall(value) || hasCall(value);
+    // console.log(t.isFunction(parentNode), parent.key);
 
     return addPoint(state, startLocation, !includesCall && !defaultAssignment);
   }

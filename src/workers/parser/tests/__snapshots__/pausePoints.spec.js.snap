@@ -84,56 +84,56 @@ exports[`Parser.pausePoints flow 1`] = `
 `;
 
 exports[`Parser.pausePoints func 1`] = `
-"/*b*/function square(n) /**/{
-  /*bs*/return n * n;
-/**/}
+"// function square(n) {
+//   return n * n;
+// }
+//
+// export function exFoo() {
+//   return \\"yay\\";
+// }
+//
+// async function slowFoo() {
+//   return \\"meh\\";
+// }
+//
+// export async function exSlowFoo() {
+//   return \\"yay in a bit\\";
+// }
+//
+// function ret() {
+//   return foo();
+// }
+//
+// child = function() {};
+//
+// (function() {
+//   2;
+// })();
+//
+// const obj = {
+//   foo: function name() {
+//     2 + 2;
+//   },
+//
+//   bar() {
+//     2 + 2;
+//   }
+// };
+//
+// export default function root() {
+// }
 
-/*bs*/export /*b*/function exFoo() /**/{
-  /*bs*/return \\"yay\\";
-/**/}
-
-/*b*/async function slowFoo() /**/{
-  /*bs*/return \\"meh\\";
-/**/}
-
-/*bs*/export /*b*/async function exSlowFoo() /**/{
-  /*bs*/return \\"yay in a bit\\";
-/**/}
-
-/*b*/function ret() /**/{
-  /**/return /*bs*/foo();
-/**/}
-
-/*bs*/child = /*b*/function() /**/{/**/};
-
-/*bs*/(/*b*/function() /**/{
-  2;
-/**/})();
-
-const /*bs*/obj = {
-  /**/foo: /*b*/function name() /**/{
-    2 + 2;
-  /**/},
-
-  /*b*/bar() /**/{
-    2 + 2;
-  /**/}
-};
-
-/*bs*/export default /*b*/function root() /**/{
-/**/}
-
-/*b*/function test(a1, /**/a2 = 45, /**/{ /**/a3, /**/a4, /**/a5: /*bs*/{ /**/a6: /**/a7 } = {} } = {}) /**/{
+/*b*/function test(a1, /*bs*/a2 = 45, /*bs*/{ /**/a3, /**/a4, /**/a5: /*bs*/{ /**/a6: /**/a7 } = {} } = {}) /**/{
   /*bs*/console./*bs*/log(/**/\\"pause next here\\");
 /**/}
-
-/*b*/() => (/*bs*/x = 4/**/);
-
-/*b*/function ret2() /**/{
-  /*bs*/return (
-    /*bs*/foo()
-  );
-/**/}
+//
+// () => (x = 4);
+//
+// function ret2() {
+//   return (
+//     foo()
+//   );
+// }
 "
 `;
 
@@ -159,7 +159,7 @@ exports[`Parser.pausePoints html 1`] = `
 <body>
 	<h1>Testing Script Tags in HTML</h1>
 	<script>
-		const /*bs*/capitalize = /*b*/name => /**/{
+		const /**/capitalize = /*b*/name => /**/{
 			/*bs*/return /*bs*/name[0]./*bs*/toUpperCase() + /*bs*/name./*bs*/substring(/**/1)
 		/**/};
 		const /**/greetAll = /**/[/**/\\"my friend\\", /**/\\"buddy\\", /**/\\"world\\"]

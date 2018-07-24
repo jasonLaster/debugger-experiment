@@ -159,3 +159,41 @@ export function traverseAst<T>(sourceId: string, visitor: Visitor, state?: T) {
   t.traverse(ast, visitor, state);
   return ast;
 }
+
+export function hasNode(rootNode, predicate) {
+  try {
+    t.traverse(rootNode, {
+      enter: node => {
+        if (predicate(node)) {
+          throw "MATCH";
+        }
+      }
+    });
+  } catch (e) {
+    if (e === "MATCH") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function findNode(rootNode, predicate) {
+  let foundNode = null;
+  try {
+    t.traverse(rootNode, {
+      enter: node => {
+        if (predicate(node)) {
+          foundNode = node;
+          throw "MATCH";
+        }
+      }
+    });
+  } catch (e) {
+    if (e === "MATCH") {
+      return foundNode;
+    }
+  }
+
+  return null;
+}

@@ -63,6 +63,11 @@ class SimplePath {
     return this._ancestor.node;
   }
 
+  get key(): string {
+    const { node, key, index } = this._ancestor;
+    return key;
+  }
+
   get node(): Node {
     const { node, key, index } = this._ancestor;
 
