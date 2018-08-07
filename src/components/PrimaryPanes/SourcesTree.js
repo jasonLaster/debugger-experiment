@@ -100,7 +100,6 @@ class SourcesTree extends Component<Props, State> {
 
     const { uncollapsedTree, sourceTree } = this.state;
 
-    
     if (
       projectRoot != nextProps.projectRoot ||
       debuggeeUrl != nextProps.debuggeeUrl ||
@@ -266,7 +265,7 @@ class SourcesTree extends Component<Props, State> {
     expanded: boolean,
     { setExpanded }: { setExpanded: SetExpanded }
   ) => {
-    const { debuggeeUrl, projectRoot } = this.props;
+    const { debuggeeUrl, projectRoot, sources } = this.props;
 
     return (
       <SourcesTreeItem
@@ -278,6 +277,7 @@ class SourcesTree extends Component<Props, State> {
         focusItem={this.focusItem}
         selectItem={this.selectItem}
         source={this.getSource(item)}
+        sources={sources}
         debuggeeUrl={debuggeeUrl}
         projectRoot={projectRoot}
         clearProjectDirectoryRoot={this.props.clearProjectDirectoryRoot}

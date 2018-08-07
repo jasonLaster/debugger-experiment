@@ -12,6 +12,7 @@
 import { isGeneratedId } from "devtools-source-map";
 import { flatten } from "lodash";
 
+import { getSourcesByURL } from "../../reducers/sources";
 import { toggleBlackBox } from "./blackbox";
 import { syncBreakpoint } from "../breakpoints";
 import { loadSourceText } from "./loadSourceText";
@@ -95,53 +96,67 @@ function loadSourceMap(sourceId: SourceId) {
 }
 
 // If a request has been made to show this source, go ahead and
+
+//
+
 // select it.
-function checkSelectedSource(sourceId: string) {
+function checkSelectedSource(sources: Source[]) {
   return async ({ dispatch, getState }: ThunkArgs) => {
-    const source = getSourceFromId(getState(), sourceId);
-
     const pendingLocation = getPendingSelectedLocation(getState());
-
-    if (!pendingLocation || !pendingLocation.url || !source.url) {
-      return;
-    }
-
-    const pendingUrl = pendingLocation.url;
-    const rawPendingUrl = getRawSourceURL(pendingUrl);
-
-    if (rawPendingUrl === source.url) {
-      if (isPrettyURL(pendingUrl)) {
-        const prettySource = await dispatch(togglePrettyPrint(source.id));
-        return dispatch(checkPendingBreakpoints(prettySource.id));
+    for (const source of sources) {
+      if (!pendingLocation || !pendingLocation.url || !source.url) {
+        return;
       }
 
-      await dispatch(
-        selectLocation({ ...pendingLocation, sourceId: source.id })
-      );
+      const pendingUrl = pendingLocation.url;
+      const rawPendingUrl = getRawSourceURL(pendingUrl);
+
+      if (rawPendingUrl === source.url) {
+        if (isPrettyURL(pendingUrl)) {
+          const prettySource = await dispatch(togglePrettyPrint(source.id));
+          return dispatch(checkPendingBreakpoints(prettySource.id));
+        }
+
+        await dispatch(
+          selectLocation({ ...pendingLocation, sourceId: source.id })
+        );
+
+        break;
+      }
     }
   };
 }
 
-function checkPendingBreakpoints(sourceId: string) {
+function checkPendingBreakpoints(sources: Source[]) {
   return async ({ dispatch, getState }: ThunkArgs) => {
-    // source may have been modified by selectLocation
-    const source = getSourceFromId(getState(), sourceId);
+    for (let source of sources) {
+      // source may have been modified by selectLocation
+      source = getSourceFromId(getState(), source.id);
 
-    const pendingBreakpoints = getPendingBreakpointsForSource(
-      getState(),
-      source.url
-    );
+      if (
+        source.url &&
+        getSourcesByURL(getState(), source.url).length > 1 &&
+        isGeneratedId(source.id)
+      ) {
+        continue;
+      }
 
-    if (pendingBreakpoints.length === 0) {
-      return;
+      const pendingBreakpoints = getPendingBreakpointsForSource(
+        getState(),
+        source.url
+      );
+
+      if (pendingBreakpoints.length === 0) {
+        return;
+      }
+
+      // load the source text if there is a pending breakpoint for it
+      await dispatch(loadSourceText(source));
+
+      await Promise.all(
+        pendingBreakpoints.map(bp => dispatch(syncBreakpoint(source.id, bp)))
+      );
     }
-
-    // load the source text if there is a pending breakpoint for it
-    await dispatch(loadSourceText(source));
-
-    await Promise.all(
-      pendingBreakpoints.map(bp => dispatch(syncBreakpoint(sourceId, bp)))
-    );
   };
 }
 
@@ -187,12 +202,9 @@ export function newSources(sources: Source[]) {
       }: Action)
     );
 
-    for (const source of filteredSources) {
-      dispatch(checkSelectedSource(source.id));
-      dispatch(checkPendingBreakpoints(source.id));
-    }
-
+    dispatch(checkSelectedSource(filteredSources));
     await dispatch(loadSourceMaps(filteredSources));
+    dispatch(checkPendingBreakpoints(filteredSources));
 
     // We would like to restore the blackboxed state
     // after loading all states to make sure the correctness.

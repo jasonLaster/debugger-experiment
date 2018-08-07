@@ -8,6 +8,8 @@ import React, { Component } from "react";
 import classnames from "classnames";
 import { showMenu } from "devtools-contextmenu";
 
+import { isOriginalId } from "devtools-source-map";
+
 import SourceIcon from "../shared/SourceIcon";
 import Svg from "../shared/Svg";
 
@@ -23,6 +25,7 @@ type Props = {
   debuggeeUrl: string,
   projectRoot: string,
   source: ?Source,
+  sources: Object,
   item: TreeNode,
   depth: number,
   focused: boolean,
@@ -144,7 +147,19 @@ export default class SourceTreeItem extends Component<Props, State> {
     );
   }
 
-  renderItemName(name: string) {
+  hasDuplicateGeneratedUrl() {
+    const { source, sources } = this.props;
+    return (
+      source &&
+      isOriginalId(source.id) &&
+      Object.values(sources).filter((s: Source) => s.url == source.url).length >
+        1
+    );
+  }
+
+  renderItemName() {
+    const { item, source } = this.props;
+    const { name } = item;
     switch (name) {
       case "ng://":
         return "Angular";
@@ -153,14 +168,13 @@ export default class SourceTreeItem extends Component<Props, State> {
       case "moz-extension://":
         return L10N.getStr("extensionsText");
       default:
-        return name;
+        return `${name} ${this.hasDuplicateGeneratedUrl() ? "[sm]" : ""}`;
     }
   }
 
   render() {
     const { item, depth, focused } = this.props;
 
-    
     return (
       <div
         className={classnames("node", { focused })}
@@ -170,7 +184,7 @@ export default class SourceTreeItem extends Component<Props, State> {
       >
         {this.renderItemArrow()}
         {this.getIcon(item, depth)}
-        <span className="label"> {this.renderItemName(item.name)} </span>
+        <span className="label"> {this.renderItemName()} </span>
       </div>
     );
   }
