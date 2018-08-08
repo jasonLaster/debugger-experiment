@@ -8,7 +8,7 @@ export async function getGeneratedLocation(
   state: Object,
   source: Source,
   location: Location,
-  sourceMaps: Object
+  sourceMaps: ?Object
 ) {
   if (!sourceMaps.isOriginalId(location.sourceId)) {
     return location;

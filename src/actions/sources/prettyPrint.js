@@ -28,6 +28,10 @@ import type { JsSource } from "../../types";
 
 export function createPrettySource(sourceId: string) {
   return async ({ dispatch, getState, sourceMaps }: ThunkArgs) => {
+    if (!sourceMaps) {
+      return;
+    }
+
     const source = getSourceFromId(getState(), sourceId);
     const url = getPrettySourceURL(source.url);
     const id = await sourceMaps.generatedToOriginalId(sourceId, url);
@@ -77,7 +81,7 @@ export function createPrettySource(sourceId: string) {
 export function togglePrettyPrint(sourceId: string) {
   return async ({ dispatch, getState, client, sourceMaps }: ThunkArgs) => {
     const source = getSource(getState(), sourceId);
-    if (!source) {
+    if (!source || !sourceMaps) {
       return {};
     }
 

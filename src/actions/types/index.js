@@ -29,8 +29,8 @@ import type { ASTAction } from "./ASTAction";
 export type ThunkArgs = {
   dispatch: (action: any) => Promise<any>,
   getState: () => State,
-  client: any,
-  sourceMaps: any,
+  client: Object,
+  sourceMaps: ?Object,
   openLink: (url: string) => void,
   openWorkerToolbox: (worker: Worker) => void
 };

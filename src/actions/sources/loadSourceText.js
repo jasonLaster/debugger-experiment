@@ -24,7 +24,7 @@ const telemetry = new Telemetry();
 
 async function loadSource(source: Source, { sourceMaps, client }) {
   const id = source.id;
-  if (isOriginalId(id)) {
+  if (sourceMaps && isOriginalId(id)) {
     return sourceMaps.getOriginalSourceText(source);
   }
 

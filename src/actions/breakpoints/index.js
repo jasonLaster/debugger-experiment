@@ -254,7 +254,7 @@ export function setBreakpointCondition(
       bp.id,
       location,
       condition,
-      sourceMaps.isOriginalId(bp.location.sourceId)
+      sourceMaps && sourceMaps.isOriginalId(bp.location.sourceId)
     );
 
     const newBreakpoint = { ...bp, condition };

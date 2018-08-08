@@ -178,12 +178,13 @@ export function selectSpecificSource(sourceId: string) {
  */
 export function jumpToMappedLocation(location: Location) {
   return async function({ dispatch, getState, client, sourceMaps }: ThunkArgs) {
-    if (!client) {
+    if (!client || !sourceMaps) {
       return;
     }
 
     const source = getSource(getState(), location.sourceId);
     let pairedLocation;
+
     if (isOriginalId(location.sourceId)) {
       pairedLocation = await getGeneratedLocation(
         getState(),

@@ -67,7 +67,12 @@ function loadSourceMap(sourceId: SourceId) {
   return async function({ dispatch, getState, sourceMaps }: ThunkArgs) {
     const source = getSource(getState(), sourceId);
 
-    if (!source || !isGeneratedId(sourceId) || !source.sourceMapURL) {
+    if (
+      !source ||
+      !sourceMaps ||
+      !isGeneratedId(sourceId) ||
+      !source.sourceMapURL
+    ) {
       return;
     }
 
