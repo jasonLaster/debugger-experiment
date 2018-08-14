@@ -31,7 +31,7 @@ export type UIState = {
   startPanelCollapsed: boolean,
   endPanelCollapsed: boolean,
   frameworkGroupingOn: boolean,
-  projectDirectoryRoot: string,
+  // projectDirectoryRoot: string,
   orientation: OrientationType,
   highlightedLineRange?: {
     start?: number,
@@ -47,7 +47,7 @@ export const createUIState = makeRecord(
     activeSearch: null,
     contextMenu: {},
     shownSource: null,
-    projectDirectoryRoot: prefs.projectDirectoryRoot,
+    // projectDirectoryRoot: prefs.projectDirectoryRoot,
     startPanelCollapsed: prefs.startPanelCollapsed,
     endPanelCollapsed: prefs.endPanelCollapsed,
     frameworkGroupingOn: prefs.frameworkGroupingOn,
@@ -113,9 +113,9 @@ function update(
     case "CLOSE_CONDITIONAL_PANEL":
       return state.set("conditionalPanelLine", null);
 
-    case "SET_PROJECT_DIRECTORY_ROOT":
-      prefs.projectDirectoryRoot = action.url;
-      return state.set("projectDirectoryRoot", action.url);
+    // case "SET_PROJECT_DIRECTORY_ROOT":
+    //   prefs.projectDirectoryRoot = action.url;
+    //   return state.set("projectDirectoryRoot", action.url);
 
     case "SET_PRIMARY_PANE_TAB":
       return state.set("selectedPrimaryPaneTab", action.tabName);
@@ -182,9 +182,9 @@ export function getConditionalPanelLine(state: OuterState): null | number {
   return state.ui.get("conditionalPanelLine");
 }
 
-export function getProjectDirectoryRoot(state: OuterState): string {
-  return state.ui.get("projectDirectoryRoot");
-}
+// export function getProjectDirectoryRoot(state: OuterState): string {
+//   return state.ui.get("projectDirectoryRoot");
+// }
 
 export function getOrientation(state: OuterState): boolean {
   return state.ui.get("orientation");
