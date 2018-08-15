@@ -48,4 +48,10 @@ describe("Parser.frameworks", () => {
     setSource(source);
     expect(getFramework(source.id)).toBe("Vue");
   });
+
+  it("does not get confused with angular", () => {
+    const source = getOriginalSource("debugger");
+    setSource(source);
+    expect(getFramework(source.id)).toBe("React");
+  });
 });

@@ -60,6 +60,8 @@ function extendsReactComponent(classes) {
 
 const isAngularComponent = sourceSymbols => {
   const { memberExpressions, identifiers } = sourceSymbols;
+
+  console.log(identifiesAngular(identifiers));
   return (
     identifiesAngular(identifiers) && hasAngularExpressions(memberExpressions)
   );
