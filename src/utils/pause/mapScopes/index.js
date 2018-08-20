@@ -65,17 +65,21 @@ export async function buildMappedScopes(
     return null;
   }
 
-  const generatedAstBindings = buildGeneratedBindingList(
-    scopes,
-    generatedAstScopes,
-    frame.this
-  );
-
   const originalRanges = await loadRangeMetadata(
     source,
     frame,
     originalAstScopes,
     sourceMaps
+  );
+
+  if (originalRanges.every(range => range.columnEnd === Infinity)) {
+    return null;
+  }
+
+  const generatedAstBindings = buildGeneratedBindingList(
+    scopes,
+    generatedAstScopes,
+    frame.this
   );
 
   const {
