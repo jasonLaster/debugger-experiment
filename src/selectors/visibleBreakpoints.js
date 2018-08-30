@@ -18,21 +18,7 @@ function getLocation(breakpoint, isGeneratedSource) {
     : breakpoint.location;
 }
 
-function memoize(func) {
-  const store = new WeakMap();
-
-  return function(key, ...rest) {
-    if (store.has(key)) {
-      return store.get(key);
-    }
-
-    const value = func.apply(null, arguments);
-    store.set(key, value);
-    return value;
-  };
-}
-
-const formatBreakpoint = memoize(function(breakpoint, selectedSource) {
+function formatBreakpoint(breakpoint, selectedSource) {
   const { condition, loading, disabled, hidden } = breakpoint;
   const sourceId = selectedSource.id;
   const isGeneratedSource = isGeneratedId(sourceId);
@@ -44,7 +30,7 @@ const formatBreakpoint = memoize(function(breakpoint, selectedSource) {
     disabled,
     hidden
   };
-});
+}
 
 function isVisible(breakpoint, selectedSource) {
   const sourceId = selectedSource.id;
