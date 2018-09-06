@@ -5,7 +5,17 @@
 
 import type { ReduxAction, State } from "./types";
 
-function reducer(state: State = {}, action: ReduxAction): State {
+function initialState() {
+  return {
+    expandedPaths: new Set(),
+    loadedProperties: new Map(),
+    actors: new Set(),
+    focusedItem: null,
+    forceUpdate: false
+  };
+}
+
+function reducer(state: State = initialState(), action: ReduxAction): State {
   const { type, data } = action;
 
   const cloneState = overrides => ({ ...state, ...overrides });
@@ -39,18 +49,46 @@ function reducer(state: State = {}, action: ReduxAction): State {
       return state;
     }
 
-    return cloneState({
-      focusedItem: data.node
-    });
+    return cloneState({ focusedItem: data.node });
   }
 
   if (type === "FORCE_UPDATED") {
-    return cloneState({
-      forceUpdate: false
-    });
+    return cloneState({ forceUpdate: false });
   }
 
   return state;
 }
 
-module.exports = reducer;
+function getExpandedPaths(state) {
+  return state.reps.expandedPaths;
+}
+
+function getActors(state) {
+  return state.reps.actors;
+}
+
+function getLoadedProperties(state) {
+  return state.reps.loadedProperties;
+}
+
+function getForceUpdate(state) {
+  return state.reps.forceUpdate;
+}
+
+function getFocusedItem(state) {
+  return state.reps.focusedItem;
+}
+
+const selectors = {
+  getExpandedPaths,
+  getActors,
+  getLoadedProperties,
+  getForceUpdate,
+  getFocusedItem
+};
+
+Object.defineProperty(module.exports, "__esModule", {
+  value: true
+});
+module.exports = selectors;
+module.exports.default = reducer;

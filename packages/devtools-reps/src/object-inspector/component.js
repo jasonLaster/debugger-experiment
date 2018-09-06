@@ -8,6 +8,9 @@ const { Component, createFactory } = require("react");
 const dom = require("react-dom-factories");
 const { connect } = require("react-redux");
 const { bindActionCreators } = require("redux");
+const actions = require("./actions");
+
+const selectors = require("./reducer");
 
 import Services from "devtools-services";
 const { appinfo } = Services;
@@ -24,7 +27,7 @@ const Utils = require("./utils");
 
 const {
   getChildren,
-  getClosestGripNode,
+  getActor,
   getParent,
   getValue,
   nodeHasAccessors,
@@ -126,16 +129,12 @@ class ObjectInspector extends Component<Props> {
     // - OR the expanded paths number did not changed, but old and new sets
     //      differ
     // - OR the focused node changed.
-    return (
-      loadedProperties.size !== nextProps.loadedProperties.size ||
-      (expandedPaths.size !== nextProps.expandedPaths.size &&
-        [...nextProps.expandedPaths].every(path =>
-          nextProps.loadedProperties.has(path)
-        )) ||
-      (expandedPaths.size === nextProps.expandedPaths.size &&
-        [...nextProps.expandedPaths].some(key => !expandedPaths.has(key))) ||
-      focusedItem !== nextProps.focusedItem
+
+    const hasLoaded = [...nextProps.expandedPaths].every(path =>
+      nextProps.loadedProperties.has(path)
     );
+
+    return hasLoaded || focusedItem !== nextProps.focusedItem;
   }
 
   componentDidUpdate(prevProps) {
@@ -146,15 +145,7 @@ class ObjectInspector extends Component<Props> {
   }
 
   componentWillUnmount() {
-    const { releaseActor } = this.props;
-    if (typeof releaseActor !== "function") {
-      return;
-    }
-
-    const { actors } = this.props;
-    for (const actor of actors) {
-      releaseActor(actor);
-    }
+    this.props.closeObjectInspector();
   }
 
   props: Props;
@@ -187,9 +178,6 @@ class ObjectInspector extends Component<Props> {
     }
 
     const {
-      createObjectClient,
-      createLongStringClient,
-      loadedProperties,
       nodeExpand,
       nodeCollapse,
       recordTelemetryEvent,
@@ -197,23 +185,8 @@ class ObjectInspector extends Component<Props> {
     } = this.props;
 
     if (expand === true) {
-      const gripItem = getClosestGripNode(item);
-      const value = getValue(gripItem);
-      const isRoot =
-        value &&
-        roots.some(root => {
-          const rootValue = getValue(root);
-          return rootValue && rootValue.actor === value.actor;
-        });
-      const actor = isRoot || !value ? null : value.actor;
-      nodeExpand(
-        item,
-        actor,
-        loadedProperties,
-        createObjectClient,
-        createLongStringClient
-      );
-
+      const actor = getActor(item, roots);
+      nodeExpand(item, actor);
       if (recordTelemetryEvent) {
         recordTelemetryEvent("object_expanded");
       }
@@ -483,6 +456,7 @@ class ObjectInspector extends Component<Props> {
         nowrap: disableWrap,
         "object-inspector": true
       }),
+
       autoExpandAll,
       autoExpandDepth,
 
@@ -506,21 +480,24 @@ class ObjectInspector extends Component<Props> {
 
 function mapStateToProps(state, props) {
   return {
-    actors: state.actors,
-    expandedPaths: state.expandedPaths,
+    actors: selectors.getActors(state),
+    expandedPaths: selectors.getExpandedPaths(state),
     // If the root changes, we want to pass a possibly new focusedItem property
     focusedItem:
-      state.roots !== props.roots ? props.focusedItem : state.focusedItem,
-    loadedProperties: state.loadedProperties,
-    forceUpdate: state.forceUpdate
+      state.roots !== props.roots
+        ? selectors.getForceUpdate(state)
+        : state.focusedItem,
+    loadedProperties: selectors.getLoadedProperties(state),
+    forceUpdate: selectors.getForceUpdate(state)
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(require("./actions"), dispatch);
-}
+//
+// function mapDispatchToProps(dispatch) {
+//   return bindActionCreators(require("./actions"), dispatch);
+// }
 
 module.exports = connect(
   mapStateToProps,
-  mapDispatchToProps
+  actions
 )(ObjectInspector);
