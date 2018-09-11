@@ -68,6 +68,7 @@ function nodeLoadProperties(node: Node, actor) {
         client.createLongStringClient,
         loadedProperties
       );
+
       dispatch(nodePropertiesLoaded(node, actor, properties));
     } catch (e) {
       console.error(e);

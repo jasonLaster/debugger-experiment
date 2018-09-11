@@ -4,6 +4,18 @@
 
 // @flow
 import type { Store } from "../types";
+const { mount } = require("enzyme");
+const React = require("react");
+
+const { createFactory } = React;
+
+const { Provider } = require("react-redux");
+const { combineReducers } = require("redux");
+const configureStore = require("../store");
+const objectInspector = require("../index");
+
+const ObjectInspector = createFactory(objectInspector.ObjectInspector);
+
 const {
   WAIT_UNTIL_TYPE
 } = require("../../shared/redux/middleware/waitUntilService");
@@ -175,6 +187,23 @@ function storeHasExactExpandedPaths(store: Store, expectedKeys: Array<string>) {
   );
 }
 
+function createStore(client: any, initialState: any = {}) {
+  const reducers = { objectInspector: objectInspector.reducer.default };
+
+  return configureStore.default({
+    thunkArgs: args => ({ ...args, client })
+  })(combineReducers(reducers), initialState);
+}
+
+function mountObjectInspector({ props, client }) {
+  const store = createStore(client);
+  const wrapper = mount(
+    createFactory(Provider)({ store }, ObjectInspector(props))
+  );
+
+  return { store, wrapper };
+}
+
 module.exports = {
   formatObjectInspector,
   storeHasExpandedPaths,
@@ -185,5 +214,7 @@ module.exports = {
   storeHasExactLoadedProperties,
   waitFor,
   waitForDispatch,
-  waitForLoadedProperties
+  waitForLoadedProperties,
+  mountObjectInspector,
+  createStore
 };

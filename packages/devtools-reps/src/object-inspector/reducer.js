@@ -15,7 +15,10 @@ function initialState() {
   };
 }
 
-function reducer(state: State = initialState(), action: ReduxAction): State {
+function reducer(
+  state: State = initialState(),
+  action: ReduxAction = {}
+): State {
   const { type, data } = action;
 
   const cloneState = overrides => ({ ...state, ...overrides });
