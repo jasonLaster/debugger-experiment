@@ -1,5 +1,5 @@
-const Component = require("./component");
+const ObjectInspector = require("./component");
 const utils = require("./utils");
 const reducer = require(".//reducer");
 
-module.exports = {Component, utils, reducer};
+module.exports = {ObjectInspector, utils, reducer};

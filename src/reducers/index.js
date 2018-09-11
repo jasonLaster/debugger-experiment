@@ -23,9 +23,8 @@ import projectTextSearch from "./project-text-search";
 import quickOpen from "./quick-open";
 import sourceTree from "./source-tree";
 import debuggee from "./debuggee";
-import Reps from "devtools-reps";
+import { objectInspector } from "devtools-reps";
 
-console.log("yo", Reps);
 export default {
   expressions,
   eventListeners,
@@ -43,5 +42,5 @@ export default {
   quickOpen,
   sourceTree,
   debuggee,
-  reps: Reps.reducer.default
+  objectInspector: objectInspector.reducer.default
 };

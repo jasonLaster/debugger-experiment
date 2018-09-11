@@ -59,24 +59,28 @@ function reducer(state: State = initialState(), action: ReduxAction): State {
   return state;
 }
 
+function getObjectInspectorState(state) {
+  return state.objectInspector;
+}
+
 function getExpandedPaths(state) {
-  return state.reps.expandedPaths;
+  return getObjectInspectorState(state).expandedPaths;
 }
 
 function getActors(state) {
-  return state.reps.actors;
+  return getObjectInspectorState(state).actors;
 }
 
 function getLoadedProperties(state) {
-  return state.reps.loadedProperties;
+  return getObjectInspectorState(state).loadedProperties;
 }
 
 function getForceUpdate(state) {
-  return state.reps.forceUpdate;
+  return getObjectInspectorState(state).forceUpdate;
 }
 
 function getFocusedItem(state) {
-  return state.reps.focusedItem;
+  return getObjectInspectorState(state).focusedItem;
 }
 
 const selectors = {
