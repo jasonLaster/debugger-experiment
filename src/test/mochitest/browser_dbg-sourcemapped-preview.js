@@ -146,7 +146,7 @@ function testImportedBindings(dbg) {
     {
       line: 24,
       column: 16,
-      expression: "aNamespace;",
+      expression: "aNamespace",
       fields: [["aNamed", "a-named"], ["default", "a-default"]]
     },
     {
