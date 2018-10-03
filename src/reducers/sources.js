@@ -300,22 +300,30 @@ export function getSourceFromId(state: OuterState, id: string): Source {
   return getSourcesState(state).sources[id];
 }
 
-export function getSourceByURL(
+export function getOriginalSourceByURL(
   state: OuterState,
-  url: string,
-  isOriginal: boolean = false
+  url: string
 ): ?Source {
-  // Pretty sources should always be original
-  if (isPrettyURL(url)) {
-    isOriginal = true;
-  }
-
-  return getSourceByUrlInSources(
+  return getOriginalSourceByUrlInSources(
     getSources(state),
     getUrls(state),
-    url,
-    isOriginal
+    url
   );
+}
+
+export function getGeneratedSourceByURL(
+  state: OuterState,
+  url: string
+): ?Source {
+  return getGeneratedSourceByUrlInSources(
+    getSources(state),
+    getUrls(state),
+    url
+  );
+}
+
+export function getSourceByURL(state: OuterState, url: string): ?Source {
+  return getSourceByUrlInSources(getSources(state), getUrls(state), url);
 }
 
 export function getSourcesByURLs(state: OuterState, urls: string[]) {
@@ -351,6 +359,31 @@ export function hasPrettySource(state: OuterState, id: string) {
   return !!getPrettySource(state, id);
 }
 
+export function getOriginalSourceByUrlInSources(
+  sources: SourcesMap,
+  urls: UrlsMap,
+  url: string
+) {
+  const foundSources = getSourcesByUrlInSources(sources, urls, url);
+  if (!foundSources) {
+    return null;
+  }
+
+  return foundSources.find(source => isOriginalSource(source) == true);
+}
+export function getGeneratedSourceByUrlInSources(
+  sources: SourcesMap,
+  urls: UrlsMap,
+  url: string
+) {
+  const foundSources = getSourcesByUrlInSources(sources, urls, url);
+  if (!foundSources) {
+    return null;
+  }
+
+  return foundSources.find(source => isOriginalSource(source) == false);
+}
+
 export function getSourceByUrlInSources(
   sources: SourcesMap,
   urls: UrlsMap,
@@ -362,7 +395,7 @@ export function getSourceByUrlInSources(
     return null;
   }
 
-  return foundSources.find(source => isOriginalSource(source) == isOriginal);
+  return foundSources[0];
 }
 
 function getSourcesByUrlInSources(
