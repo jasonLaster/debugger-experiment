@@ -12,17 +12,19 @@
 import { combineReducers } from "redux";
 import sourceMaps from "devtools-source-map";
 import reducers from "../reducers";
+import { createSource } from "../reducers/sources";
 import actions from "../actions";
 import * as selectors from "../selectors";
 import { getHistory } from "../test/utils/history";
 import configureStore from "../actions/utils/create-store";
+import sourceQueue from "../utils/source-queue";
 
 /**
  * @memberof utils/test-head
  * @static
  */
 function createStore(client: any, initialState: any = {}, sourceMapsMock: any) {
-  return configureStore({
+  const store = configureStore({
     log: false,
     history: getHistory(),
     makeThunkArgs: args => {
@@ -33,6 +35,12 @@ function createStore(client: any, initialState: any = {}, sourceMapsMock: any) {
       };
     }
   })(combineReducers(reducers), initialState);
+  sourceQueue.clear();
+  sourceQueue.initialize({
+    newSources: sources => store.dispatch(actions.newSources(sources))
+  });
+
+  return store;
 }
 
 /**
