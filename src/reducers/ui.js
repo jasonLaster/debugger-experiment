@@ -110,7 +110,9 @@ function update(
       return state.set("highlightedLineRange", {});
 
     case "OPEN_CONDITIONAL_PANEL":
-      return state.set("conditionalPanelLine", action.line);
+      return state
+        .set("conditionalPanelLine", action.line)
+        .set("isLogPoint", action.log);
 
     case "CLOSE_CONDITIONAL_PANEL":
       return state.set("conditionalPanelLine", null);

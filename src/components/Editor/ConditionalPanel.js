@@ -63,6 +63,14 @@ export class ConditionalPanel extends PureComponent<Props> {
     const { selectedLocation, line } = this.props;
     const sourceId = selectedLocation ? selectedLocation.sourceId : "";
     const location = { sourceId, line };
+
+    const log = true;
+    // input 2
+    // output console.log(2)
+    if (log) {
+      condition = `console.log(${condition})`;
+    }
+
     return this.props.setBreakpointCondition(location, { condition });
   }
 
@@ -149,7 +157,17 @@ export class ConditionalPanel extends PureComponent<Props> {
 
   renderConditionalPanel(props: Props) {
     const { breakpoint } = props;
-    const condition = breakpoint ? breakpoint.condition : "";
+    let condition = breakpoint ? breakpoint.condition : "";
+
+    const log = true;
+    if (log) {
+      // input console.log(2)
+      // output 2
+      if (condition && condition.match(/^console.log\(.*\)$/)) {
+        condition = condition.match(/^console.log\((.*)\)/)[1];
+      }
+    }
+
     const panel = document.createElement("div");
     ReactDOM.render(
       <div
