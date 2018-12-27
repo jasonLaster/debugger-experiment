@@ -77,7 +77,6 @@ type ThreadPauseState = {
 export type PauseState = {
   mainThread: string,
   currentThread: string,
-  debuggeeUrl: string,
   canRewind: boolean,
   threads: { [string]: ThreadPauseState }
 };
@@ -86,8 +85,7 @@ export const createPauseState = (): PauseState => ({
   mainThread: "UnknownThread",
   currentThread: "UnknownThread",
   threads: {},
-  canRewind: false,
-  debuggeeUrl: ""
+  canRewind: false
 });
 
 const resumedPauseState = {
@@ -108,7 +106,6 @@ const createInitialPauseState = () => ({
   shouldPauseOnExceptions: prefs.pauseOnExceptions,
   shouldPauseOnCaughtExceptions: prefs.pauseOnCaughtExceptions,
   canRewind: false,
-  debuggeeUrl: "",
   command: null,
   previousLocation: null,
   skipPausing: prefs.skipPausing
@@ -298,8 +295,7 @@ function update(
             ...state.threads[state.mainThread],
             ...resumedPauseState
           }
-        },
-        debuggeeUrl: action.url
+        }
       };
 
     case "TOGGLE_SKIP_PAUSING": {
@@ -365,15 +361,11 @@ export function isStepping(state: OuterState) {
   return ["stepIn", "stepOver", "stepOut"].includes(getPauseCommand(state));
 }
 
-export function getMainThread(state: OuterState) {
-  return state.pause.mainThread;
-}
-
 export function getCurrentThread(state: OuterState) {
   return state.pause.currentThread;
 }
 
-export function threadIsPaused(state: OuterState, thread: string) {
+export function getThreadIsPaused(state: OuterState, thread: string) {
   return !!getThreadPauseState(state.pause, thread).frames;
 }
 
@@ -553,10 +545,6 @@ export const getSelectedFrame: Selector<?Frame> = createSelector(
     return frames.find(frame => frame.id == selectedFrameId);
   }
 );
-
-export function getDebuggeeUrl(state: OuterState) {
-  return state.pause.debuggeeUrl;
-}
 
 export function getSkipPausing(state: OuterState) {
   return getCurrentPauseState(state).skipPausing;

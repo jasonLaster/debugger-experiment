@@ -17,6 +17,7 @@ import {
   isGenerated,
   isOriginal as isOriginalSource
 } from "../utils/source";
+
 import { originalToGeneratedId } from "devtools-source-map";
 import { prefs } from "../utils/prefs";
 
@@ -143,17 +144,8 @@ function update(
       return updateProjectDirectoryRoot(state, action.url);
 
     case "NAVIGATE":
-      const source =
-        state.selectedLocation &&
-        state.sources[state.selectedLocation.sourceId];
-
-      const url = source && source.url;
-
-      if (!url) {
-        return initialSourcesState();
-      }
-
-      return { ...initialSourcesState(), url };
+      const newState = initialSourcesState();
+      return updateSourcesThread(newState, action.mainThread);
 
     case "SET_FOCUSED_SOURCE_ITEM":
       return { ...state, focusedItem: action.item };
@@ -261,6 +253,13 @@ function updateRelativeSource(
   relativeSources[source.thread][source.id] = relativeSource;
 
   return relativeSources;
+}
+
+function updateSourcesThread(state, thread) {
+  return {
+    ...state,
+    relativeSources: { ...state.relativeSources, [thread.actor]: {} }
+  };
 }
 
 function updateProjectDirectoryRoot(state: SourcesState, root: string) {

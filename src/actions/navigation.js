@@ -20,7 +20,7 @@ import {
 } from "../workers/parser";
 
 import { clearWasmStates } from "../utils/wasm";
-
+import { getMainThread } from "../selectors";
 import type { Action, ThunkArgs } from "./types";
 
 /**
@@ -45,12 +45,15 @@ export function willNavigate(event: Object) {
   };
 }
 
-export function navigate(url: string): Action {
-  sourceQueue.clear();
+export function navigate(url: string) {
+  return async function({ dispatch, getState }: ThunkArgs) {
+    sourceQueue.clear();
+    const thread = getMainThread(getState());
 
-  return {
-    type: "NAVIGATE",
-    url
+    dispatch({
+      type: "NAVIGATE",
+      mainThread: { ...thread, url }
+    });
   };
 }
 

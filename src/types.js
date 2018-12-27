@@ -390,8 +390,15 @@ export type Scope = {|
   type: string
 |};
 
-export type Worker = {
-  actor: string,
-  type: number,
-  url: string
+export type Thread = {
+  +actor: string,
+  +url: string
 };
+
+export type Worker = {
+  +actor: string,
+  +url: string,
+  +type: number
+};
+
+export type WorkersList = Array<Worker>;
