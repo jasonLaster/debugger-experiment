@@ -8,6 +8,8 @@ import ReactDOM from "react-dom";
 import classnames from "classnames";
 import { getDocument } from "../../utils/editor";
 import Svg from "../shared/Svg";
+import { showMenu } from "devtools-contextmenu";
+import { breakpointItems } from "./menus/items";
 
 // eslint-disable-next-line max-len
 import type { ColumnBreakpoint as ColumnBreakpointType } from "../../selectors/visibleColumnBreakpoints";
@@ -21,26 +23,29 @@ type Props = {
   source: Object,
   enabled: boolean,
   toggleBreakpoint: (number, number) => void,
-  columnBreakpoint: ColumnBreakpointType
+  columnBreakpoint: ColumnBreakpointType,
+  openConditionalPanel: any
 };
 
 const breakpointImg = document.createElement("div");
 ReactDOM.render(<Svg name={"column-marker"} />, breakpointImg);
-function makeBookmark(isActive, condition, { onClick }) {
+function makeBookmark(columnBreakpoint, { onClick, onContextMenu }) {
   const bp = breakpointImg.cloneNode(true);
-  const className = isActive ? "active" : "disabled";
+  const { breakpoint } = columnBreakpoint;
+  const condition = breakpoint && breakpoint.condition;
+  const isActive = breakpoint && !breakpoint.disabled;
 
-  bp.className = classnames(
-    "column-breakpoint",
-    {
-      "has-condition": condition
-    },
-    className
-  );
+  bp.className = classnames("column-breakpoint", {
+    "has-condition": condition,
+    active: isActive,
+    disabled: !isActive
+  });
+
   if (condition) {
     bp.setAttribute("title", condition);
   }
   bp.onclick = onClick;
+  bp.oncontextmenu = onContextMenu;
 
   return bp;
 }
@@ -59,13 +64,10 @@ export default class ColumnBreakpoint extends PureComponent<Props> {
     }
 
     const { line, column } = columnBreakpoint.location;
-    const widget = makeBookmark(
-      columnBreakpoint.enabled,
-      columnBreakpoint.condition,
-      {
-        onClick: this.toggleBreakpoint
-      }
-    );
+    const widget = makeBookmark(columnBreakpoint, {
+      onClick: this.onClick,
+      onContextMenu: this.onContextMenu
+    });
 
     this.bookmark = doc.setBookmark({ line: line - 1, ch: column }, { widget });
   };
@@ -77,10 +79,25 @@ export default class ColumnBreakpoint extends PureComponent<Props> {
     }
   };
 
-  toggleBreakpoint = () => {
-    const { columnBreakpoint, toggleBreakpoint } = this.props;
+  onClick = event => {
+    event.stopPropagation();
+    event.preventDefault();
+    const {
+      columnBreakpoint,
+      actions: { toggleBreakpoint }
+    } = this.props;
     const { line, column } = columnBreakpoint.location;
     toggleBreakpoint(line, column);
+  };
+
+  onContextMenu = event => {
+    event.stopPropagation();
+    event.preventDefault();
+    const {
+      columnBreakpoint: { breakpoint, location },
+      actions
+    } = this.props;
+    showMenu(event, breakpointItems({ breakpoint, location, actions }));
   };
 
   componentDidMount() {

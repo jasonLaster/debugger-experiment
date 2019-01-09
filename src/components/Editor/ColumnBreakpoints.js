@@ -21,7 +21,12 @@ class ColumnBreakpoints extends Component {
     editor: Object,
     selectedSource: Source,
     columnBreakpoints: ColumnBreakpointType[],
-    toggleBreakpoint: (number, ?number) => void
+    actions: {
+      toggleBreakpoint: typeof actions.toggleBreakpoint,
+      toggleDisabledBreakpoint: typeof actions.toggleDisabledBreakpoint,
+      openConditionalPanel: typeof actions.openConditionalPanel,
+      continueToHere: typeof actions.continueToHere
+    }
   };
 
   render() {
@@ -29,8 +34,18 @@ class ColumnBreakpoints extends Component {
       editor,
       columnBreakpoints,
       selectedSource,
-      toggleBreakpoint
+      toggleBreakpoint,
+      toggleDisabledBreakpoint,
+      openConditionalPanel,
+      continueToHere
     } = this.props;
+
+    const breakpointActions = {
+      toggleBreakpoint,
+      toggleDisabledBreakpoint,
+      openConditionalPanel,
+      continueToHere
+    };
 
     if (!selectedSource || selectedSource.isBlackBoxed) {
       return null;
@@ -44,7 +59,7 @@ class ColumnBreakpoints extends Component {
           columnBreakpoint={breakpoint}
           editor={editor}
           source={selectedSource}
-          toggleBreakpoint={toggleBreakpoint}
+          actions={breakpointActions}
         />
       ));
     });
@@ -59,8 +74,20 @@ const mapStateToProps = state => {
   };
 };
 
-const { toggleBreakpoint } = actions;
-const mapDispatchToProps = { toggleBreakpoint };
+const {
+  toggleBreakpoin,
+  toggleDisabledBreakpoint,
+  openConditionalPanel,
+  toggleBreakpoint,
+  continueToHere
+} = actions;
+const mapDispatchToProps = {
+  toggleBreakpoint,
+  toggleDisabledBreakpoint,
+  openConditionalPanel,
+  toggleBreakpoint,
+  continueToHere
+};
 
 export default connect(
   mapStateToProps,

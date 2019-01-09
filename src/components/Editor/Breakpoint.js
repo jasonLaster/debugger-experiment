@@ -17,16 +17,6 @@ import type { Source, Breakpoint as BreakpointType } from "../../types";
 const breakpointSvg = document.createElement("div");
 ReactDOM.render(<Svg name="breakpoint" />, breakpointSvg);
 
-function makeMarker(isDisabled: boolean) {
-  const bp = breakpointSvg.cloneNode(true);
-  bp.className = classnames("editor new-breakpoint", {
-    "breakpoint-disabled": isDisabled,
-    "folding-enabled": features.codeFolding
-  });
-
-  return bp;
-}
-
 type Props = {
   breakpoint: BreakpointType,
   selectedSource: Source,
@@ -34,40 +24,6 @@ type Props = {
 };
 
 class Breakpoint extends PureComponent<Props> {
-  addBreakpoint: Function;
-
-  addBreakpoint = () => {
-    const { breakpoint, editor, selectedSource } = this.props;
-
-    // Hidden Breakpoints are never rendered on the client
-    if (breakpoint.hidden) {
-      return;
-    }
-
-    // NOTE: we need to wait for the breakpoint to be loaded
-    // to get the generated location
-    if (!selectedSource || breakpoint.loading) {
-      return;
-    }
-
-    const sourceId = selectedSource.id;
-    const line = toEditorLine(sourceId, breakpoint.location.line);
-    const doc = getDocument(sourceId);
-
-    doc.setGutterMarker(line, "breakpoints", makeMarker(breakpoint.disabled));
-
-    editor.codeMirror.addLineClass(line, "line", "new-breakpoint");
-    if (breakpoint.condition) {
-      if (breakpoint.log) {
-        editor.codeMirror.addLineClass(line, "line", "has-condition log");
-      } else {
-        editor.codeMirror.addLineClass(line, "line", "has-condition");
-      }
-    } else {
-      editor.codeMirror.removeLineClass(line, "line", "has-condition");
-    }
-  };
-
   componentDidMount() {
     this.addBreakpoint();
   }
@@ -95,6 +51,69 @@ class Breakpoint extends PureComponent<Props> {
     doc.removeLineClass(line, "line", "new-breakpoint");
     doc.removeLineClass(line, "line", "has-condition");
   }
+
+  makeMarker(isDisabled: boolean) {
+    const { breakpoint } = this.props;
+    const bp = breakpointSvg.cloneNode(true);
+
+    bp.className = classnames("editor new-breakpoint", {
+      "breakpoint-disabled": breakpoint.disabled,
+      "folding-enabled": features.codeFolding
+    });
+
+    bp.onmousedown = this.onClick;
+    bp.oncontextmenu = this.onContextMenu;
+
+    return bp;
+  }
+
+  onClick = event => {
+    // ignore right clicks
+    if (event.button === 2) {
+      return;
+    }
+
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  onContextMenu = event => {
+    debugger;
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  addBreakpoint = () => {
+    const { breakpoint, editor, selectedSource } = this.props;
+
+    // Hidden Breakpoints are never rendered on the client
+    if (breakpoint.hidden) {
+      return;
+    }
+
+    // NOTE: we need to wait for the breakpoint to be loaded
+    // to get the generated location
+    if (!selectedSource || breakpoint.loading) {
+      return;
+    }
+
+    const sourceId = selectedSource.id;
+    const line = toEditorLine(sourceId, breakpoint.location.line);
+    const doc = getDocument(sourceId);
+
+    const lh = doc.setGutterMarker(line, "breakpoints", this.makeMarker());
+
+    editor.codeMirror.addLineClass(line, "line", "new-breakpoint");
+    if (breakpoint.condition) {
+      if (breakpoint.log) {
+        editor.codeMirror.addLineClass(line, "line", "has-condition log");
+      } else {
+        editor.codeMirror.addLineClass(line, "line", "has-condition");
+      }
+    } else {
+      editor.codeMirror.removeLineClass(line, "line", "has-condition");
+    }
+  };
 
   render() {
     return null;

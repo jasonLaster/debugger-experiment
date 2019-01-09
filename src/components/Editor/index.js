@@ -21,7 +21,8 @@ import {
   getSelectedLocation,
   getSelectedSource,
   getConditionalPanelLocation,
-  getSymbols
+  getSymbols,
+  getContextMenu
 } from "../../selectors";
 
 // Redux actions
@@ -49,6 +50,7 @@ import {
   getEditor,
   clearEditor,
   getCursorLine,
+  lineAtHeight,
   toSourceLine,
   getDocument,
   scrollToColumn,
@@ -345,20 +347,32 @@ class Editor extends PureComponent<Props, State> {
   };
 
   openMenu(event: MouseEvent) {
-    event.stopPropagation();
-    event.preventDefault();
+    // event.stopPropagation();
+    // event.preventDefault();
 
-    const { setContextMenu } = this.props;
-    const target: Element = (event.target: any);
-
-    if (
-      target.classList.contains("CodeMirror-linenumber") ||
-      target.getAttribute("id") === "columnmarker"
-    ) {
-      return setContextMenu("Gutter", event);
+    const { setContextMenu, selectedSource } = this.props;
+    const { editor } = this.state;
+    if (!selectedSource || !editor) {
+      return;
     }
 
-    return setContextMenu("Editor", event);
+    const target: Element = (event.target: any);
+    const { id: sourceId } = selectedSource;
+    const line = lineAtHeight(editor, sourceId, event);
+
+    const location = { line, sourceId };
+    debugger;
+    return;
+    if (target.classList.contains("CodeMirror-linenumber")) {
+      console.log(">> gutter");
+      return setContextMenu({ type: "Gutter", event, location });
+    }
+
+    if (target.getAttribute("id") === "columnmarker") {
+      return;
+    }
+
+    return setContextMenu({ type: "Editor", event, location });
   }
 
   onGutterClick = (
@@ -376,6 +390,7 @@ class Editor extends PureComponent<Props, State> {
       continueToHere
     } = this.props;
 
+    debugger;
     // ignore right clicks in the gutter
     if (
       (ev.ctrlKey && ev.button === 0) ||
@@ -411,9 +426,7 @@ class Editor extends PureComponent<Props, State> {
   };
 
   onGutterContextMenu = (event: MouseEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-    return this.props.setContextMenu("Gutter", event);
+    return this.openMenu(event);
   };
 
   onClick(e: MouseEvent) {
@@ -573,7 +586,12 @@ class Editor extends PureComponent<Props, State> {
   }
 
   renderItems() {
-    const { horizontal, selectedSource, conditionalPanelLocation } = this.props;
+    const {
+      horizontal,
+      selectedSource,
+      conditionalPanelLocation,
+      contextMenu
+    } = this.props;
     const { editor } = this.state;
 
     if (!selectedSource || !editor || !getDocument(selectedSource.id)) {
@@ -589,8 +607,10 @@ class Editor extends PureComponent<Props, State> {
         <Preview editor={editor} editorRef={this.$editorWrapper} />;
         <Footer editor={editor} horizontal={horizontal} />
         <HighlightLines editor={editor} />
-        <EditorMenu editor={editor} />
-        <GutterMenu editor={editor} />
+        {contextMenu ? <EditorMenu editor={editor} /> : null}
+        {contextMenu ? (
+          <GutterMenu editor={editor} contextMenu={contextMenu} />
+        ) : null}
         {conditionalPanelLocation ? <ConditionalPanel editor={editor} /> : null}
         {features.columnBreakpoints ? (
           <ColumnBreakpoints editor={editor} />
@@ -635,6 +655,7 @@ const mapStateToProps = state => {
 
   return {
     selectedLocation: getSelectedLocation(state),
+    contextMenu: getContextMenu(state),
     selectedSource,
     searchOn: getActiveSearch(state) === "file",
     conditionalPanelLocation: getConditionalPanelLocation(state),

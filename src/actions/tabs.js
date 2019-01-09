@@ -113,10 +113,10 @@ export function closeTabsForMissingThreads(workers: Worker[]) {
         }
       }
     }
-    const tabs = removeSourcesFromTabList(oldTabs, removed);
-    dispatch({ type: "CLOSE_TABS", removed, tabs });
-
-    const sourceId = getNewSelectedSourceId(getState(), tabs);
-    dispatch(selectSource(sourceId));
+    // const tabs = removeSourcesFromTabList(oldTabs, removed);
+    // dispatch({ type: "CLOSE_TABS", removed, tabs });
+    //
+    // const sourceId = getNewSelectedSourceId(getState(), tabs);
+    // dispatch(selectSource(sourceId));
   };
 }

@@ -409,3 +409,7 @@ export type WorkerList = Array<Worker>;
 export type Cancellable = {
   cancel: () => void
 };
+
+export type PossibleBreakpoint = { line: number, string: number };
+export type PossibleLineBreakpoints = Array<PossibleBreakpoint>;
+export type PossibleSourceBreakpoints = { [number]: PossibleLineBreakpoints };

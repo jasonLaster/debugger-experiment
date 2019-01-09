@@ -24,10 +24,12 @@ import type {
   SelectedPrimaryPaneTabType
 } from "../reducers/ui";
 
-export function setContextMenu(type: string, event: any) {
-  return ({ dispatch }: ThunkArgs) => {
-    dispatch({ type: "SET_CONTEXT_MENU", contextMenu: { type, event } });
-  };
+export function setContextMenu(contextMenu) {
+  return { type: "SET_CONTEXT_MENU", contextMenu };
+}
+
+export function clearContextMenu(contextMenu) {
+  return { type: "SET_CONTEXT_MENU", contextMenu: null };
 }
 
 export function setPrimaryPaneTab(tabName: SelectedPrimaryPaneTabType) {

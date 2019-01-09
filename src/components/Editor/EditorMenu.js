@@ -226,7 +226,7 @@ class EditorMenu extends Component {
 
   componentWillUpdate(nextProps) {
     // clear the context menu since it is open
-    this.props.setContextMenu("", null);
+    this.props.clearContextMenu();
     return this.showMenu(nextProps);
   }
 
@@ -261,6 +261,7 @@ const mapStateToProps = state => {
 
 const {
   addExpression,
+  clearContextMenu,
   evaluateInConsole,
   flashLineRange,
   jumpToMappedLocation,
@@ -271,6 +272,7 @@ const {
 
 const mapDispatchToProps = {
   addExpression,
+  clearContextMenu,
   evaluateInConsole,
   flashLineRange,
   jumpToMappedLocation,
