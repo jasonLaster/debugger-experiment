@@ -242,7 +242,7 @@ function removeBreakpoint(
   }
 }
 
-function setBreakpointOptions(
+async function setBreakpointOptions(
   location: SourceActorLocation,
   options: BreakpointOptions
 ) {
@@ -250,12 +250,8 @@ function setBreakpointOptions(
   const bpClient = bpClients[id];
   delete bpClients[id];
 
-  const sourceThreadClient = bpClient.source._activeThread;
-  return bpClient
-    .setCondition(sourceThreadClient, transformOptionsToCondition(options))
-    .then(_bpClient => {
-      bpClients[id] = _bpClient;
-    });
+  const newClient = await bpClient.setOptions(options);
+  bpClients[id] = newClient;
 }
 
 async function evaluateInFrame(script: Script, options: EvaluateParam) {

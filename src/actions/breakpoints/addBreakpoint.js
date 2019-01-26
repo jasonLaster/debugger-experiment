@@ -166,7 +166,7 @@ export function addBreakpoint(
       return;
     }
 
-    const breakpoint = createBreakpoint(breakpointPosition, options);
+    const breakpoint = createBreakpoint(breakpointPosition, { options });
 
     return dispatch({
       type: "ADD_BREAKPOINT",
