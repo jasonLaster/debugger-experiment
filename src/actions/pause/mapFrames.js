@@ -9,7 +9,8 @@ import {
   getFrames,
   getSymbols,
   getSource,
-  getSelectedFrame
+  getSelectedFrame,
+  assertPausedId
 } from "../../selectors";
 
 import assert from "../../utils/assert";
@@ -161,7 +162,7 @@ async function expandFrames(
  * @memberof actions/pause
  * @static
  */
-export function mapFrames() {
+export function mapFrames(pausedId) {
   return async function({ dispatch, getState, sourceMaps }: ThunkArgs) {
     const frames = getFrames(getState());
     if (!frames) {
@@ -174,6 +175,8 @@ export function mapFrames() {
 
     const thread = getCurrentThread(getState());
     const selectedFrameId = getSelectedFrameId(getState(), mappedFrames);
+
+    assertPausedId(getState(), pausedId);
     dispatch({
       type: "MAP_FRAMES",
       thread,

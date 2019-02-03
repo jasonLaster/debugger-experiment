@@ -8,7 +8,8 @@ import {
   isEvaluatingExpression,
   getSelectedFrame,
   getSources,
-  getLastCommand
+  getLastCommand,
+  getPauseId
 } from "../../selectors";
 
 import { mapFrames } from ".";
@@ -30,65 +31,76 @@ import type { ThunkArgs } from "../types";
 async function getOriginalSourceForFrame(state, frame: Frame) {
   return getSources(state)[frame.location.sourceId];
 }
+
 /**
  * Debugger has just paused
  *
  * @param {object} pauseInfo
  * @memberof actions/pause
  * @static
+
  */
-export function paused(pauseInfo: Pause) {
-  return async function({ dispatch, getState, client, sourceMaps }: ThunkArgs) {
-    const { thread, frames, why, loadedObjects } = pauseInfo;
-    const topFrame = frames.length > 0 ? frames[0] : null;
+function paused(pauseInfo: Pause) {
+  return async function({ dispatch, getState, client, sourceMaps }) {
+    try {
+      const { thread, frames, why, loadedObjects } = pauseInfo;
+      const topFrame = frames.length > 0 ? frames[0] : null;
 
-    // NOTE: do not step when leaving a frame or paused at a debugger statement
-    if (topFrame && !why.frameFinished && why.type == "resumeLimit") {
-      const mappedFrame = await updateFrameLocation(topFrame, sourceMaps);
-      const source = await getOriginalSourceForFrame(getState(), mappedFrame);
+      // NOTE: do not step when leaving a frame or paused at a debugger statement
+      if (topFrame && !why.frameFinished && why.type == "resumeLimit") {
+        const mappedFrame = await updateFrameLocation(topFrame, sourceMaps);
+        const source = await getOriginalSourceForFrame(getState(), mappedFrame);
 
-      // Ensure that the original file has loaded if there is one.
-      await dispatch(loadSourceText(source));
+        // Ensure that the original file has loaded if there is one.
+        await dispatch(loadSourceText(source));
 
-      if (shouldStep(mappedFrame, getState(), sourceMaps)) {
-        // When stepping past a location we shouldn't pause at according to the
-        // source map, make sure we continue stepping in the same direction we
-        // were going previously.
-        const rewind = getLastCommand(getState(), thread) == "reverseStepOver";
-        dispatch(command(rewind ? "reverseStepOver" : "stepOver"));
-        return;
+        if (shouldStep(mappedFrame, getState(), sourceMaps)) {
+          // When stepping past a location we shouldn't pause at according to the
+          // source map, make sure we continue stepping in the same direction we
+          // were going previously.
+          const rewind =
+            getLastCommand(getState(), thread) == "reverseStepOver";
+          dispatch(command(rewind ? "reverseStepOver" : "stepOver"));
+          return;
+        }
       }
-    }
 
-    dispatch({
-      type: "PAUSED",
-      thread,
-      why,
-      frames,
-      selectedFrameId: topFrame ? topFrame.id : undefined,
-      loadedObjects: loadedObjects || []
-    });
+      assertPausedId(getState(), pausedId);
 
-    const hiddenBreakpoint = getHiddenBreakpoint(getState());
-    if (hiddenBreakpoint) {
-      dispatch(removeBreakpoint(hiddenBreakpoint));
-    }
+      dispatch({
+        type: "PAUSED",
+        thread,
+        why,
+        frames,
+        selectedFrameId: topFrame ? topFrame.id : undefined,
+        loadedObjects: loadedObjects || []
+      });
 
-    await dispatch(mapFrames());
+      const hiddenBreakpoint = getHiddenBreakpoint(getState());
+      if (hiddenBreakpoint) {
+        dispatch(removeBreakpoint(hiddenBreakpoint));
+      }
 
-    const selectedFrame = getSelectedFrame(getState());
-    if (selectedFrame) {
-      await dispatch(selectLocation(selectedFrame.location));
-    }
+      await dispatch(mapFrames());
 
-    dispatch(togglePaneCollapse("end", false));
-    await dispatch(fetchScopes());
+      const selectedFrame = getSelectedFrame(getState());
+      if (selectedFrame) {
+        await dispatch(selectLocation(selectedFrame.location));
+      }
 
-    // Run after fetching scoping data so that it may make use of the sourcemap
-    // expression mappings for local variables.
-    const atException = why.type == "exception";
-    if (!atException || !isEvaluatingExpression(getState())) {
-      await dispatch(evaluateExpressions());
+      dispatch(togglePaneCollapse("end", false));
+      await dispatch(fetchScopes());
+
+      // Run after fetching scoping data so that it may make use of the sourcemap
+      // expression mappings for local variables.
+      const atException = why.type == "exception";
+      if (!atException || !isEvaluatingExpression(getState())) {
+        await dispatch(evaluateExpressions());
+      }
+    } catch (e) {
+      if (e.name != "pausedError") {
+        throw e;
+      }
     }
   };
 }

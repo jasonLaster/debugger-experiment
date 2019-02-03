@@ -536,6 +536,17 @@ export function getTopFrame(state: OuterState) {
   return frames && frames[0];
 }
 
+export function getPauseId(state: OuterState) {
+  const topFrame = getTopFrame(state);
+  return topFrame && topFrame.id;
+}
+
+export function assertPausedId(state, pausedId) {
+  if (pausedId && pausedId != getPauseId(state)) {
+    throw { name: "pausedError" };
+  }
+}
+
 export const getSelectedFrame: Selector<?Frame> = createSelector(
   getSelectedFrameId,
   getFrames,

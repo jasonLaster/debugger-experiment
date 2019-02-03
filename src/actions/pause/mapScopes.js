@@ -17,7 +17,7 @@ import type { ThunkArgs } from "../types";
 
 import { buildMappedScopes } from "../../utils/pause/mapScopes";
 
-export function mapScopes(scopes: Promise<Scope>, frame: Frame) {
+export function mapScopes(scopes: Promise<Scope>, frame: Frame, pausedId) {
   return async function({ dispatch, getState, client, sourceMaps }: ThunkArgs) {
     const generatedSource = getSource(
       getState(),
@@ -45,13 +45,16 @@ export function mapScopes(scopes: Promise<Scope>, frame: Frame) {
         await dispatch(loadSourceText(source));
 
         try {
-          return await buildMappedScopes(
+          const mappedScopes = await buildMappedScopes(
             source,
             frame,
             await scopes,
             sourceMaps,
             client
           );
+
+          assertPausedId(getState(), pausedId);
+          return mappedScopes;
         } catch (e) {
           log(e);
           return null;
