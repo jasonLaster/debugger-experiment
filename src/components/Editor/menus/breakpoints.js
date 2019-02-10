@@ -123,10 +123,10 @@ export const logPointItem = (
   breakpointActions: BreakpointItemActions
 ) => {
   const {
-    options: { condition },
+    options: { logValue },
     location
   } = breakpoint;
-  return condition
+  return logValue
     ? editLogPointItem(location, breakpointActions)
     : addLogPointItem(location, breakpointActions);
 };
