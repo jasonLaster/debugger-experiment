@@ -28,7 +28,7 @@ export type ASTAction =
     |}
   | {|
       +type: "IN_SCOPE_LINES",
-      +lines: AstLocation[]
+      +lines: number[]
     |}
   | PromiseAction<
       {|

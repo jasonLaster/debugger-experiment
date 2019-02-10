@@ -12,7 +12,7 @@ import { range, flatMap, uniq, without } from "lodash";
 import type { ASTLocation } from "../../types";
 import type { ThunkArgs } from "../types";
 
-function getOutOfScopeLines(outOfScopeLocations: ASTLocation[]) {
+function getOutOfScopeLines(outOfScopeLocations: ?(ASTLocation[])) {
   if (!outOfScopeLocations) {
     return null;
   }
