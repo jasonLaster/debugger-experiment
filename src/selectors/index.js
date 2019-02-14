@@ -40,6 +40,10 @@ export { getVisibleSelectedFrame } from "./visibleSelectedFrame";
 export { getBreakpointSources } from "./breakpointSources";
 export { getXHRBreakpoints, shouldPauseOnAnyXHR } from "./breakpoints";
 export { visibleColumnBreakpoints } from "./visibleColumnBreakpoints";
+export {
+  getRelativeSources,
+  getRelativeSourcesForThread
+} from "./relativeSources";
 
 import { objectInspector } from "devtools-reps";
 

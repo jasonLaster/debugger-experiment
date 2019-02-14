@@ -66,4 +66,8 @@ export function getThreads(state: OuterState) {
   return [getMainThread(state), ...sortBy(getWorkers(state), getDisplayName)];
 }
 
+export function getThreadUrls(state) {
+  return [getDebuggeeUrl(state), ...getThreads.map(t => t.url)];
+}
+
 type OuterState = { debuggee: DebuggeeState };

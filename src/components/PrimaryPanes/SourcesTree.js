@@ -18,7 +18,6 @@ import {
   getProjectDirectoryRoot,
   getRelativeSourcesForThread,
   getFocusedSourceItem,
-  getWorkerByThread,
   getWorkerCount
 } from "../../selectors";
 
@@ -56,8 +55,6 @@ import type { SourcesMap, State as AppState } from "../../reducers/types";
 import type { Item } from "../shared/ManagedTree";
 
 type Props = {
-  thread: string,
-  worker: Worker,
   sources: SourcesMap,
   sourceCount: number,
   shownSource?: Source,
@@ -161,7 +158,7 @@ class SourcesTree extends Component<Props, State> {
   };
 
   onFocus = (item: TreeNode) => {
-    this.props.focusItem({ thread: this.props.thread, item });
+    this.props.focusItem({ thread: this.props.threadUrl, item });
   };
 
   // NOTE: we get the source from sources because item.contents is cached
@@ -187,11 +184,11 @@ class SourcesTree extends Component<Props, State> {
   };
 
   onExpand = (item: Item, expandedState: Set<string>) => {
-    this.props.setExpandedState(this.props.thread, expandedState);
+    this.props.setExpandedState(this.props.threadUrl, expandedState);
   };
 
   onCollapse = (item: Item, expandedState: Set<string>) => {
-    this.props.setExpandedState(this.props.thread, expandedState);
+    this.props.setExpandedState(this.props.threadUrl, expandedState);
   };
 
   onKeyDown = (e: KeyboardEvent) => {
@@ -345,8 +342,7 @@ class SourcesTree extends Component<Props, State> {
 function getSourceForTree(
   state: AppState,
   relativeSources: SourcesMap,
-  source: ?Source,
-  thread
+  source: ?Source
 ): ?Source {
   if (!source) {
     return null;
@@ -364,25 +360,27 @@ const mapStateToProps = (state, props) => {
   const selectedSource = getSelectedSource(state);
   const shownSource = getShownSource(state);
   const focused = getFocusedSourceItem(state);
-  const thread = props.thread;
-  const relativeSources = getRelativeSourcesForThread(state, thread);
+  const relativeSources = getRelativeSourcesForThread(state, props.threadUrl);
 
   return {
-    shownSource: getSourceForTree(state, relativeSources, shownSource, thread),
+    shownSource: getSourceForTree(
+      state,
+      relativeSources,
+      shownSource,
+      threadUrl
+    ),
     selectedSource: getSourceForTree(
       state,
       relativeSources,
       selectedSource,
-      thread
+      threadUrl
     ),
     debuggeeUrl: getDebuggeeUrl(state),
-    expanded: getExpandedState(state, props.thread),
-    focused: focused && focused.thread == props.thread ? focused.item : null,
+    expanded: getExpandedState(state),
+    focused: focused && focused.item,
     projectRoot: getProjectDirectoryRoot(state),
     sources: relativeSources,
-    sourceCount: Object.values(relativeSources).length,
-    worker: getWorkerByThread(state, thread),
-    workerCount: getWorkerCount(state)
+    sourceCount: Object.values(relativeSources).length
   };
 };
 
